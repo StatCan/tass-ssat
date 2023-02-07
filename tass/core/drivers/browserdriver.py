@@ -24,6 +24,16 @@ class BrowserDriver():
             options.add_argument(option)
         return options
         
+    @property
+    def driver(self):
+        return self._driver
+        
+    def wait(self, timer=None,):
+        if (timer == None):
+            timer = self._configs['explicit_wait']
+        return WebDriverWait(self._driver, timer)
+         
+        
         
 
 class ChromeDriver(BrowserDriver):
