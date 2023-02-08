@@ -1,0 +1,4 @@
+name: tass_ssat-dev
+dependencies:
+  - python=3.11
+  - jsonschema
