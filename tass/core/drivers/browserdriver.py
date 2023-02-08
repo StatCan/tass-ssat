@@ -3,90 +3,49 @@ import pathlib
 import os
 
 from selenium import webdriver
+from selenium.webdriver.support.wait import WebDriverWait
 
-
-
-class BrowserDriver():
-
-    def __init__(self, browser):
-        self._configs = json.load(open(os.path.join(pathlib.Path().absolute(), 'config', 'browsers.json')))[browser]
-        print(self._configs)
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager    
         
-        
-    def start(self):
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from webdriver_manager.firefox import GeckoDriverManager
+   
+from selenium.webdriver.edge.service import Service as EdgeService
+from webdriver_manager.microsoft import EdgeChromiumDriverManager   
+
+
+
+class WebDriverWaitWrapper():
     
-        if (self._driver):
-            self._driver.implicitly_wait(self._configs['implicit_wait'])
-            #self._driver.maximize_window()
-            
-    def _add_options(self, options, args=[]):
-        for option in args:
-            options.add_argument(option)
-        return options
-        
-    @property
-    def driver(self):
-        return self._driver
-        
-    def wait(self, timer=None,):
-        if (timer == None):
-            timer = self._configs['explicit_wait']
-        return WebDriverWait(self._driver, timer)
-         
-        
-        
+    def wait_for_element(self, until_func, **kwargs):
+        wait = WebDriverWait(self, 30) #TODO: pull time from config file
+        return wait.until(until_func(**kwargs))
 
-class ChromeDriver(BrowserDriver):
+
+class ChromeDriver(webdriver.Chrome, WebDriverWaitWrapper):
     def __init__(self):
-        super().__init__('chrome')
-        
-        
-    def start(self):
-        from selenium.webdriver.chrome.service import Service as ChromeService
-        from webdriver_manager.chrome import ChromeDriverManager
-        
-        options = self._add_options(webdriver.ChromeOptions(), self._configs['options'])
-        wdriver = webdriver.Chrome(service=ChromeService(executable_path=ChromeDriverManager().install()), options=options)
-        self._driver = wdriver
-        super().start()
+        options = webdriver.ChromeOptions()
+        #TODO: generate Options from config file 
+        options.add_argument('--start-maximized')
+        super().__init__(self, service=ChromeService(executable_path=ChromeDriverManager().install()), options=options)
 
 
-class FirefoxDriver(BrowserDriver):
+class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
     def __init__(self):
-        super().__init__('firefox') 
+        options = webdriver.FirefoxOptions()
+        #TODO: generate Options from config file
+        options.add_argument('--start-maximized')
+        super().__init__(service=FirefoxService(GeckoDriverManager().install()), options=options) 
         
-        
-    def start(self):
-        from selenium.webdriver.firefox.service import Service as FirefoxService
-        from webdriver_manager.firefox import GeckoDriverManager
-        
-        wdriver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
-        self._driver = wdriver
-        super().start()
     
 
-class EdgeDriver(BrowserDriver):
+class EdgeDriver(webdriver.Edge, WebDriverWaitWrapper):
     def __init__(self):
-        super().__init__('edge')
-        
-    def start(self):
-        from selenium.webdriver.edge.service import Service as EdgeService
-        from webdriver_manager.microsoft import EdgeChromiumDriverManager
-        
-        wdriver = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()))
-        self._driver = wdriver
-        super.start()
-
-
-def factory(browser = 'chrome'):
-        if (browser == 'chrome'):
-            return ChromeDriver()
-        elif (browser == 'firefox'):
-            return FirefoxDriver()
-        elif (browser == 'edge'):
-            return EdgeDriver()
-        else:
-            raise ValueError(browser)
+        options = webdriver.EdgeOptions()
+        #TODO: generate Options from config file
+        options.add_argument('--start-maximized')
+        super().__init__(service=EdgeService(EdgeChromiumDriverManager().install()), options=options)
             
 
     
