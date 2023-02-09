@@ -4,3 +4,4 @@ dependencies:
   - jsonschema
   - selenium
   - webdriver-manager
+  - flake8
