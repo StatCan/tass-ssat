@@ -58,7 +58,7 @@ class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
     """ Custom FirefoxDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
-        super().__init__(service=FirefoxService(GeckoDriverManager().install()), options=self._config_options(webdriver.FirefoxOptions, config)) 
+        super().__init__(self, service=FirefoxService(GeckoDriverManager().install()), options=self._config_options(webdriver.FirefoxOptions, config)) 
         
     
 
@@ -66,7 +66,7 @@ class EdgeDriver(webdriver.Edge, WebDriverWaitWrapper):
     """ Custom EdgeDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
-        super().__init__(service=EdgeService(EdgeChromiumDriverManager().install()), options=self._config_options(webdriver.EdgeOptions, config))
+        super().__init__(self, service=EdgeService(EdgeChromiumDriverManager().install()), options=self._config_options(webdriver.EdgeOptions, config))
             
 
     
