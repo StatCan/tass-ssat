@@ -7,11 +7,11 @@
 	"firefox":{
 		"implicit_wait":5,
 		"explicit_wait":10,
-		"options":[]
+		"options":["--start-maximized"]
 	},
 	"edge":{
 		"implicit_wait":5,
 		"explicit_wait":10,
-		"options":[]
+		"options":["--start-maximized"]
 	}
 }
