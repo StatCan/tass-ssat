@@ -16,7 +16,7 @@ We will follow PEP-8 and use Flake8 for evaluation/enforcement.
 
 ## Tabs vs Spaces
 
-TO BE DISCUSSED.
+Spaces win.
 
 ## Text Editors/IDEs
 
@@ -25,7 +25,18 @@ encoded plain text files.
 
 ## Branch Naming
 
-TO BE DISCUSSED.
+Branches will follow the naming scheme "type-number-summary". Ex:
+feature-2-click_action.
+
+The accepted types for now are:
+- feature
+- doc
+- bugfix
+
+Other types can be added as time goes on.
+
+The summary should be a brief explanation of what the branch does, in one
+to three words, separated by underscores.
 
 ## Merging
 
@@ -34,6 +45,10 @@ a suitably name branch linked to an issue. When changes are ready to be
 pushed to main, a pull request is created, reviewed, corrected as needed,
 approved, and merged.
 
-When approving merge requests, the approver must review changes, run
+When approving merge requests, the reviewer must review changes, run
 tests, and pass the code through flake8. Any problems can be returned to
 the proposer of the change for rectification.
+
+Currently, merge requests must be reviewed and approved by at least
+1 person. As the team grows, the number of reviewers should be increased
+as appropriate.
