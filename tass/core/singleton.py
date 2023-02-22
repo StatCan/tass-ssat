@@ -8,7 +8,7 @@ class Singleton(type):
         return cls._instances[cls]
 
     def reset(cls):
-        if csl in cls._instances:
+        if cls in cls._instances:
             del cls._instances[cls]
         else:
             print("Key: " + str(cls) + " is not present.")
