@@ -1,11 +1,13 @@
 import pytest
+import json
+from tass.core.tass_item import TassItem
+from tass.drivers.browserdriver import ChromeDriver
 
 
 class TassConfig(pytest.File):
 
-    def __init__(self, uuid, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(self, **kwargs)
-        self._uuid = uuid
 
     @property
     def name(self):
@@ -18,28 +20,23 @@ class TassConfig(pytest.File):
 
 class TassSuite(TassConfig):
 
-    def __init__(self, *,
-                 testcases,
-                 **kwargs):
-        super().__init__(self, **kwargs)
-        self.testcases = testcases
-        
     def collect(self):
         # TODO: Collect all test cases as TassItems and yield
         pass
-        
-    # TODO: implement custom from_parent
 
 
-class TassRun(TassConfig):
-    
-    def __init__(self, *,
-                 testcases,
-                 testsuites,
-                 **kwargs):
+class TassRun(pytest.File):
 
     def collect(self):
-        # TODO: Collect all test cases as TassItems, then collect all TestSuites and yield TassItems
-        pass
-        
-    # TODO: implement custom from_parent
+        # TODO: Collect all test cases as TassItems,
+        # then collect all TestSuites and yield TassItems
+        self.file = json.load(open(self.path))
+        # print(self.file)
+        self.testcases = self.file.get("test_cases", None)
+        driver = ChromeDriver(json.load(open('tass/config/browsers.json'))
+                              .get("chrome", {}))
+        for case in self.testcases:
+            yield TassItem.from_parent(self,
+                                       name=case.get('title', "Untitled"),
+                                       steps=case.get("steps", []),
+                                       driver=driver)

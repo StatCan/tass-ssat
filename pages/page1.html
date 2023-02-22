@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Page One</title>
+
+  </head>
+  <body>
+    <button type="button" name="button" id="btnColor" onclick="onClick(this)">Color Change Button</button>
+    <input type="text" name="name" id="nameField" value="">
+    <ul>
+    <li><button type="button" name="button1" id="btn1" onclick="onClick(this)">Button 1</button></li>
+    <li><button type="button" name="button2" id="btn2" onclick="onClick(this)">Button 2</button></li>
+    <li><a href="page2.html" id="nextBtn">NEXT</a>
+    </ul>
+    <script>
+
+      function onClick(btn) {
+        btn.style.backgroundColor = colors[index];
+        btn.style.color = 'white';
+
+        index = index >= colors.length - 1 ? 0 : index + 1;
+      }
+
+      let index = 0;
+
+      const colors = ['salmon', 'green', 'blue', 'purple'];
+
+
+</script>
+  </body>
+</html>
