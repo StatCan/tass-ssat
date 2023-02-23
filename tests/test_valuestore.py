@@ -2,6 +2,7 @@ import unittest
 from tass.core.valuestore import ValueStore
 from tass.core.singleton import Singleton
 
+
 class TestValueStore(unittest.TestCase):
     def setUp(self):
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
@@ -12,7 +13,7 @@ class TestValueStore(unittest.TestCase):
         Singleton.reset(ValueStore)
 
     def test_create(self):
-        self.assertFalse(Singleton.exists(ValueStore), 
+        self.assertFalse(Singleton.exists(ValueStore),
                          msg="ValueStore should not be initialized.")
         my_values = ValueStore()
         self.assertTrue(Singleton.exists(ValueStore),
@@ -52,6 +53,7 @@ class TestValueStore(unittest.TestCase):
         self.assertEqual(my_values3.get_data("key1"), "test")
         my_values3.add_to_dict("key2", "more test")
         self.assertEqual(my_values.get_data("key2"), "more test")
+
 
 if __name__ == '__main__':
     unittest.main()

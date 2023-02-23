@@ -1,5 +1,6 @@
 from .singleton import Singleton
 
+
 class ValueStore(metaclass=Singleton):
     def __init__(self):
         self.value_dict = {}

@@ -2,6 +2,7 @@ import unittest
 import json
 from jsonschema import Draft7Validator
 
+
 class TestJsonSchema(unittest.TestCase):
     def setUp(self):
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
@@ -15,6 +16,7 @@ class TestJsonSchema(unittest.TestCase):
         print(self.schema)
         print("Schema validator result:")
         print(Draft7Validator.check_schema(self.schema))
+
 
 if __name__ == '__main__':
     unittest.main()
