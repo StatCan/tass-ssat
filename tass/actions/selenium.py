@@ -42,7 +42,7 @@ def read_css(driver, *, element=None, attribute=''):
         return _find_element(driver, element).value_of_css_property(attribute)
     except WebDriverException as e:
         print("Exception: ", e, " trying again")
-        return _find_element(driver, element).get_attribute(attribute)
+        return _find_element(driver, element).value_of_css_property(attribute)
 
 
 def _find_element(driver, element):
