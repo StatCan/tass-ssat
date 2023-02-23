@@ -52,7 +52,7 @@ class ChromeDriver(webdriver.Chrome, WebDriverWaitWrapper):
     def __init__(self, config):
         self._config = config
         super().__init__(self, service=ChromeService(
-            executable_path=ChromeDriverManager().install()),
+            ChromeDriverManager().install()),
             options=self._config_options(webdriver.ChromeOptions, config))
 
 
