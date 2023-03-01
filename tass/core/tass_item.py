@@ -1,4 +1,5 @@
 import pytest
+import time
 import tass.actions.selenium as actions
 
 
@@ -16,12 +17,13 @@ class TassItem(pytest.Item):
         for step in self.steps:
             print('* * * * * * * * * *')
             print(step)
-            print('* * * * * * * * * *')
-            _execute_step(step, self.driver)
+            print('* * * * * * * * * *\n\n')
+            _execute_step(step, self.driver), '\n\n'
 
+        time.sleep(8)
         self.driver.quit()
 
 
 def _execute_step(step, driver):
     params = dict(zip(it := iter(step.get('parameters', None)), it))
-    getattr(actions, step.get('action'))(driver=driver, **params)
+    return getattr(actions, step.get('action'))(driver=driver, **params)

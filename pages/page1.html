@@ -16,10 +16,12 @@
     <script>
 
       function onClick(btn) {
-        btn.style.backgroundColor = colors[index];
+        
         btn.style.color = 'white';
-
-        index = index >= colors.length - 1 ? 0 : index + 1;
+		setTimeout(()=> { 
+			btn.style.backgroundColor = colors[index]; 
+			index = index >= colors.length - 1 ? 0 : index + 1;}, 6000);
+        
       }
 
       let index = 0;

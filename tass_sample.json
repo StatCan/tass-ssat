@@ -10,25 +10,31 @@
 					"uuid":"sample-test-step-0",
 					"title":"Launch google.ca",
 					"action":"load_file",
-					"parameters":["file_name", "page1.html"]
+					"parameters":["relative_path", "pages/page1.html"]
 				}, 
 				{
 					"uuid":"sample-test-step-1",
 					"title":"Type search query into google",
 					"action":"type",
-					"parameters":["element", ["id", "nameField"], "text", "do a barrel roll"]
+					"parameters":["locator", {"by":"id", "value":"nameField"}, "text", "do a barrel roll"]
 				},
 				{
 					"uuid":"sample-test-step-2",
 					"title":"Click the search button",
 					"action":"click",
-					"parameters":["element", ["id", "btnColor"]]
+					"parameters":["locator", {"by":"id", "value":"btnColor"}]
+				},
+				{				
+					"uuid":"sample-test-step-3",
+					"title":"Wait for the button to change color then, then click.",
+					"action":"wait_until",
+					"parameters":["until", "css_includes", "action", "click", "attribute", "background-color", "expected_value", "250, 128, 114", "locator", {"by":"id", "value":"btnColor"}]
 				},
 				{
-					"uuid":"sample-test-step-3",
+					"uuid":"sample-test-step-4",
 					"title":"Read search query",
 					"action":"read_css",
-					"parameters":["element", ["id", "btnColor"], "attribute", "background-color"]
+					"parameters":["locator", {"by":"id", "value":"btnColor"}, "attribute", "background-color"]
 				}
 			]
 			
