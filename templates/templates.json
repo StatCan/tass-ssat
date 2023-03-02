@@ -1,0 +1,117 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+
+    "definitions": {
+        "Test_run": {
+            "type": "object",
+	    "Properties": {
+                "uuid": {"type": "string"},
+		"start_time": {"type": "string"},
+		"end_time": {"type": "string"},
+		"build": {"type": "string"},
+		"status": {
+		    "type": "array",
+		    "items": {"$ref": "#/definitions/Status"},
+		    "default": []
+		},
+		"test_cases": {
+		    "type": "array",
+		    "items": {"type":"string"},
+		    "default": []
+		},
+		"test_suites": {
+		    "type": "array",
+		    "items": {"type":"string"},
+		    "default": []
+		}
+	    }
+	},
+	"Test_suite": {
+            "type": "object",
+	    "Properties": {
+                "uuid": {"type": "string"},
+		"test_cases": {
+		    "type": "array",
+		    "items": {"type": "string"},
+		    "default": []
+		},
+		"keywords": {
+		    "type": "array",
+		    "items": {"type": "string"},
+		    "default": []
+		}
+	    }
+	},
+	"Test_case": {
+            "type": "object",
+	    "Properties": {
+                "uuid": "string",
+		"title": "string",
+		"steps": {
+		    "type": "array",
+		    "items": {"$ref": "#/definitions/Step/"},
+		    "default": []
+		},
+		"pass_cond": "string"
+	    }
+	},
+	"Step": {
+            "type": "object",
+	    "Properties": {
+		"uuid": "string",
+		"title": "string",
+		"action": "string",
+		"parameter": {
+                    "type": "array",
+		    "items": {"type": "string"},
+		    "default": []
+		},
+		"pass_cond": "string"
+	    }
+	},
+	"Meta": {
+	    "type": "object",
+	    "Properties": {
+	        "uuids": {
+                    "type": "array",
+       		    "items": {"type": "string"},
+		    "default": []
+	        },
+	        "paths": {
+                    "type": "array",
+		    "items": {"type": "string"},
+		    "default": []
+	        }
+	    }
+	},
+	"Report": {
+            "type:": "object",
+	    "Properties": {
+	        "format": "string",
+	        "fields": {
+                    "type": "array",
+		    "items": {"type": "string"},
+		    "default": []
+	        }
+	    }
+	},
+	"Status": {
+            "type": "object",
+            "Properties": {
+		"uuid": "string",
+                "status": "boolean"
+	    }
+	}
+    },
+
+    "type": "object",
+    "properties": {
+        "Test_run": {"$ref": "#/definitions/Test_run"},
+	"Test_suite": {"$ref": "#/definitions/Test_suite"},
+	"Test_case": {"$ref": "#/definitions/Test_case"},
+	"Step": {"$ref": "#/definitions/Step"},
+	"Meta": {"$ref": "#/definitions/Meta"},
+	"Report": {"$ref": "#/definitions/Report"},
+	"Status": {"$ref": "#/definitions/Status"}
+    }
+}

@@ -6,20 +6,20 @@ def _find_element(driver, element):
     return driver.find_element(**element)
 
 
-def click(driver, find=_find_element, element=None):
+def click(driver, find=_find_element, **kwargs):
     try:
-        find(driver, element).click()
+        find(driver, **kwargs).click()
     except WebDriverException as e:
         print("Exception: ", e, " trying again")
         find(driver, element).click()
 
 
-def type(driver, find=_find_element, element=None, text=''):
+def type(driver, find=_find_element, text='', **kwargs):
     try:
-        find(driver, element).send_keys(text)
+        find(driver, **kwargs).send_keys(text)
     except WebDriverException as e:
         print("Exception: ", e, " trying again")
-        find(driver, element).send_keys(text)
+        find(driver, **kwargs).send_keys(text)
 
 
 def load_url(driver, url=''):
@@ -31,18 +31,17 @@ def load_file(driver, relative_path=''):
     driver.get('file://' + url)
 
 
-def read_attribute(driver, find=_find_element, element=None, attribute=''):
+def read_attribute(driver, find=_find_element, attribute='', **kwargs):
     try:
-        return find(driver, element).get_attribute(attribute)
-
+        return find(driver, **kwargs).get_attribute(attribute)
     except WebDriverException as e:
         print("Exception: ", e, " trying again")
-        return find(driver, element).get_attribute(attribute)
+        return find(driver, **kwargs).get_attribute(attribute)
 
 
-def read_css(driver, find=_find_element, element=None, attribute=''):
+def read_css(driver, find=_find_element, attribute='', **kwargs):
     try:
-        return find(driver, element).value_of_css_property(attribute)
+        return find(driver, **kwargs).value_of_css_property(attribute)
     except WebDriverException as e:
         print("Exception: ", e, " trying again")
-        return find(driver, element).value_of_css_property(attribute)
+        return find(driver, **kwargs).value_of_css_property(attribute)
