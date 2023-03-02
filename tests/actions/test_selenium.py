@@ -35,6 +35,7 @@ class TestSelenium(unittest.TestCase):
         self.assertEqual(self.driver.title, "Google")
     
     def test_SeleniumLoadFile(self):
+<<<<<<< HEAD
         selenium.load_file(self.driver, self.test_page_url)
         self.assertEqual(self.driver.title, "Page One")
         
