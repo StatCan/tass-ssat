@@ -2,8 +2,8 @@ import pathlib
 import os
 from selenium.common.exceptions import WebDriverException
 
-def _find_element(driver, element):
-    return driver.find_element(**element)
+def _find_element(driver, locator):
+    return driver.find_element(**locator)
 
 
 def click(driver, find=_find_element, **kwargs):
@@ -11,7 +11,7 @@ def click(driver, find=_find_element, **kwargs):
         find(driver, **kwargs).click()
     except WebDriverException as e:
         print("Exception: ", e, " trying again")
-        find(driver, element).click()
+        find(driver, **kwargs).click()
 
 
 def type(driver, find=_find_element, text='', **kwargs):
