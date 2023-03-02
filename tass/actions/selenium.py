@@ -2,6 +2,7 @@ import pathlib
 import os
 from selenium.common.exceptions import WebDriverException
 
+
 def _find_element(driver, locator):
     return driver.find_element(**locator)
 
