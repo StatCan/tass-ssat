@@ -4,6 +4,7 @@ from tass.drivers.browserdriver import ChromeDriver as Chrome
 from tass.drivers.browserdriver import FirefoxDriver as Firefox
 from tass.drivers.browserdriver import EdgeDriver as Edge
 
+#TODO: Add a description of what the class does
 
 class TestSelenium(unittest.TestCase):
     
