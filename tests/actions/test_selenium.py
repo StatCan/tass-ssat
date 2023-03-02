@@ -59,3 +59,10 @@ class TestSelenium(unittest.TestCase):
         self.assertEqual(selenium.read_attribute(
                 self.driver, attribute='name',
                 locator={"by": "id", "value": "btn2"}), 'button2')
+                
+    def test_SeleniumReadCSS(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        self.driver.get('file://' + url)
+        self.assertEqual(selenium.read_css(
+                self.driver, attribute='width',
+                locator={"by": "id", "value": "btn1"}), '300px')
