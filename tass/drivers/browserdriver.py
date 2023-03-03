@@ -40,7 +40,7 @@ class WebDriverWaitWrapper():
             options_obj.add_argument(opt)
         return options_obj
 
-    def implicitly_wait(self):
+    def implicit_wait_from_config(self):
         """ Shortcut function to set the implicit wait
             based on the configuration file.
         """
