@@ -40,7 +40,7 @@ class WebDriverWaitWrapper():
             options_obj.add_argument(opt)
         return options_obj
 
-    def implicit_wait_from_config(self):
+    def _implicit_wait_from_config(self):
         """ Shortcut function to set the implicit wait
             based on the configuration file.
         """
@@ -51,24 +51,27 @@ class ChromeDriver(webdriver.Chrome, WebDriverWaitWrapper):
     """ Custom ChromeDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
-        super().__init__(self, service=ChromeService(
+        super().__init__(service=ChromeService(
             ChromeDriverManager().install()),
             options=self._config_options(webdriver.ChromeOptions, config))
+        self._implicit_wait_from_config()
 
 
 class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
     """ Custom FirefoxDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
-        super().__init__(self, service=FirefoxService(
+        super().__init__(service=FirefoxService(
             GeckoDriverManager().install()),
             options=self._config_options(webdriver.FirefoxOptions, config))
+        self._implicit_wait_from_config()
 
 
 class EdgeDriver(webdriver.Edge, WebDriverWaitWrapper):
     """ Custom EdgeDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
-        super().__init__(self, service=EdgeService(
+        super().__init__(service=EdgeService(
             EdgeChromiumDriverManager().install()),
             options=self._config_options(webdriver.EdgeOptions, config))
+        self._implicit_wait_from_config()

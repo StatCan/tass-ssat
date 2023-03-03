@@ -2,7 +2,7 @@ import unittest
 import os
 import pathlib
 import tass.actions.selenium as selenium
-from tass.drivers.browserdriver import ChromeDriver as Chrome
+from tass.drivers.browserdriver import FirefoxDriver as Chrome
 import selenium.webdriver.support.expected_conditions as EC
 
 
@@ -11,7 +11,7 @@ class TestSelenium(unittest.TestCase):
     config = {
             "implicit_wait": 5,
             "explicit_wait": 10,
-            "options": ["--start-maximized"]
+            "options": ["--start-maximized", "--headless"]
             }
 
     test_page_url = 'tests/pages/page1.html'
@@ -25,7 +25,6 @@ class TestSelenium(unittest.TestCase):
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
         self.driver = Chrome(self.config)
-        self.driver.implicit_wait_from_config()
 
     def test_SeleniumLoadURL(self):
         url = "https://www.google.ca"
