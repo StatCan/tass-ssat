@@ -48,6 +48,7 @@ class WebDriverWaitWrapper():
 
 
 class ChromeDriver(webdriver.Chrome, WebDriverWaitWrapper):
+    browser = 'Chrome'
     """ Custom ChromeDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
@@ -58,6 +59,7 @@ class ChromeDriver(webdriver.Chrome, WebDriverWaitWrapper):
 
 
 class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
+    browser = 'Firefox'
     """ Custom FirefoxDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
@@ -68,6 +70,7 @@ class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
 
 
 class EdgeDriver(webdriver.Edge, WebDriverWaitWrapper):
+    browser = 'Edge'
     """ Custom EdgeDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
