@@ -63,6 +63,8 @@ class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
         super().__init__(self, service=FirefoxService(
             GeckoDriverManager().install()),
             options=self._config_options(webdriver.FirefoxOptions, config))
+        if ('--start-maximized' in config.get('options', [])):
+            self.maximize_window()
 
 
 class EdgeDriver(webdriver.Edge, WebDriverWaitWrapper):
