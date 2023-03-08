@@ -27,46 +27,46 @@
 	    }
 	},
 	"Test_suite": {
-            "type": "object",
+      "type": "object",
 	    "Properties": {
-                "uuid": {"type": "string"},
-		"test_cases": {
-		    "type": "array",
-		    "items": {"type": "string"},
-		    "default": []
-		},
-		"keywords": {
-		    "type": "array",
-		    "items": {"type": "string"},
-		    "default": []
-		}
+          "uuid": {"type": "string"},
+		      "test_cases": {
+		          "type": "array",
+		          "items": {"$ref": "#/definitions/Test_case/"}, 
+		          "default": []
+		      },
+		      "keywords": {
+              "type": "array",
+              "items": {"type": "string"},
+              "default": []
+		      }
 	    }
 	},
 	"Test_case": {
-            "type": "object",
+      "type": "object",
 	    "Properties": {
-                "uuid": "string",
-		"title": "string",
-		"steps": {
-		    "type": "array",
-		    "items": {"$ref": "#/definitions/Step/"},
-		    "default": []
-		},
-		"pass_cond": "string"
+          "uuid": "string",
+		      "title": "string",
+		      "steps": {
+		          "type": "array",
+              "items": {"$ref": "#/definitions/Step/"},
+              "default": []
+		      },
+		      "pass_cond": "string"
 	    }
 	},
 	"Step": {
-            "type": "object",
+      "type": "object",
 	    "Properties": {
-		"uuid": "string",
-		"title": "string",
-		"action": "string",
-		"parameter": {
-                    "type": "array",
-		    "items": {"type": "string"},
-		    "default": []
-		},
-		"pass_cond": "string"
+		      "uuid": "string",
+          "title": "string",
+          "action": "string",
+          "parameters": {
+              "type": "array",
+		          "items": {"type": "string"},
+		          "default": []
+		      },
+		      "pass_cond": "string"
 	    }
 	},
 	"Meta": {

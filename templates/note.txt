@@ -1,0 +1,5 @@
+Some comments on the templates:
+
+(1) I changed the type specification of test_suite's "test_cases" attribute from string to the appropriate template reference. 
+
+(2) I think the type specification of test_case's "actions" attribute should probably be more restrictive than string (an enumeration type based on available web-driver actions?)
