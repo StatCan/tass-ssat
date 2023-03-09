@@ -79,9 +79,7 @@ class TestSelenium(unittest.TestCase):
                 driver = browser(self.config)
                 driver.get('file://' + url)
                 text = 'Selenium Test Type'
-                selenium.type(
-                    driver, text=text,
-                    locator={"by": "id", "value": "nameField"})
+                driver.find_element('id', 'nameField').send_keys(text)
                 self.assertEqual(
                     driver
                     .find_element('id', 'nameField')
