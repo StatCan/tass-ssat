@@ -15,7 +15,7 @@ class TestValueStore(unittest.TestCase):
     def test_create(self):
         self.assertFalse(Singleton.exists(ValueStore),
                          msg="ValueStore should not be initialized.")
-        my_values = ValueStore()
+        ValueStore()
         self.assertTrue(Singleton.exists(ValueStore),
                         msg="ValueStore should be initialized.")
 
