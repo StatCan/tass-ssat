@@ -23,6 +23,14 @@ def type(driver, find=_find_element, text='', **kwargs):
         find(driver, **kwargs).send_keys(text)
 
 
+def clear(driver, find=_find_element, **kwargs):
+    try:
+        find(driver, **kwargs).clear()
+    except WebDriverException as e:
+        print("Exception: ", e, " trying again")
+        find(driver, **kwargs).clear()
+
+
 def load_url(driver, url=''):
     driver.get(url)
 
