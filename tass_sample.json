@@ -4,31 +4,82 @@
 	"test_cases":[
 		{	
 			"uuid":"sample-test-case",
-			"title":"Sample Test Case",
+			"title":"Sample Test Case A",
+			"browser": "chrome",
 			"steps":[
 				{
 					"uuid":"sample-test-step-0",
 					"title":"Launch google.ca",
 					"action":"load_file",
-					"parameters":["file_name", "page1.html"]
+					"parameters":["relative_path", "tests/pages/page1.html"]
 				}, 
 				{
 					"uuid":"sample-test-step-1",
 					"title":"Type search query into google",
 					"action":"type",
-					"parameters":["element", ["id", "nameField"], "text", "do a barrel roll"]
+					"parameters":["locator", {"by":"id", "value":"nameField"}, "text", "do a barrel roll"]
 				},
 				{
 					"uuid":"sample-test-step-2",
 					"title":"Click the search button",
 					"action":"click",
-					"parameters":["element", ["id", "btnColor"]]
+					"parameters":["locator", {"by": "id", "value": "btnColor"}]
 				},
 				{
 					"uuid":"sample-test-step-3",
 					"title":"Read search query",
 					"action":"read_css",
-					"parameters":["element", ["id", "btnColor"], "attribute", "background-color"]
+				"parameters":["locator", {"by": "id", "value": "btnColor"}, "attribute", "background-color"]
+				}
+			]
+			
+		},
+		{	
+			"uuid":"sample-test-case",
+			"title":"Sample Test Case B",
+			"browser": "firefox",
+			"steps":[
+				{
+					"uuid":"sample-test-step-0",
+					"title":"Launch google.ca",
+					"action":"load_file",
+					"parameters":["relative_path", "tests/pages/page1.html"]
+				}, 
+				{
+					"uuid":"sample-test-step-1",
+					"title":"Type search query into google",
+					"action":"type",
+					"parameters":["locator", {"by":"id", "value":"nameField"}, "text", "do a barrel roll"]
+				},
+				{
+					"uuid":"sample-test-step-2",
+					"title":"Click the search button",
+					"action":"click",
+					"parameters":["locator", {"by": "id", "value": "btnColor"}]
+				},
+				{
+					"uuid":"sample-test-step-3",
+					"title":"Read search query",
+					"action":"read_css",
+				"parameters":["locator", {"by": "id", "value": "btnColor"}, "attribute", "background-color"]
+				}, 
+				{
+					"uuid":"sample-test-step-1",
+					"title":"Type search query into google",
+					"action":"type",
+					"parameters":["locator", {"by":"id", "value":"nameField"}, "text", "don't do a barrel roll"]
+				},
+				{
+					"uuid":"sample-test-step-2",
+					"title":"Click the search button",
+					"action":"click",
+					"parameters":["locator", {"by": "id", "value": "btnColor"}]
+				},
+				{
+					"uuid":"sample-test-step-3",
+					"title":"Read search query",
+					"action":"read_css",
+				"parameters":["locator", {"by": "id", "value": "btnColor"}, "attribute", "background-color"]
 				}
 			]
 			

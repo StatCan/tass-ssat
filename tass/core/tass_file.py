@@ -1,7 +1,7 @@
 import pytest
 import json
 from tass.core.tass_item import TassItem
-from tass.drivers.browserdriver import ChromeDriver
+from tass.drivers.supportedbrowsers import Browsers
 
 
 class TassConfig(pytest.File):
@@ -33,10 +33,20 @@ class TassRun(pytest.File):
         self.file = json.load(open(self.path))
         # print(self.file)
         self.testcases = self.file.get("test_cases", None)
-        driver = ChromeDriver(json.load(open('tass/config/browsers.json'))
-                              .get("chrome", {}))
+
         for case in self.testcases:
+            name = case.get('browser', 'chrome')
+            try:
+                browser = Browsers.browser(name)
+            except (KeyError):
+                print('')
+                print('Not a supported browser: ',
+                      name, 'Skipping this case: ', case['title'])
+                continue
+            driver = {'browser': browser,
+                      'config': json.load(open('tass/config/browsers.json'))
+                      .get(name, {})}
             yield TassItem.from_parent(self,
                                        name=case.get('title', "Untitled"),
                                        steps=case.get("steps", []),
-                                       driver=driver)
+                                       browser_config=driver)

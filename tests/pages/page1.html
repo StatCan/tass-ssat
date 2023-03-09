@@ -9,17 +9,19 @@
     <button type="button" name="button" id="btnColor" onclick="onClick(this)">Color Change Button</button>
     <input type="text" name="name" id="nameField" value="">
     <ul>
-    <li><button type="button" name="button1" id="btn1" onclick="onClick(this)">Button 1</button></li>
+    <li><button type="button" name="button1" id="btn1" style="color: black; background-color: yellow; width: 300px;">Button 1</button></li>
     <li><button type="button" name="button2" id="btn2" onclick="onClick(this)">Button 2</button></li>
     <li><a href="page2.html" id="nextBtn">NEXT</a>
     </ul>
     <script>
 
       function onClick(btn) {
-        btn.style.backgroundColor = colors[index];
+        
         btn.style.color = 'white';
-
-        index = index >= colors.length - 1 ? 0 : index + 1;
+		setTimeout(()=> { 
+			btn.style.backgroundColor = colors[index]; 
+			index = index >= colors.length - 1 ? 0 : index + 1;}, 6000);
+        
       }
 
       let index = 0;

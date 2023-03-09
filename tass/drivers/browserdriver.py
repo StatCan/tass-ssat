@@ -8,6 +8,10 @@ from selenium.webdriver.edge.service import Service as EdgeService
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
 
+def newDriver(browser, config):
+    return browser(config)
+
+
 class WebDriverWaitWrapper():
     """ Wrapper class for adding general features to browser driver classes."""
     def wait_until(self, until_func, **kwargs):
@@ -40,7 +44,7 @@ class WebDriverWaitWrapper():
             options_obj.add_argument(opt)
         return options_obj
 
-    def implicitly_wait(self):
+    def _implicit_wait_from_config(self):
         """ Shortcut function to set the implicit wait
             based on the configuration file.
         """
@@ -48,27 +52,35 @@ class WebDriverWaitWrapper():
 
 
 class ChromeDriver(webdriver.Chrome, WebDriverWaitWrapper):
+    browser = 'Chrome'
     """ Custom ChromeDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
-        super().__init__(self, service=ChromeService(
+        super().__init__(service=ChromeService(
             ChromeDriverManager().install()),
             options=self._config_options(webdriver.ChromeOptions, config))
+        self._implicit_wait_from_config()
 
 
 class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
+    browser = 'Firefox'
     """ Custom FirefoxDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
-        super().__init__(self, service=FirefoxService(
+        super().__init__(service=FirefoxService(
             GeckoDriverManager().install()),
             options=self._config_options(webdriver.FirefoxOptions, config))
+        self._implicit_wait_from_config()
+        if ('--start-maximized' in config.get('options', [])):
+            self.maximize_window()
 
 
 class EdgeDriver(webdriver.Edge, WebDriverWaitWrapper):
+    browser = 'Edge'
     """ Custom EdgeDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
-        super().__init__(self, service=EdgeService(
+        super().__init__(service=EdgeService(
             EdgeChromiumDriverManager().install()),
             options=self._config_options(webdriver.EdgeOptions, config))
+        self._implicit_wait_from_config()
