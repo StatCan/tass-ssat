@@ -72,6 +72,27 @@ class TestSelenium(unittest.TestCase):
                     .get_attribute('value'), text)
                 driver.quit()
 
+    def test_SeleniumClear(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            with self.subTest(browser=browser.browser):
+                driver = browser(self.config)
+                driver.get('file://' + url)
+                text = 'Selenium Test Type'
+                driver.find_element('id', 'nameField').send_keys(text)
+                self.assertEqual(
+                    driver
+                    .find_element('id', 'nameField')
+                    .get_attribute('value'), text)
+                selenium.clear(
+                    driver,
+                    locator={"by": "id", "value": "nameField"})
+                self.assertEqual(
+                    driver
+                    .find_element('id', 'nameField')
+                    .get_attribute('value'), '')
+                driver.quit()
+
     def test_SeleniumReadAttribute(self):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
