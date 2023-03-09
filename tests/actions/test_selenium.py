@@ -18,7 +18,6 @@ class TestSelenium(unittest.TestCase):
 
     test_page_url = 'tests/pages/page1.html'
 
-
     def setUp(self):
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         print("Beginning new test TestCase %s" % self._testMethodName)
@@ -30,7 +29,7 @@ class TestSelenium(unittest.TestCase):
         url = "https://www.google.ca"
         for browser in self.drivers:
             with self.subTest(browser=browser.browser):
-                driver = browser(self.config) 
+                driver = browser(self.config)
                 selenium.load_url(driver, url)
                 self.assertEqual(driver.title, "Google")
                 driver.quit()
@@ -49,10 +48,12 @@ class TestSelenium(unittest.TestCase):
             with self.subTest(browser=browser.browser):
                 driver = browser(self.config)
                 driver.get('file://' + url)
-                selenium.click(driver, locator={"by": "id", "value": "btnColor"})
+                selenium.click(driver,
+                               locator={"by": "id", "value": "btnColor"})
                 self.assertIsNotNone(driver.wait_until(
                         until_func=EC.presence_of_element_located,
-                        locator=("xpath", "//button[contains(@style, 'salmon')]")))
+                        locator=("xpath",
+                                 "//button[contains(@style, 'salmon')]")))
                 driver.quit()
 
     def test_SeleniumType(self):
@@ -63,11 +64,12 @@ class TestSelenium(unittest.TestCase):
                 driver.get('file://' + url)
                 text = 'Selenium Test Type'
                 selenium.type(
-                    driver, text=text, locator={"by": "id", "value": "nameField"})
+                    driver, text=text,
+                    locator={"by": "id", "value": "nameField"})
                 self.assertEqual(
                     driver
-                        .find_element('id', 'nameField')
-                        .get_attribute('value'), text)
+                    .find_element('id', 'nameField')
+                    .get_attribute('value'), text)
                 driver.quit()
 
     def test_SeleniumReadAttribute(self):

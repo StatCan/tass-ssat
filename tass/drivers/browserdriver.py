@@ -71,7 +71,6 @@ class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
             self.maximize_window()
 
 
-
 class EdgeDriver(webdriver.Edge, WebDriverWaitWrapper):
     browser = 'Edge'
     """ Custom EdgeDriver for selenium interactions."""
