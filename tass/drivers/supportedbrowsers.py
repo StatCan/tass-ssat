@@ -10,7 +10,4 @@ class Browsers(Enum):
     EDGE = EdgeDriver
 
     def browser(name):
-        browser = Browsers[name.upper()].value
-        if (browser):
-            return browser
-        raise ValueError('Not a supported browser: ' + name)
+        return Browsers[name.upper()].value
