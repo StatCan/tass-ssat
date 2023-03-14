@@ -8,6 +8,10 @@ from selenium.webdriver.edge.service import Service as EdgeService
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
 
+def newDriver(browser, config):
+    return browser(config)
+
+
 class WebDriverWaitWrapper():
     """ Wrapper class for adding general features to browser driver classes."""
     def wait_until(self, until_func, **kwargs):
