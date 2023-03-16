@@ -1,6 +1,6 @@
 from tass.core.tass_items import TassItem
 from tass.drivers.browserdriver import newDriver
-import tass.actions.selenium as actions
+from tass.actions.actions import action
 
 
 class TassCase(TassItem):
@@ -29,4 +29,4 @@ class TassCase(TassItem):
 
 def _execute_step(step, driver):
     params = dict(zip(it := iter(step.get('parameters', None)), it))
-    getattr(actions, step.get('action'))(driver=driver, **params)
+    action(*step.get('action'))(driver=driver, **params)
