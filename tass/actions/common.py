@@ -1,8 +1,13 @@
+from tass.core.valuestore import ValueStore
+
+
 def store_value(key, value):
-    # TODO: implement a function to store a value for later use
-    pass
+    ValueStore().add_to_dict(key, value)
 
 
 def read_value(key):
-    # TODO: implement a function to read a stored value
-    pass
+    store = ValueStore()
+    if store.contains(key):
+        return store.get_data(key)
+    else:
+        return None
