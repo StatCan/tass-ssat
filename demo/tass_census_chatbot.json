@@ -1,0 +1,39 @@
+{
+	"uuid":"census-chatbot",
+	"build":"v0.1.0",
+	"browser": "chrome",
+	"test_cases":[
+		{	
+			"uuid":"census-chatbot01",
+			"name":"Census Chatbot Initial Test",
+		
+			"steps":[
+				{
+					"uuid":"census-chatbot01-00",
+					"name":"Launch Census Chatbot test page.",
+					"action":["selenium","load_url"],
+					"parameters":["url", "https://wcms-work-alpha.prod.cloud.statcan.ca/eng/test/contact-us-chatbot"]
+				}, 
+				{
+					"uuid":"census-chatbot01-01",
+					"name":"Switch to Chatbot frame.",
+					"action":["selenium","switch_frame"],
+					"parameters":["frame", "Microsoft_Omnichannel_LCWidget_Chat_Iframe_Window"]
+				},
+				{
+					"uuid":"census-chatbot01-02",
+					"name":"Open Chatbot",
+					"action":["selenium","click"],
+					"parameters":["locator", {"by": "id", "value": "oclcw-chatButton"}]
+				},
+				{
+					"uuid":"census-chatbot01-03",
+					"name":"Type a question",
+					"action":["selenium","type"],
+					"parameters":["locator", {"by": "xpath", "value": "//form/descendant::textarea"}, "text", "Hello, how are you?"]
+				}
+			]
+			
+		}
+	]		
+}
