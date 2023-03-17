@@ -54,17 +54,3 @@ def read_css(driver, find=_find_element, attribute='', **kwargs):
     except WebDriverException as e:
         print("Exception: ", e, " trying again")
         return find(driver, **kwargs).value_of_css_property(attribute)
-
-
-def switch_frame(driver, find=_find_element, frame=None):
-    try:
-        if (isinstance(frame, str)):
-            driver.switch_to.frame(frame)
-        else:
-            driver.switch_to.frame(find(driver, **frame))
-    except WebDriverException as e:
-        print("Exception: ", e, " trying again")
-        if (isinstance(frame, str)):
-            driver.switch_to.frame(frame)
-        else:
-            driver.switch_to.frame(find(driver, **frame))
