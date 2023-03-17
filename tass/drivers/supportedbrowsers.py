@@ -9,5 +9,6 @@ class Browsers(Enum):
     FIREFOX = FirefoxDriver
     EDGE = EdgeDriver
 
-    def browser(name):
-        return Browsers[name.upper()].value
+
+def browser(name):
+    return Browsers[name.upper()].value

@@ -1,7 +1,7 @@
 import json
 from tass.core.tass_items import TassFile
 from tass.core.tass_case import TassCase
-from tass.drivers.supportedbrowsers import Browsers
+import tass.drivers.supportedbrowsers as Browsers
 
 
 class TassSuite(TassFile):
