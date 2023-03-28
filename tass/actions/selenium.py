@@ -87,6 +87,8 @@ def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
         if (status):
             return
         elif (soft):
-            raise TassSoftAssertionError('Element is not displayed.', reason=e, *kwargs)
+            raise TassSoftAssertionError(
+                'Element is not displayed.', reason=e, *kwargs)
         else:
-            raise TassAssertionError('Element is not displayed.', reason=e, *kwargs)
+            raise TassAssertionError(
+                'Element is not displayed.', reason=e, *kwargs)

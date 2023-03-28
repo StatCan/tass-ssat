@@ -13,7 +13,7 @@ class TassCase(TassItem):
             print('* * * * * * * * * *')
             print(step)
             print('* * * * * * * * * *')
-            
+
             try:
                 _execute_step(step, self.driver)
                 step.update({"status": "passed"})
@@ -24,7 +24,7 @@ class TassCase(TassItem):
                 print(repr(fail))
                 step.update({"status": "failed"})
                 break
-                
+
         self.driver.quit()
 
     def __init__(self, *, steps=[], browser_config={}, **kwargs):
@@ -39,10 +39,11 @@ class TassCase(TassItem):
         if (self._driver is None):
             self._driver = newDriver(**self._browser_config)
         return self._driver
-    
+
     @property
     def steps(self):
         return self._steps
+
 
 def _execute_step(step, driver):
     params = dict(zip(it := iter(step.get('parameters', None)), it))
