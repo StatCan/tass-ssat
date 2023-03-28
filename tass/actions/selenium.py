@@ -58,13 +58,19 @@ def read_css(driver, find=_find_element, attribute='', **kwargs):
 
 def switch_frame(driver, find=_find_element, frame=None):
     try:
-        if (isinstance(frame, str)):
-            driver.switch_to.frame(frame)
+        if (frame):
+            if (isinstance(frame, str)):
+                driver.switch_to.frame(frame)
+            else:
+                driver.switch_to.frame(find(driver, **frame))
         else:
-            driver.switch_to.frame(find(driver, **frame))
+            driver.switch_to.parent_frame()
     except WebDriverException as e:
         print("Exception: ", e, " trying again")
-        if (isinstance(frame, str)):
-            driver.switch_to.frame(frame)
+        if (frame):
+            if (isinstance(frame, str)):
+                driver.switch_to.frame(frame)
+            else:
+                driver.switch_to.frame(find(driver, **frame))
         else:
-            driver.switch_to.frame(find(driver, **frame))
+            driver.switch_to.parent_frame()

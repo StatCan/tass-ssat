@@ -23,7 +23,7 @@ class TestSelenium(unittest.TestCase):
         print("Beginning new test TestCase %s" % self._testMethodName)
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
-        self.drivers = [EDriver, FDriver, CDriver]
+        self.drivers = [CDriver, FDriver, EDriver]
 
     def test_SeleniumLoadURL(self):
         url = "https://www.google.ca"
@@ -113,4 +113,16 @@ class TestSelenium(unittest.TestCase):
                 self.assertEqual(selenium.read_css(
                         driver, attribute='width',
                         locator={"by": "id", "value": "btn1"}), '300px')
+                driver.quit()
+
+    def test_SeleniumSwitchToFrame(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            with self.subTest(browser=browser.browser):
+                driver = browser(self.config)
+                driver.get('file://' + url)
+                selenium.switch_frame(driver, frame='FrameA')
+                btnName = driver.find_element(
+                    *('id', 'btnColor')).get_attribute('name')
+                self.assertEqual(btnName, 'buttonAlpha')
                 driver.quit()
