@@ -11,26 +11,51 @@
 				{
 					"uuid":"sample-test-step-0",
 					"name":"Launch google.ca",
+					"status": "untested",
 					"action":["selenium","load_file"],
 					"parameters":["relative_path", "tests/pages/page1.html"]
 				}, 
 				{
 					"uuid":"sample-test-step-1",
 					"name":"Type search query into google",
+					"status": "untested",
 					"action":["selenium","type"],
 					"parameters":["locator", {"by":"id", "value":"nameField"}, "text", "do a barrel roll"]
 				},
 				{
 					"uuid":"sample-test-step-2",
 					"name":"Click the search button",
+					"status": "untested",
 					"action":["selenium","click"],
 					"parameters":["locator", {"by": "id", "value": "btnColor"}]
 				},
 				{
 					"uuid":"sample-test-step-3",
 					"name":"Read search query",
+					"status": "untested",
 					"action":["selenium","read_css"],
-				"parameters":["locator", {"by": "id", "value": "btnColor"}, "attribute", "background-color"]
+					"parameters":["locator", {"by": "id", "value": "btnColor"}, "attribute", "background-color"]
+				},
+				{				
+					"uuid":"sample-test-step-4",
+					"name":"assert is displayed",
+					"action":["selenium","assert_displayed"],
+					"status": "untested",
+					"parameters":["soft", true, "locator", {"by": "id", "value": "btn-x"}]
+				},
+				{
+					"uuid":"sample-test-step-5",
+					"name":"assert is displayed",
+					"status": "untested",
+					"action":["selenium","assert_displayed"],
+					"parameters":["soft", false, "locator", {"by": "id", "value": "btn-x"}]
+				},
+				{
+					"uuid":"sample-test-step-6",
+					"name":"assert is displayed",
+					"status": "untested",
+					"action":["selenium","assert_displayed"],
+					"parameters":["soft", true, "locator", {"by": "id", "value": "btn-x"}]
 				}
 			]
 			
@@ -42,48 +67,56 @@
 				{
 					"uuid":"sample-test-step-0",
 					"name":"Launch google.ca",
+					"status": "untested",
 					"action":["selenium","load_file"],
 					"parameters":["relative_path", "tests/pages/page1.html"]
 				}, 
 				{
 					"uuid":"sample-test-step-1",
 					"name":"Type search query into google",
+					"status": "untested",
 					"action":["selenium","type"],
 					"parameters":["locator", {"by":"id", "value":"nameField"}, "text", "do a barrel roll"]
 				},
 				{
 					"uuid":"sample-test-step-2",
 					"name":"Click the search button",
+					"status": "untested",
 					"action":["selenium","click"],
 					"parameters":["locator", {"by": "id", "value": "btnColor"}]
 				},
 				{
 					"uuid":"sample-test-step-3",
 					"name":"Read search query",
+					"status": "untested",
 					"action":["selenium","read_css"],
 				"parameters":["locator", {"by": "id", "value": "btnColor"}, "attribute", "background-color"]
 				},
 				{
 					"uuid":"sample-test-step-0",
 					"name":"Launch google.ca",
+					"status": "untested",
 					"action":["selenium","load_file"],
 					"parameters":["relative_path", "tests/pages/page1.html"]
 				}, 
 				{
 					"uuid":"sample-test-step-1",
 					"name":"Type search query into google",
+					"status": "untested",
 					"action":["selenium","type"],
 					"parameters":["locator", {"by":"id", "value":"nameField"}, "text", "do a barrel roll"]
 				},
 				{
 					"uuid":"sample-test-step-2",
 					"name":"Click the search button",
+					"status": "untested",
 					"action":["selenium","click"],
 					"parameters":["locator", {"by": "id", "value": "btnColor"}]
 				},
 				{
 					"uuid":"sample-test-step-3",
 					"name":"Read search query",
+					"status": "untested",
 					"action":["selenium","read_css"],
 				"parameters":["locator", {"by": "id", "value": "btnColor"}, "attribute", "background-color"]
 				}

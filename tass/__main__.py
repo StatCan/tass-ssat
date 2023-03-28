@@ -10,6 +10,8 @@ def main(args):
         for case in test.collect():
             print(case)
             case.execute_tass()
+            print('/ / / / / / / / / / / / / / / / / / / /')
+            print(json.dumps(case.steps, sort_keys=True, indent=4))
 
 
 if __name__ == '__main__':

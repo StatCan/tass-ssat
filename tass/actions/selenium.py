@@ -1,6 +1,8 @@
 import pathlib
 import os
 from selenium.common.exceptions import WebDriverException
+from tass.exceptions.assertion_errors import TassAssertionError
+from tass.exceptions.assertion_errors import TassSoftAssertionError
 
 
 def _find_element(driver, locator):
@@ -68,3 +70,23 @@ def switch_frame(driver, find=_find_element, frame=None):
             driver.switch_to.frame(frame)
         else:
             driver.switch_to.frame(find(driver, **frame))
+
+
+# / / / / / / / Assertions / / / / / / /
+def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
+    try:
+        status = find(driver, **kwargs).is_displayed()
+        if (status):
+            return
+        elif (soft):
+            raise TassSoftAssertionError('Element is not displayed.', *kwargs)
+        else:
+            raise TassAssertionError('Element is not displayed.', *kwargs)
+    except WebDriverException as e:
+        status = find(driver, **kwargs).is_displayed()
+        if (status):
+            return
+        elif (soft):
+            raise TassSoftAssertionError('Element is not displayed.', reason=e, *kwargs)
+        else:
+            raise TassAssertionError('Element is not displayed.', reason=e, *kwargs)
