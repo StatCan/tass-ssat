@@ -1,5 +1,4 @@
-# Testing and Automated Services Suite – Suite et service d’automatisation
-et de testing
+# Testing and Automated Services Suite – Suite et service d’automatisation et de testing
 
 The TASS application assists users in creating and running reproducible
 test cases for web applications. TASS uses json configuration files to
