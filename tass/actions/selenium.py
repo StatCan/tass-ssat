@@ -1,7 +1,7 @@
 import pathlib
 import os
 from selenium.common.exceptions import WebDriverException
-from tass.exceptions.assertion_errors import TassAssertionError
+from tass.exceptions.assertion_errors import TassHardAssertionError
 from tass.exceptions.assertion_errors import TassSoftAssertionError
 
 
@@ -79,16 +79,22 @@ def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
         if (status):
             return
         elif (soft):
-            raise TassSoftAssertionError('Element is not displayed.', *kwargs)
+            raise TassSoftAssertionError(
+                'Soft Assertion failed: Element is not displayed.',
+                *kwargs)
         else:
-            raise TassAssertionError('Element is not displayed.', *kwargs)
+            raise TassHardAssertionError(
+                'Hard Assertion failed: Element is not displayed.',
+                *kwargs)
     except WebDriverException as e:
         status = find(driver, **kwargs).is_displayed()
         if (status):
             return
         elif (soft):
             raise TassSoftAssertionError(
-                'Element is not displayed.', reason=e, *kwargs)
+                'Soft Assertion failed: Element is not displayed.',
+                reason=e, *kwargs)
         else:
-            raise TassAssertionError(
-                'Element is not displayed.', reason=e, *kwargs)
+            raise TassHardAssertionError(
+                'Hard Assertion failed: Element is not displayed.',
+                reason=e, *kwargs)
