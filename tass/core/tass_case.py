@@ -15,13 +15,15 @@ class TassCase(TassItem):
             print('* * * * * * * * * *')
 
             try:
+                # Executing the step, catching the custom exception
+                # reporting a failed step here.
                 _execute_step(step, self.driver)
                 step.update({"status": "passed"})
             except TassSoftAssertionError as soft_fail:
-                print(repr(soft_fail))
+                # TODO: Error message should be attached here.
                 step.update({"status": "failed"})
             except TassAssertionError as fail:
-                print(repr(fail))
+                # TODO: Error message should be attached here.
                 step.update({"status": "failed"})
                 break
 
