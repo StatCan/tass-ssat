@@ -84,3 +84,8 @@ class EdgeDriver(webdriver.Edge, WebDriverWaitWrapper):
             EdgeChromiumDriverManager().install()),
             options=self._config_options(webdriver.EdgeOptions, config))
         self._implicit_wait_from_config()
+
+
+def toJson(driver):
+    # TODO: Include configuration information in the output.
+    return {'browser': driver.browser.lower()}

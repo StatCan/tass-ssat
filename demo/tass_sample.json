@@ -1,4 +1,5 @@
 {
+	"name": "Tass Sample Suite",
 	"uuid":"sample-test-run",
 	"build":"0.1.0Test",
 	"browser": "chrome",
