@@ -171,3 +171,57 @@ class TestSelenium(unittest.TestCase):
                         locator={"by": "id", "value": "btn-x"})
 
                 driver.quit()
+
+    def test_SeleniumAssertNotDisplayedSuccess(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            with self.subTest(browser=browser.browser):
+                driver = browser(self.config)
+                driver.get('file://' + url)
+                try:
+                    selenium.assert_not_displayed(
+                        driver,
+                        locator={"by": "id", "value": "btn-x"})
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
+    def test_SeleniumAssertNotDisplayedFailed(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            with self.subTest(browser=browser.browser):
+                driver = browser(self.config)
+                driver.get('file://' + url)
+                with self.assertRaises(TassHardAssertionError):
+                    selenium.assert_not_displayed(
+                        driver,
+                        locator={"by": "id", "value": "btn1"})
+
+                driver.quit()
+
+    def test_SeleniumAssertNotDisplayedSoftSuccess(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            with self.subTest(browser=browser.browser):
+                driver = browser(self.config)
+                driver.get('file://' + url)
+                try:
+                    selenium.assert_not_displayed(
+                        driver, soft=True,
+                        locator={"by": "id", "value": "btn-x"})
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
+    def test_SeleniumAssertNotDisplayedSoftFailed(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            with self.subTest(browser=browser.browser):
+                driver = browser(self.config)
+                driver.get('file://' + url)
+                with self.assertRaises(TassSoftAssertionError):
+                    selenium.assert_not_displayed(
+                        driver, soft=True,
+                        locator={"by": "id", "value": "btn1"})
+
+                driver.quit()
