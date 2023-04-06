@@ -8,7 +8,7 @@ from tass.exceptions.assertion_errors import TassSoftAssertionError
 
 class TassCase(TassItem):
     def execute_tass(self):
-        self._start_time = datetime.now().strftime("%d-%m-%Y--%H:%M:%S")
+        self._start_time = datetime.now().strftime("%d-%m-%Y--%H_%M_%S")
         self._status = 'incomplete'
         for step in self.steps:
             print('')

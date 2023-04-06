@@ -37,7 +37,7 @@ class TassRun(TassFile):
     def collect(self):
         # TODO: Collect all test cases as TassItems,
         # then collect all TestSuites and yield TassItems
-        self._start_time = datetime.now().strftime("%d-%m-%Y--%H:%M:%S")
+        self._start_time = datetime.now().strftime("%d-%m-%Y--%H_%M_%S")
         try:
             browser = Browsers.browser(self._browser_name)
         except (KeyError) as ke:
