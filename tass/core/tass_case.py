@@ -39,10 +39,10 @@ class TassCase(TassItem):
                 self._errors.append(step)
                 break
 
-        if (self._errors):
-            self._status = 'passed'
-        else:
+        if (len(self._errors) > 0):
             self._status = 'failed'
+        else:
+            self._status = 'passed'
         self.driver.quit()
 
     def __init__(self, *, steps=[], browser_config={}, **kwargs):
@@ -71,6 +71,7 @@ class TassCase(TassItem):
             "uuid": self.uuid,
             "start_time": self._start_time,
             "status": self._status,
+            "browser": self.driver,
             "errors": self._errors,
             "steps": self._steps
         }

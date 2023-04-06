@@ -52,7 +52,6 @@ class WebDriverWaitWrapper():
 
 
 class ChromeDriver(webdriver.Chrome, WebDriverWaitWrapper):
-    browser = 'Chrome'
     """ Custom ChromeDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
@@ -61,9 +60,18 @@ class ChromeDriver(webdriver.Chrome, WebDriverWaitWrapper):
             options=self._config_options(webdriver.ChromeOptions, config))
         self._implicit_wait_from_config()
 
+    def toJson(self):
+        # TODO: Include configuration information in the output.
+        caps = self.capabilities
+        return {
+            'name': caps['browserName'],
+            'version': caps['browserVersion'],
+            'driver-version': caps['chrome']['chromedriverVersion'],
+            'platform': caps['platformName']
+        }
+
 
 class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
-    browser = 'Firefox'
     """ Custom FirefoxDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
@@ -74,9 +82,18 @@ class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
         if ('--start-maximized' in config.get('options', [])):
             self.maximize_window()
 
+    def toJson(self):
+        # TODO: Include configuration information in the output.
+        caps = self.capabilities
+        return {
+            'name': caps['browserName'],
+            'version': caps['browserVersion'],
+            'driver-version': caps['moz:geckodriverVersion'],
+            'platform': caps['platformName']
+        }
+
 
 class EdgeDriver(webdriver.Edge, WebDriverWaitWrapper):
-    browser = 'Edge'
     """ Custom EdgeDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
@@ -85,7 +102,12 @@ class EdgeDriver(webdriver.Edge, WebDriverWaitWrapper):
             options=self._config_options(webdriver.EdgeOptions, config))
         self._implicit_wait_from_config()
 
-
-def toJson(driver):
-    # TODO: Include configuration information in the output.
-    return {'browser': driver.browser.lower()}
+    def toJson(self):
+        # TODO: Include configuration information in the output.
+        caps = self.capabilities
+        return {
+            'name': caps['browserName'],
+            'version': caps['browserVersion'],
+            'driver-version': caps['msedge']['msedgedriverVersion'],
+            'platform': caps['platformName']
+        }

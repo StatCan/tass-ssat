@@ -1,7 +1,6 @@
 import argparse
 import json
 from pathlib import Path
-from tass.drivers.browserdriver import toJson
 from tass.core.tass_files import TassRun
 
 
@@ -9,9 +8,7 @@ class TassEncoder(json.JSONEncoder):
     # Convert Python objects to JSON equivalent.
     # TODO: Update format to match test management tool
     def default(self, obj):
-        if (hasattr(obj, 'browser')):
-            return toJson(obj)
-        elif (hasattr(obj, 'toJson')):
+        if (hasattr(obj, 'toJson')):
             return obj.toJson()
         else:
             raise TypeError(
