@@ -26,6 +26,8 @@ def main(args):
             print('/ / / / / / / / / / / / / / / / / / / /')
 
     # Write results to file
+    Path('results').mkdir(exist_ok=True)
+    
     file_name = test.uuid + '---' + test.start_time + '.json'
     result_path = Path().resolve() / "results" / file_name
     with open(result_path, 'w+', encoding='utf-8') as f:
