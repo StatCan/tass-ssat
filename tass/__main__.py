@@ -11,8 +11,6 @@ def main(args):
             print(case)
             case.execute_tass()
             print('/ / / / / / / / / / / / / / / / / / / /')
-            # Dumping resulting json for debugging purposes
-            print(json.dumps(case, sort_keys=True, indent=4))
 
 
 if __name__ == '__main__':
