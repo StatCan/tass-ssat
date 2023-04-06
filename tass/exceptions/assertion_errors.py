@@ -20,9 +20,9 @@ class TassAssertionError(Exception):
 
 class TassSoftAssertionError(TassAssertionError):
     def __init__(self, message, reason=None, *args):
-        super().__init__(message, reason, args)
+        super().__init__(message, reason=reason, *args)
 
 
 class TassHardAssertionError(TassAssertionError):
     def __init__(self, message, reason=None, *args):
-        super().__init__(message, reason, args)
+        super().__init__(message, reason=reason, *args)
