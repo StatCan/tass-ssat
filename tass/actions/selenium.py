@@ -100,12 +100,12 @@ def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
             raise TassSoftAssertionError(
                 '''Soft Assertion failed: assert_displayed
                 -> Element is not displayed.''',
-                reason=e, *kwargs)
+                e, *kwargs)
         else:
             raise TassHardAssertionError(
                 '''Hard Assertion failed: assert_displayed
                 ->  Element is not displayed.''',
-                reason=e, *kwargs)
+                e, *kwargs)
 
 
 def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
@@ -127,9 +127,9 @@ def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
             raise TassSoftAssertionError(
                 '''Soft Assertion failed: assert_not_displayed
                 ->  Element is displayed.''',
-                reason=e, *kwargs)
+                e, *kwargs)
         else:
             raise TassHardAssertionError(
                 '''Hard Assertion failed: assert_not_displayed
                 ->  Element is displayed.''',
-                reason=e, *kwargs)
+                e, *kwargs)
