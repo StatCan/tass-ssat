@@ -96,9 +96,7 @@ def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
                 -> Element is not displayed.''',
                 *kwargs)
     except WebDriverException as e:
-        if (_is_displayed(driver, find=find, **kwargs)):
-            return
-        elif (soft):
+        if (soft):
             raise TassSoftAssertionError(
                 '''Soft Assertion failed: assert_displayed
                 -> Element is not displayed.''',
@@ -125,9 +123,7 @@ def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
                 ->  Element is displayed.''',
                 *kwargs)
     except WebDriverException as e:
-        if not (_is_displayed(driver, find=find, **kwargs)):
-            return
-        elif (soft):
+        if (soft):
             raise TassSoftAssertionError(
                 '''Soft Assertion failed: assert_not_displayed
                 ->  Element is displayed.''',
