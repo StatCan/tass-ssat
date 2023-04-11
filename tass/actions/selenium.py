@@ -1,10 +1,20 @@
 import pathlib
 import os
 from selenium.common.exceptions import WebDriverException
+from tass.exceptions.assertion_errors import TassHardAssertionError
+from tass.exceptions.assertion_errors import TassSoftAssertionError
 
 
 def _find_element(driver, locator):
     return driver.find_element(**locator)
+
+
+def _is_displayed(driver, find=_find_element, **kwargs):
+    try:
+        return find(driver, **kwargs).is_displayed()
+    except WebDriverException as e:
+        print("Exception: ", e, " trying again")
+        return find(driver, **kwargs).is_displayed()
 
 
 def click(driver, find=_find_element, **kwargs):
@@ -68,3 +78,58 @@ def switch_frame(driver, find=_find_element, frame=None):
             driver.switch_to.frame(frame)
         else:
             driver.switch_to.frame(find(driver, **frame))
+
+
+# / / / / / / / Assertions / / / / / / /
+def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
+    try:
+        if (_is_displayed(driver, find=find, **kwargs)):
+            return
+        elif (soft):
+            raise TassSoftAssertionError(
+                '''Soft Assertion failed: assert_displayed
+                -> Element is not displayed.''',
+                *kwargs)
+        else:
+            raise TassHardAssertionError(
+                '''Hard Assertion failed: assert_displayed
+                -> Element is not displayed.''',
+                *kwargs)
+    except WebDriverException as e:
+        if (soft):
+            raise TassSoftAssertionError(
+                '''Soft Assertion failed: assert_displayed
+                -> Element is not displayed.''',
+                reason=e, *kwargs)
+        else:
+            raise TassHardAssertionError(
+                '''Hard Assertion failed: assert_displayed
+                ->  Element is not displayed.''',
+                reason=e, *kwargs)
+
+
+def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
+    try:
+        if not (_is_displayed(driver, find=find, **kwargs)):
+            return
+        elif (soft):
+            raise TassSoftAssertionError(
+                '''Soft Assertion failed: assert_not_displayed
+                -> Element is displayed.''',
+                *kwargs)
+        else:
+            raise TassHardAssertionError(
+                '''Hard Assertion failed: assert_not_displayed
+                ->  Element is displayed.''',
+                *kwargs)
+    except WebDriverException as e:
+        if (soft):
+            raise TassSoftAssertionError(
+                '''Soft Assertion failed: assert_not_displayed
+                ->  Element is displayed.''',
+                reason=e, *kwargs)
+        else:
+            raise TassHardAssertionError(
+                '''Hard Assertion failed: assert_not_displayed
+                ->  Element is displayed.''',
+                reason=e, *kwargs)

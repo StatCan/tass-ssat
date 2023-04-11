@@ -10,6 +10,7 @@ def main(args):
         for case in test.collect():
             print(case)
             case.execute_tass()
+            print('/ / / / / / / / / / / / / / / / / / / /')
 
 
 if __name__ == '__main__':
