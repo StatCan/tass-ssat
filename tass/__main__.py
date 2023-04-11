@@ -1,6 +1,19 @@
 import argparse
 import json
+from pathlib import Path
 from tass.core.tass_files import TassRun
+
+
+class TassEncoder(json.JSONEncoder):
+    # Convert Python objects to JSON equivalent.
+    # TODO: Update format to match test management tool
+    def default(self, obj):
+        if (hasattr(obj, 'toJson')):
+            return obj.toJson()
+        else:
+            raise TypeError(
+                "Unserializable object {} of type {}".format(obj, type(obj))
+                )
 
 
 def main(args):
@@ -11,6 +24,14 @@ def main(args):
             print(case)
             case.execute_tass()
             print('/ / / / / / / / / / / / / / / / / / / /')
+
+    # Write results to file
+    Path('results').mkdir(exist_ok=True)
+
+    file_name = test.uuid + '---' + test.start_time + '.json'
+    result_path = Path().resolve() / "results" / file_name
+    with open(result_path, 'w+', encoding='utf-8') as f:
+        json.dump(test, f, indent=4, cls=TassEncoder)
 
 
 if __name__ == '__main__':

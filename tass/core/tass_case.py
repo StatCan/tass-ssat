@@ -1,13 +1,15 @@
+from datetime import datetime
 from tass.core.tass_items import TassItem
 from tass.drivers.browserdriver import newDriver
 from tass.actions.actions import action
-from tass.exceptions.assertion_errors import TassAssertionError
+from tass.exceptions.assertion_errors import TassHardAssertionError
 from tass.exceptions.assertion_errors import TassSoftAssertionError
 
 
 class TassCase(TassItem):
     def execute_tass(self):
-        # print(self.steps)
+        self._start_time = datetime.now().strftime("%d-%m-%Y--%H_%M_%S")
+        self._status = 'incomplete'
         for step in self.steps:
             print('')
             print('* * * * * * * * * *')
@@ -21,12 +23,26 @@ class TassCase(TassItem):
                 step.update({"status": "passed"})
             except TassSoftAssertionError as soft_fail:
                 # TODO: Error message should be attached here.
-                step.update({"status": "failed"})
-            except TassAssertionError as fail:
+                error = {
+                    "status": "failed",
+                    "status_message": soft_fail.message
+                    }
+                step.update(error)
+                self._errors.append(step)
+            except TassHardAssertionError as fail:
                 # TODO: Error message should be attached here.
-                step.update({"status": "failed"})
+                error = {
+                    "status": "failed",
+                    "status_message": fail.message
+                    }
+                step.update(error)
+                self._errors.append(step)
                 break
 
+        if (len(self._errors) > 0):
+            self._status = 'failed'
+        else:
+            self._status = 'passed'
         self.driver.quit()
 
     def __init__(self, *, steps=[], browser_config={}, **kwargs):
@@ -35,6 +51,9 @@ class TassCase(TassItem):
         self._browser_config = browser_config
         self._steps = steps
         self._driver = None
+        self._start_time = 'not started'
+        self._status = 'untested'
+        self._errors = []
 
     @property
     def driver(self):
@@ -45,6 +64,17 @@ class TassCase(TassItem):
     @property
     def steps(self):
         return self._steps
+
+    def toJson(self):
+        return {
+            "name": self.name,
+            "uuid": self.uuid,
+            "start_time": self._start_time,
+            "status": self._status,
+            "browser": self.driver,
+            "errors": self._errors,
+            "steps": self._steps
+        }
 
 
 def _execute_step(step, driver):
