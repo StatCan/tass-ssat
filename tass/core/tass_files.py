@@ -48,8 +48,8 @@ class TassRun(TassFile):
         for case in self._raw_test_cases:
             with open('tass/config/browsers.json') as f:
                 driver = {'browser': browser,
-                        'config': json.load(f)
-                        .get(self._browser_name, {})}
+                          'config': json.load(f)
+                          .get(self._browser_name, {})}
             tasscase = TassCase(parent=self, browser_config=driver, **case)
             yield tasscase
             self._completed_cases.append(tasscase)
