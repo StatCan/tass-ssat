@@ -31,16 +31,16 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumLoadURL(self):
         url = "https://www.google.ca"
         for browser in self.drivers:
-            with self.subTest(browser=browser.browser):
-                driver = browser(self.config)
+            driver = browser(self.config)
+            with self.subTest(browser=driver.browser):
                 selenium.load_url(driver, url)
                 self.assertEqual(driver.title, "Google")
                 driver.quit()
 
     def test_SeleniumLoadFile(self):
         for browser in self.drivers:
-            with self.subTest(browser=browser.browser):
-                driver = browser(self.config)
+            driver = browser(self.config)
+            with self.subTest(browser=driver.browser):
                 selenium.load_file(driver, self.test_page_url)
                 self.assertEqual(driver.title, "Page One")
                 driver.quit()
@@ -48,8 +48,8 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumClick(self):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
-            with self.subTest(browser=browser.browser):
-                driver = browser(self.config)
+            driver = browser(self.config)
+            with self.subTest(browser=driver.browser):
                 driver.get('file://' + url)
                 selenium.click(driver,
                                locator={"by": "id", "value": "btnColor"})
@@ -62,8 +62,8 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumType(self):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
-            with self.subTest(browser=browser.browser):
-                driver = browser(self.config)
+            driver = browser(self.config)
+            with self.subTest(browser=driver.browser):
                 driver.get('file://' + url)
                 text = 'Selenium Test Type'
                 selenium.type(
@@ -78,8 +78,8 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumClear(self):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
-            with self.subTest(browser=browser.browser):
-                driver = browser(self.config)
+            driver = browser(self.config)
+            with self.subTest(browser=driver.browser):
                 driver.get('file://' + url)
                 text = 'Selenium Test Type'
                 driver.find_element('id', 'nameField').send_keys(text)
@@ -99,8 +99,8 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumReadAttribute(self):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
-            with self.subTest(browser=browser.browser):
-                driver = browser(self.config)
+            driver = browser(self.config)
+            with self.subTest(browser=driver.browser):
                 driver.get('file://' + url)
                 self.assertEqual(selenium.read_attribute(
                         driver, attribute='name',
@@ -110,8 +110,8 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumReadCSS(self):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
-            with self.subTest(browser=browser.browser):
-                driver = browser(self.config)
+            driver = browser(self.config)
+            with self.subTest(browser=driver.browser):
                 driver.get('file://' + url)
                 self.assertEqual(selenium.read_css(
                         driver, attribute='width',
@@ -121,8 +121,8 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertDisplayedSuccess(self):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
-            with self.subTest(browser=browser.browser):
-                driver = browser(self.config)
+            driver = browser(self.config)
+            with self.subTest(browser=driver.browser):
                 driver.get('file://' + url)
                 try:
                     selenium.assert_displayed(
@@ -135,8 +135,8 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertDisplayedFailed(self):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
-            with self.subTest(browser=browser.browser):
-                driver = browser(self.config)
+            driver = browser(self.config)
+            with self.subTest(browser=driver.browser):
                 driver.get('file://' + url)
                 with self.assertRaises(TassHardAssertionError):
                     selenium.assert_displayed(
@@ -148,8 +148,8 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertDisplayedSoftSuccess(self):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
-            with self.subTest(browser=browser.browser):
-                driver = browser(self.config)
+            driver = browser(self.config)
+            with self.subTest(browser=driver.browser):
                 driver.get('file://' + url)
                 try:
                     selenium.assert_displayed(
@@ -162,8 +162,8 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertDisplayedSoftFailed(self):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
-            with self.subTest(browser=browser.browser):
-                driver = browser(self.config)
+            driver = browser(self.config)
+            with self.subTest(browser=driver.browser):
                 driver.get('file://' + url)
                 with self.assertRaises(TassSoftAssertionError):
                     selenium.assert_displayed(
@@ -175,8 +175,8 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertNotDisplayedSuccess(self):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
-            with self.subTest(browser=browser.browser):
-                driver = browser(self.config)
+            driver = browser(self.config)
+            with self.subTest(browser=driver.browser):
                 driver.get('file://' + url)
                 try:
                     selenium.assert_not_displayed(
@@ -189,8 +189,8 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertNotDisplayedFailed(self):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
-            with self.subTest(browser=browser.browser):
-                driver = browser(self.config)
+            driver = browser(self.config)
+            with self.subTest(browser=driver.browser):
                 driver.get('file://' + url)
                 with self.assertRaises(TassHardAssertionError):
                     selenium.assert_not_displayed(
@@ -202,8 +202,8 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertNotDisplayedSoftSuccess(self):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
-            with self.subTest(browser=browser.browser):
-                driver = browser(self.config)
+            driver = browser(self.config)
+            with self.subTest(browser=driver.browser):
                 driver.get('file://' + url)
                 try:
                     selenium.assert_not_displayed(
@@ -216,8 +216,8 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertNotDisplayedSoftFailed(self):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
-            with self.subTest(browser=browser.browser):
-                driver = browser(self.config)
+            driver = browser(self.config)
+            with self.subTest(browser=driver.browser):
                 driver.get('file://' + url)
                 with self.assertRaises(TassSoftAssertionError):
                     selenium.assert_not_displayed(

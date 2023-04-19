@@ -13,6 +13,10 @@ def newDriver(browser, config):
 
 
 class WebDriverWaitWrapper():
+    @property
+    def browser(self):
+        self.capabilities['browserName']
+
     """ Wrapper class for adding general features to browser driver classes."""
     def wait_until(self, until_func, **kwargs):
         """ Wait for element to meet condition before returning the WebElement
