@@ -32,7 +32,7 @@ class TestSelenium(unittest.TestCase):
         url = "https://www.google.ca"
         for browser in self.drivers:
             driver = browser(self.config)
-            with self.subTest(browser=driver.browser):
+            with self.subTest(browser=driver.toJson()):
                 selenium.load_url(driver, url)
                 self.assertEqual(driver.title, "Google")
                 driver.quit()
@@ -40,7 +40,7 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumLoadFile(self):
         for browser in self.drivers:
             driver = browser(self.config)
-            with self.subTest(browser=driver.browser):
+            with self.subTest(browser=driver.toJson()):
                 selenium.load_file(driver, self.test_page_url)
                 self.assertEqual(driver.title, "Page One")
                 driver.quit()
@@ -49,7 +49,7 @@ class TestSelenium(unittest.TestCase):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
             driver = browser(self.config)
-            with self.subTest(browser=driver.browser):
+            with self.subTest(browser=driver.toJson()):
                 driver.get('file://' + url)
                 selenium.click(driver,
                                locator={"by": "id", "value": "btnColor"})
@@ -63,7 +63,7 @@ class TestSelenium(unittest.TestCase):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
             driver = browser(self.config)
-            with self.subTest(browser=driver.browser):
+            with self.subTest(browser=driver.toJson()):
                 driver.get('file://' + url)
                 text = 'Selenium Test Type'
                 selenium.type(
@@ -79,7 +79,7 @@ class TestSelenium(unittest.TestCase):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
             driver = browser(self.config)
-            with self.subTest(browser=driver.browser):
+            with self.subTest(browser=driver.toJson()):
                 driver.get('file://' + url)
                 text = 'Selenium Test Type'
                 driver.find_element('id', 'nameField').send_keys(text)
@@ -100,7 +100,7 @@ class TestSelenium(unittest.TestCase):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
             driver = browser(self.config)
-            with self.subTest(browser=driver.browser):
+            with self.subTest(browser=driver.toJson()):
                 driver.get('file://' + url)
                 self.assertEqual(selenium.read_attribute(
                         driver, attribute='name',
@@ -111,7 +111,7 @@ class TestSelenium(unittest.TestCase):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
             driver = browser(self.config)
-            with self.subTest(browser=driver.browser):
+            with self.subTest(browser=driver.toJson()):
                 driver.get('file://' + url)
                 self.assertEqual(selenium.read_css(
                         driver, attribute='width',
@@ -122,7 +122,7 @@ class TestSelenium(unittest.TestCase):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
             driver = browser(self.config)
-            with self.subTest(browser=driver.browser):
+            with self.subTest(browser=driver.toJson()):
                 driver.get('file://' + url)
                 try:
                     selenium.assert_displayed(
@@ -136,7 +136,7 @@ class TestSelenium(unittest.TestCase):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
             driver = browser(self.config)
-            with self.subTest(browser=driver.browser):
+            with self.subTest(browser=driver.toJson()):
                 driver.get('file://' + url)
                 with self.assertRaises(TassHardAssertionError):
                     selenium.assert_displayed(
@@ -149,7 +149,7 @@ class TestSelenium(unittest.TestCase):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
             driver = browser(self.config)
-            with self.subTest(browser=driver.browser):
+            with self.subTest(browser=driver.toJson()):
                 driver.get('file://' + url)
                 try:
                     selenium.assert_displayed(
@@ -163,7 +163,7 @@ class TestSelenium(unittest.TestCase):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
             driver = browser(self.config)
-            with self.subTest(browser=driver.browser):
+            with self.subTest(browser=driver.toJson()):
                 driver.get('file://' + url)
                 with self.assertRaises(TassSoftAssertionError):
                     selenium.assert_displayed(
@@ -176,7 +176,7 @@ class TestSelenium(unittest.TestCase):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
             driver = browser(self.config)
-            with self.subTest(browser=driver.browser):
+            with self.subTest(browser=driver.toJson()):
                 driver.get('file://' + url)
                 try:
                     selenium.assert_not_displayed(
@@ -190,7 +190,7 @@ class TestSelenium(unittest.TestCase):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
             driver = browser(self.config)
-            with self.subTest(browser=driver.browser):
+            with self.subTest(browser=driver.toJson()):
                 driver.get('file://' + url)
                 with self.assertRaises(TassHardAssertionError):
                     selenium.assert_not_displayed(
@@ -203,7 +203,7 @@ class TestSelenium(unittest.TestCase):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
             driver = browser(self.config)
-            with self.subTest(browser=driver.browser):
+            with self.subTest(browser=driver.toJson()):
                 driver.get('file://' + url)
                 try:
                     selenium.assert_not_displayed(
@@ -217,7 +217,7 @@ class TestSelenium(unittest.TestCase):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
             driver = browser(self.config)
-            with self.subTest(browser=driver.browser):
+            with self.subTest(browser=driver.toJson()):
                 driver.get('file://' + url)
                 with self.assertRaises(TassSoftAssertionError):
                     selenium.assert_not_displayed(
