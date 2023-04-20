@@ -38,10 +38,6 @@ class WebDriverWaitWrapper():
         wait = WebDriverWait(self, self._config.get('explicit_wait', 10))
         return wait.until(until_func(**kwargs))
 
-    @property
-    def browser(self):
-        self.capabilities['browserName']
-
     def _config_options(self, browser_options, config):
         options_obj = browser_options()
         for opt in config.get('options', []):
