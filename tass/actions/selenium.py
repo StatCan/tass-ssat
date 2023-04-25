@@ -1,13 +1,19 @@
 import pathlib
 import os
+from tass.core.page_reader import PageReader
 from selenium.common.exceptions import WebDriverException
 from tass.exceptions.assertion_errors import TassHardAssertionError
 from tass.exceptions.assertion_errors import TassSoftAssertionError
 
 
-def _find_element(driver, locator):
-    return driver.find_element(**locator)
+def _find_element(driver, page=None, locator=None):
+    return driver.find_element(**_locate(page, locator))
 
+def _locate(page=None, locator=None):
+    if (isinstance(locator, str)):
+        return PageReader().get_element(*page, locator)
+    elif isinstance(locator, dict):
+        return locator
 
 def _is_displayed(driver, find=_find_element, **kwargs):
     try:
