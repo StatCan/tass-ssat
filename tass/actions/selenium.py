@@ -9,11 +9,16 @@ from tass.exceptions.assertion_errors import TassSoftAssertionError
 def _find_element(driver, page=None, locator=None):
     return driver.find_element(**_locate(page, locator))
 
+
 def _locate(page=None, locator=None):
     if (isinstance(locator, str)):
         return PageReader().get_element(*page, locator)
     elif isinstance(locator, dict):
         return locator
+    else:
+        msg = "Locator type not supported. Type: {}".format(type(locator))
+        raise TypeError(msg)
+
 
 def _is_displayed(driver, find=_find_element, **kwargs):
     try:
@@ -35,7 +40,6 @@ def type(driver, find=_find_element, text='', **kwargs):
     try:
         find(driver, **kwargs).send_keys(text)
     except WebDriverException as e:
-        print("Exception: ", e, " trying again")
         find(driver, **kwargs).send_keys(text)
 
 
