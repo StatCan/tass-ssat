@@ -46,9 +46,10 @@ class TassRun(TassFile):
             raise ke
 
         for case in self._raw_test_cases:
-            driver = {'browser': browser,
-                      'config': json.load(open('tass/config/browsers.json'))
-                      .get(browser, {})}
+            with open('tass/config/browsers.json') as f:
+                driver = {'browser': browser,
+                          'config': json.load(f)
+                          .get(self._browser_name, {})}
             tasscase = TassCase(parent=self, browser_config=driver, **case)
             yield tasscase
             self._completed_cases.append(tasscase)
