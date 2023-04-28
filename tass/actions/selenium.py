@@ -91,6 +91,24 @@ def switch_frame(driver, find=_find_element, frame=None):
             driver.switch_to.frame(find(driver, **frame))
 
 
+def switch_window(driver, title=None):
+    cur_handle = driver.current_window_handle
+    if (title is None):
+        for handle in driver.window_handles:
+            if (handle != cur_handle):
+                driver.switch_to.window(handle)
+                return
+    elif (isinstance(title, str)):
+        for handle in driver.window_handles:
+            if (handle == cur_handle):
+                continue
+            else:
+                driver.switch_to.window(handle)
+                if (driver.title == title):
+                    return
+    raise ValueError('No window with title: {}'.format(title))
+
+
 # / / / / / / / Assertions / / / / / / /
 def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
     try:
