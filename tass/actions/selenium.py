@@ -6,11 +6,11 @@ from tass.exceptions.assertion_errors import TassHardAssertionError
 from tass.exceptions.assertion_errors import TassSoftAssertionError
 
 
-def _find_element(driver, page=None, locator=None):
+def _find_element(driver, locator, page=None):
     return driver.find_element(**_locate(page, locator))
 
 
-def _locate(page=None, locator=None):
+def _locate(page, locator):
     if (isinstance(locator, str)):
         return PageReader().get_element(*page, locator)
     elif isinstance(locator, dict):
@@ -40,6 +40,7 @@ def type(driver, find=_find_element, text='', **kwargs):
     try:
         find(driver, **kwargs).send_keys(text)
     except WebDriverException as e:
+        print("Exception: ", e, " trying again")
         find(driver, **kwargs).send_keys(text)
 
 
