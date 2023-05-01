@@ -16,7 +16,7 @@ class TestSelenium(unittest.TestCase):
     config = {
             "implicit_wait": 5,
             "explicit_wait": 10,
-            "options": ["--start-maximized", "--headless"]
+            "options": ["--start-maximized"]
             }
 
     test_page_url = 'tests/pages/page1.html'
@@ -225,3 +225,43 @@ class TestSelenium(unittest.TestCase):
                         locator={"by": "id", "value": "btn1"})
 
                 driver.quit()
+
+    def test_SeleniumSwitchWindowNoTitle(self):
+        url_0 = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        url_1 = 'https://www.google.ca'
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get(url_1)
+                driver.switch_to.new_window('tab')
+                driver.get('file://' + url_0)
+                self.assertEqual(driver.title, 'Page One')
+                selenium.switch_window(driver)
+                self.assertEqual(driver.title, 'Google')
+
+            driver.quit()
+
+    def test_SeleniumSwitchWindowByTitle(self):
+        url_0 = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        url_1 = 'https://www.google.ca'
+        url_2 = 'https://www.github.com'
+        google = 'Google'
+        pageOne = 'Page One'
+        github = 'GitHub: Let’s build from here · GitHub'
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get(url_1)
+                driver.switch_to.new_window('tab')
+                driver.get(url_2)
+                driver.switch_to.new_window('tab')
+                driver.get('file://' + url_0)
+                self.assertEqual(driver.title, pageOne)
+                selenium.switch_window(driver, google)
+                self.assertEqual(driver.title, google)
+                selenium.switch_window(driver, github)
+                self.assertEqual(driver.title, github)
+                selenium.switch_window(driver, pageOne)
+                self.assertEqual(driver.title, pageOne)
+
+            driver.quit()
