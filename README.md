@@ -19,13 +19,14 @@ docs/best_practices.md. Also, create your conda environment via
 `conda env create -f environment.yaml`.
 
 The conda environment will contain all the of the dependencies at the
-correct versions.
+correct versions. To run tests, make sure you have an editable install
+with `pip install -e .` from the root directory.
 
 ### Utilization
 
 The testing framework can be invoked from your CLI with the command
 
-`python -m ./path/to/module/tass --file ./path/to/config/file`.
+`python -m tass --file ./path/to/config/file`.
 
 #### Demo
 
