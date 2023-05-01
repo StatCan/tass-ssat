@@ -16,7 +16,7 @@ class TestSelenium(unittest.TestCase):
     config = {
             "implicit_wait": 5,
             "explicit_wait": 10,
-            "options": ["--start-maximized"]
+            "options": ["--start-maximized", "--headless"]
             }
 
     test_page_url = 'tests/pages/page1.html'
