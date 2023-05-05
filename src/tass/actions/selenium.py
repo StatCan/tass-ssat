@@ -35,7 +35,7 @@ def _is_displayed(driver, find=_find_element, **kwargs):
 
 def click(driver, find=_find_element, **kwargs):
     """Click an element in the DOM
-
+    
     Execute the selenium click function against the locator
     that is part of the kwargs argument. If a WebDriverException
     occurs the action is attempted a second time before
@@ -53,6 +53,7 @@ def click(driver, find=_find_element, **kwargs):
             Dictionary containing additional parameters. Contents
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
+<<<<<<< HEAD
             requires: locator.
     """
     try:
@@ -139,7 +140,6 @@ def load_url(driver, url):
             to the open browser.
         url:
             The url to be loaded. Must be complete and correctly formatted.
-
     """
     driver.get(url)
 
@@ -226,6 +226,7 @@ def read_css(driver, attribute, find=_find_element, **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
+
     try:
         return find(driver, **kwargs).value_of_css_property(attribute)
     except WebDriverException as e:
@@ -255,7 +256,6 @@ def switch_frame(driver, frame, find=_find_element):
             and 'value' as a locator.
 
     """
-
     try:
         # TODO: if/else logic needs to be revisited for POM implementation.
         if (isinstance(frame, str)):

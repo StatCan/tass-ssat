@@ -21,7 +21,7 @@ def store_value(key, value):
 
 
 def read_value(key):
-"""Retrieve a previously stored value.
+    """Retrieve a previously stored value.
 
     Args:
         key:
