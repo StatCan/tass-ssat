@@ -20,7 +20,7 @@
 					"uuid":"sample-test-step-1",
 					"name":"Type search query into google",
 					"status": "untested",
-					"action":["selenium","type"],
+					"action":["selenium","write"],
 					"parameters":["locator", {"by":"id", "value":"nameField"}, "text", "do a barrel roll"]
 				},
 				{
@@ -76,7 +76,7 @@
 					"uuid":"sample-test-step-1",
 					"name":"Type search query into google",
 					"status": "untested",
-					"action":["selenium","type"],
+					"action":["selenium","write"],
 					"parameters":["locator", {"by":"id", "value":"nameField"}, "text", "do a barrel roll"]
 				},
 				{
@@ -104,7 +104,7 @@
 					"uuid":"sample-test-step-1",
 					"name":"Type search query into google",
 					"status": "untested",
-					"action":["selenium","type"],
+					"action":["selenium","write"],
 					"parameters":["locator", {"by":"id", "value":"nameField"}, "text", "do a barrel roll"]
 				},
 				{

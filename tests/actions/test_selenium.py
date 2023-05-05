@@ -59,14 +59,14 @@ class TestSelenium(unittest.TestCase):
                                  "//button[contains(@style, 'salmon')]")))
                 driver.quit()
 
-    def test_SeleniumType(self):
+    def test_SeleniumWrite(self):
         url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         for browser in self.drivers:
             driver = browser(self.config)
             with self.subTest(browser=driver.toJson()):
                 driver.get('file://' + url)
                 text = 'Selenium Test Type'
-                selenium.type(
+                selenium.write(
                     driver, text=text,
                     locator={"by": "id", "value": "nameField"})
                 self.assertEqual(

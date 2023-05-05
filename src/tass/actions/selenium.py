@@ -25,7 +25,7 @@ def click(driver, find=_find_element, **kwargs):
         find(driver, **kwargs).click()
 
 
-def type(driver, find=_find_element, text='', **kwargs):
+def write(driver, find=_find_element, text='', **kwargs):
     try:
         find(driver, **kwargs).send_keys(text)
     except WebDriverException as e:
