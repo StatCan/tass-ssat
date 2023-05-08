@@ -8,6 +8,12 @@ class TassEncoder(json.JSONEncoder):
     # Convert Python objects to JSON equivalent.
     # TODO: Update format to match test management tool
     def default(self, obj):
+        """
+        Default JSON encoder
+        for custom TASS classes.
+        Serializable TASS classes should
+        implement the toJson function.
+        """
         if (hasattr(obj, 'toJson')):
             return obj.toJson()
         else:
@@ -17,10 +23,16 @@ class TassEncoder(json.JSONEncoder):
 
 
 def main(args):
+    """
+    Starting point for execution of tests.
+    """
     print(args.file)
     with open(args.file) as file:
+        # open the test file and load into memory as TassRun
+        # TODO: TassRun or Tass Suite can be executed
         test = TassRun(args.file, **json.load(file))
         for case in test.collect():
+            # collect test cases from file
             print(case)
             case.execute_tass()
             print('/ / / / / / / / / / / / / / / / / / / /')
