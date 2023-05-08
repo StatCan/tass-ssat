@@ -5,3 +5,5 @@ dependencies:
   - selenium
   - webdriver-manager
   - flake8
+  - conda-build
+  - python-build
