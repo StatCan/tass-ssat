@@ -268,21 +268,21 @@ def switch_frame(driver, frame, find=_find_element):
 
 def switch_window(driver, title=None):
     """Change to the next tab/window or switch to one wih a matching title.
-    
+
     Execute the selenium switch_to.window function. If title
     is not given then switch to the next tab/window, if a str title
-    is provided then all open windows/tabs are cycled through 
+    is provided then all open windows/tabs are cycled through
     until one with a matching title is found.
-    
+
     Args:
         driver:
             The RemoteWebDriver object that is connected
             to the open browser.
         title:
             The title (str) of a window or tab to be switched to.
-            The title must be an exact match in order for it to be 
+            The title must be an exact match in order for it to be
             found and switched to correctly.
-    
+
     """
     # TODO: Keep track of window handles to avoid loop?
     cur_handle = driver.current_window_handle
