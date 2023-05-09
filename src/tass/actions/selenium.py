@@ -286,7 +286,6 @@ def switch_window(driver, title=None):
             The title (str) of a window or tab to be switched to.
             The title must be an exact match in order for it to be
             found and switched to correctly.
-
     """
     # TODO: Keep track of window handles to avoid loop?
     cur_handle = driver.current_window_handle
