@@ -266,6 +266,42 @@ def switch_frame(driver, frame, find=_find_element):
             driver.switch_to.frame(find(driver, **frame))
 
 
+def switch_window(driver, title=None):
+    """Change to the next tab/window or switch to one wih a matching title.
+
+    Execute the selenium switch_to.window function. If title
+    is not given then switch to the next tab/window, if a str title
+    is provided then all open windows/tabs are cycled through
+    until one with a matching title is found.
+
+    Args:
+        driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+        title:
+            The title (str) of a window or tab to be switched to.
+            The title must be an exact match in order for it to be
+            found and switched to correctly.
+
+    """
+    # TODO: Keep track of window handles to avoid loop?
+    cur_handle = driver.current_window_handle
+    if (title is None):
+        for handle in driver.window_handles:
+            if (handle != cur_handle):
+                driver.switch_to.window(handle)
+                return
+    elif (isinstance(title, str)):
+        for handle in driver.window_handles:
+            if (handle == cur_handle):
+                continue
+            else:
+                driver.switch_to.window(handle)
+                if (driver.title == title):
+                    return
+    raise ValueError('No window with title: {}'.format(title))
+
+
 # / / / / / / / Assertions / / / / / / /
 def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
     """Assert the given element is displayed. Can be a soft of hard check
