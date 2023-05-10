@@ -1,6 +1,10 @@
 import pathlib
+<<<<<<< HEAD
 import os
 from tass.core.page_reader import PageReader
+=======
+import os
+>>>>>>> origin/main
 from selenium.common.exceptions import WebDriverException
 from tass.exceptions.assertion_errors import TassHardAssertionError
 from tass.exceptions.assertion_errors import TassSoftAssertionError
@@ -19,7 +23,6 @@ def _locate(page, locator):
     else:
         msg = "Locator type not supported. Type: {}".format(type(locator))
         raise TypeError(msg)
-
 
 
 def _is_displayed(driver, find=_find_element, **kwargs):
@@ -51,7 +54,6 @@ def click(driver, find=_find_element, **kwargs):
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
             requires: locator.
-
     """
     try:
         find(driver, **kwargs).click()
@@ -88,7 +90,6 @@ def write(driver, find=_find_element, text='', **kwargs):
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
             requires: locator.
-
     """
     try:
         find(driver, **kwargs).send_keys(text)
@@ -118,7 +119,6 @@ def clear(driver, find=_find_element, **kwargs):
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
             requires: locator.
-
     """
     try:
         find(driver, **kwargs).clear()
@@ -156,7 +156,6 @@ def load_file(driver, relative_path):
             to the open browser.
         relative_path:
             The file path to be loaded. Must be relative to the root directory.
-
     """
     url = os.path.join(pathlib.Path().resolve(), relative_path)
     driver.get('file://' + url)
@@ -190,7 +189,6 @@ def read_attribute(driver, attribute, find=_find_element, **kwargs):
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
             requires: locator.
-
     """
     try:
         return find(driver, **kwargs).get_attribute(attribute)
@@ -227,7 +225,6 @@ def read_css(driver, attribute, find=_find_element, **kwargs):
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
             requires: locator.
-
     """
     try:
         return find(driver, **kwargs).value_of_css_property(attribute)
@@ -336,7 +333,6 @@ def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
             requires: locator.
-
     """
     try:
         if (_is_displayed(driver, find=find, **kwargs)):
@@ -390,7 +386,6 @@ def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
             requires: locator.
-
     """
     try:
         if not (_is_displayed(driver, find=find, **kwargs)):
