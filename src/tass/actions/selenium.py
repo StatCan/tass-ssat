@@ -1,10 +1,6 @@
 import pathlib
-<<<<<<< HEAD
 import os
 from tass.core.page_reader import PageReader
-=======
-import os
->>>>>>> origin/main
 from selenium.common.exceptions import WebDriverException
 from tass.exceptions.assertion_errors import TassHardAssertionError
 from tass.exceptions.assertion_errors import TassSoftAssertionError
@@ -35,7 +31,7 @@ def _is_displayed(driver, find=_find_element, **kwargs):
 
 def click(driver, find=_find_element, **kwargs):
     """Click an element in the DOM
-    
+
     Execute the selenium click function against the locator
     that is part of the kwargs argument. If a WebDriverException
     occurs the action is attempted a second time before
