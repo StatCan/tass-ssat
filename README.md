@@ -19,13 +19,28 @@ docs/best_practices.md. Also, create your conda environment via
 `conda env create -f environment.yaml`.
 
 The conda environment will contain all the of the dependencies at the
-correct versions.
+correct versions. To run tests, make sure you have an editable install
+with `pip install -e .` from the root directory.
+
+#### Build Pypi Package
+
+To build the pypi package, navigate to the root of the directory and type
+`python -m build`. This will use the `pyproject.toml` file to build the
+package. The package will be in the `dist` folder in your repository.
+
+#### Build Conda Package
+
+To build the conda package, navigate to the root of the directory and type
+`conda build conda-recipe`. The package can be found in a folder specified
+in the command output. You can always install it via `conda install
+--use-local tass` if you wish to install it in the same environment you
+built it.
 
 ### Utilization
 
 The testing framework can be invoked from your CLI with the command
 
-`python -m ./path/to/module/tass --file ./path/to/config/file`.
+`python -m tass --file ./path/to/config/file`.
 
 #### Demo
 
