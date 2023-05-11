@@ -25,6 +25,12 @@ class PageReader(metaclass=Singleton):
         else:
             return self._load_pages(file_key)[page_key][element_key]
 
+    def get_url(self, file_key, page_key, url_key):
+        if self.pages_loaded(file_key):
+            return self.page_dict[file_key][page_key][url_key]
+        else:
+            return self._load_pages(file_key)[page_key][url_key]
+
     def pages_loaded(self, key):
         return key in self.page_dict
 

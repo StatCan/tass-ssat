@@ -157,6 +157,35 @@ def load_file(driver, relative_path):
     driver.get('file://' + url)
 
 
+def load_page(driver, page, url_key='url', file_toggle=False):
+    """Load a page using the URL provided in the POM
+
+        Execute the selenium get function against the URL or
+        file path provided in the given page.
+
+        Args:
+            driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+            page:
+            The key combination for the POM page object.
+            url_key:
+            The key for the url in the required environment.
+            in the case of multiple URLs for the same page in
+            different environments. The default value is 'url'.
+            The default URL for the POM object should be 'url'.
+            file_toggle:
+            A flag that indicates if a local file should be used. In which
+            case the provided url is treated like a relative file path
+            instead of a web URL.
+    """
+    if (file_toggle):
+        path = PageReader().get_url(*page, url_key)
+        load_file(driver, path)
+    else:
+        url = PageReader().get_url(*page, url_key)
+        load_url(driver, url)
+
 def read_attribute(driver, attribute, find=_find_element, **kwargs):
     """Read the value of an attribute for an element in the DOM
 
