@@ -331,6 +331,18 @@ def switch_window(driver, title=None):
 
 
 # / / / / / / / Assertions / / / / / / /
+def assert_page_is_open(driver, find=_find_element, method='element', **kwargs):
+    match method:
+        case 'element':
+            # TODO: check for presence of element
+        case 'title':
+            # TODO: check for correct title            
+        case 'url':
+            # TODO: check for correct url
+        case _:
+            # TODO: fall through case, exception?
+
+
 def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
     """Assert the given element is displayed. Can be a soft of hard check
 
