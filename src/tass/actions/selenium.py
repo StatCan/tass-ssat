@@ -157,7 +157,7 @@ def load_file(driver, relative_path):
     driver.get('file://' + url)
 
 
-def load_page(driver, page, url_key='url', file_toggle=False):
+def load_page(driver, page, url_key='url', use_local=False):
     """Load a page using the URL provided in the POM
 
         Execute the selenium get function against the URL or
@@ -174,12 +174,12 @@ def load_page(driver, page, url_key='url', file_toggle=False):
             in the case of multiple URLs for the same page in
             different environments. The default value is 'url'.
             The default URL for the POM object should be 'url'.
-            file_toggle:
+            use_local:
             A flag that indicates if a local file should be used. In which
             case the provided url is treated like a relative file path
             instead of a web URL.
     """
-    if (file_toggle):
+    if (use_local):
         path = PageReader().get_url(*page, url_key)
         load_file(driver, path)
     else:
