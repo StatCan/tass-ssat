@@ -1,6 +1,7 @@
 import pathlib
 import os
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.support.select import Select
 from tass.exceptions.assertion_errors import TassHardAssertionError
 from tass.exceptions.assertion_errors import TassSoftAssertionError
 
@@ -84,6 +85,57 @@ def write(driver, find=_find_element, text='', **kwargs):
     except WebDriverException as e:
         print("Exception: ", e, " trying again")
         find(driver, **kwargs).send_keys(text)
+
+
+def select_dropdown(driver, value, using, find=_find_element, **kwargs):
+    """Select an option from a dropdown using text, value, or index in the DOM
+
+    Execute the selenium Select.select_by_* function
+    described by 'using' against the locator that is part of the kwargs argument.
+    If a WebDriverException occurs the action is attempted
+    a second time before allowing the exception to be raised to the next level.
+
+    Args:
+        driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+        find:
+            The function to be called when attempting to locate
+            an element. Must use either a explicit wait function
+            or the default _find_element fuinction.
+        text:
+            The str text that is displayed for the desired option
+            tag in the DOM. The text must be an exact match
+            to the text in the DOM in order for the option to be
+            selected.
+        using:
+            A str value that is part of the set of possible methods to
+            select from a dropdown. Possible values include "text, value, and index"
+            to be used to determine the select function from selenium.
+        **kwargs:
+            Dictionary containing additional parameters. Contents
+            of the dictionary will vary based on the find function used.
+            By default, _find_element is used and thus kwargs
+            requires: locator.
+
+    """
+    match using:
+        case 'text':
+            select = Select.select_by_visible_text
+        case 'value':
+            select = Select.select_by_value
+        case 'index':
+            select = Select.select_by_index
+        case _:
+            raise ValueError('Select method {using} is not a valid method.' )
+            
+    try:
+        dropdown = Select(find(driver, **kwargs))
+        select(dropdown, value)
+    except WebDriverException as e:
+        print("Exception: ", e, " trying again")
+        dropdown = Select(find(driver, **kwargs))
+        select(dropdown, value)
 
 
 def clear(driver, find=_find_element, **kwargs):
