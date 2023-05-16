@@ -91,8 +91,8 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
     """Select an option from a dropdown using text, value, or index in the DOM
 
     Execute the selenium Select.select_by_* function
-    described by 'using' against the locator that is part of the kwargs argument.
-    If a WebDriverException occurs the action is attempted
+    described by 'using' against the locator that is part of the kwargs
+    argument. If a WebDriverException occurs the action is attempted
     a second time before allowing the exception to be raised to the next level.
 
     Args:
@@ -110,8 +110,9 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
             selected.
         using:
             A str value that is part of the set of possible methods to
-            select from a dropdown. Possible values include "text, value, and index"
-            to be used to determine the select function from selenium.
+            select from a dropdown. Possible values include "text,
+            value, and index" to be used to determine the
+            select function from selenium.
         **kwargs:
             Dictionary containing additional parameters. Contents
             of the dictionary will vary based on the find function used.
@@ -127,8 +128,8 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
         case 'index':
             select = Select.select_by_index
         case _:
-            raise ValueError('Select method {using} is not a valid method.' )
-            
+            raise ValueError('Select method {using} is not a valid method.')
+
     try:
         dropdown = Select(find(driver, **kwargs))
         select(dropdown, value)
