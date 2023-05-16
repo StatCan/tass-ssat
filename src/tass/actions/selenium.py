@@ -103,11 +103,12 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
             The function to be called when attempting to locate
             an element. Must use either a explicit wait function
             or the default _find_element fuinction.
-        text:
-            The str text that is displayed for the desired option
-            tag in the DOM. The text must be an exact match
-            to the text in the DOM in order for the option to be
-            selected.
+        value:
+            The DOM value to be used for selection. This can be
+            the visible text (which must match the element text in
+            the DOM exactly), it can be the value of the option
+            element or it can be the index attribute of the desired
+            option element.
         using:
             A str value that is part of the set of possible methods to
             select from a dropdown. Possible values include "text,
