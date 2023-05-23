@@ -10,7 +10,7 @@ def convert(path):
     for cell in ws[1]:
         header.append(cell.value)
 
-    conf_file["steps"] = []
+    conf_file['steps'] = []
 
     for row in ws.iter_rows(min_row=2):
         steps = {}
@@ -21,12 +21,7 @@ def convert(path):
 
             index += 1
 
-        conf_file["steps"].append(steps)
+        conf_file['steps'].append(steps)
 
-    print(conf_file)
+    return conf_file
 
-def main():
-    convert('./tests/data/testfile.xlsx')
-
-if __name__ == '__main__':
-    main()
