@@ -226,6 +226,208 @@ class TestSelenium(unittest.TestCase):
 
                 driver.quit()
 
+    def test_SeleniumAssertPageIsOpenByTitleSoftFailure(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get('file://' + url)
+                with self.assertRaises(TassSoftAssertionError):
+                    selenium.assert_page_is_open(
+                        driver, soft=True, page_id={
+                                                    'identifier': 'Page One1',
+                                                    'method': 'title'})
+
+                driver.quit()
+
+    def test_SeleniumAssertPageIsOpenByURLSoftFailure(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get('file://' + url)
+                with self.assertRaises(TassSoftAssertionError):
+                    selenium.assert_page_is_open(
+                        driver, soft=True, page_id={
+                                                'identifier': 'not the url',
+                                                'method': 'url'})
+
+                driver.quit()
+
+    def test_SeleniumAssertPageIsOpenByElementSoftFailure(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get('file://' + url)
+                with self.assertRaises(TassSoftAssertionError):
+                    selenium.assert_page_is_open(
+                        driver, page_id={
+                                    'identifier': {
+                                        'locator': {
+                                            'by': 'id',
+                                            'value': 'noElement'
+                                            }
+                                        },
+                                    'method': 'element'
+                                    },
+                        soft=True)
+
+                driver.quit()
+
+    def test_SeleniumAssertPageIsOpenByTitleSoftSuccess(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get('file://' + url)
+                try:
+                    selenium.assert_page_is_open(
+                        driver, soft=True, page_id={
+                                                    'identifier': 'Page One',
+                                                    'method': 'title'})
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
+    def test_SeleniumAssertPageIsOpenByURLSoftSuccess(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get('file://' + url)
+                try:
+                    selenium.assert_page_is_open(
+                        driver, soft=True, page_id={
+                                                'identifier': 'file://' + url,
+                                                'method': 'url'})
+                except TassAssertionError as e:
+                    self.fail(e.message)
+
+                driver.quit()
+
+    def test_SeleniumAssertPageIsOpenByElementSoftSuccess(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get('file://' + url)
+                try:
+                    selenium.assert_page_is_open(
+                        driver, page_id={
+                                    'identifier': {
+                                        'locator': {
+                                            'by': 'id',
+                                            'value': 'btnColor'
+                                            }
+                                        },
+                                    'method': 'element'
+                                    },
+                        soft=True)
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
+    def test_SeleniumAssertPageIsOpenByTitleFailure(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get('file://' + url)
+                with self.assertRaises(TassHardAssertionError):
+                    selenium.assert_page_is_open(
+                        driver, page_id={
+                                    'identifier': 'Page One1',
+                                    'method': 'title'})
+
+                driver.quit()
+
+    def test_SeleniumAssertPageIsOpenByURLFailure(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get('file://' + url)
+                with self.assertRaises(TassHardAssertionError):
+                    selenium.assert_page_is_open(
+                        driver, 'not the url', page_id={
+                                                'identifier': 'not the url',
+                                                'method': 'url'})
+
+                driver.quit()
+
+    def test_SeleniumAssertPageIsOpenByElementFailure(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get('file://' + url)
+                with self.assertRaises(TassHardAssertionError):
+                    selenium.assert_page_is_open(
+                        driver, page_id={
+                                    'identifier': {
+                                        'locator': {
+                                            'by': 'id',
+                                            'value': 'noElement'
+                                            }
+                                        },
+                                    'method': 'element'
+                                    })
+
+                driver.quit()
+
+    def test_SeleniumAssertPageIsOpenByTitleSuccess(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get('file://' + url)
+                try:
+                    selenium.assert_page_is_open(
+                        driver, page_id={
+                                    'identifier': 'Page One',
+                                    'method': 'title'})
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
+    def test_SeleniumAssertPageIsOpenByURLSuccess(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get('file://' + url)
+                try:
+                    selenium.assert_page_is_open(
+                        driver, 'file://' + url, page_id={
+                                                'identifier': 'file://' + url,
+                                                'method': 'url'})
+                except TassAssertionError as e:
+                    self.fail(e.message)
+
+                driver.quit()
+
+    def test_SeleniumAssertPageIsOpenByElementSuccess(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get('file://' + url)
+                try:
+                    selenium.assert_page_is_open(
+                        driver, page_id={
+                                    'identifier': {
+                                        'locator': {
+                                            'by': 'id',
+                                            'value': 'btnColor'
+                                            }
+                                        },
+                                    'method': 'element'
+                                    })
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
     def test_SeleniumSwitchWindowNoTitle(self):
         url_0 = os.path.join(pathlib.Path().resolve(), self.test_page_url)
         url_1 = 'https://www.google.ca'

@@ -49,7 +49,6 @@ def click(driver, find=_find_element, **kwargs):
             Dictionary containing additional parameters. Contents
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
-<<<<<<< HEAD
             requires: locator.
     """
     try:
@@ -185,6 +184,7 @@ def load_page(driver, page, url_key='url', use_local=False):
     else:
         url = PageReader().get_url(*page, url_key)
         load_url(driver, url)
+
 
 def read_attribute(driver, attribute, find=_find_element, **kwargs):
     """Read the value of an attribute for an element in the DOM
@@ -331,16 +331,70 @@ def switch_window(driver, title=None):
 
 
 # / / / / / / / Assertions / / / / / / /
-def assert_page_is_open(driver, find=_find_element, method='element', **kwargs):
+def _fail(soft, message, exception=None, *args):
+    if (soft):
+        raise TassSoftAssertionError(
+                "Soft Assertion failed: " + message,
+                exception, *args)
+    else:
+        raise TassHardAssertionError(
+                "Hard Assertion failed: " + message,
+                exception, *args)
+
+
+def assert_page_is_open(driver, page=None, find=_find_element,
+                        soft=False, page_id=None):
+    """Assert the given page is open using the described method
+
+    Assert that the given page is open using one of the pre-defined methods.
+    'element' checks for the presence of a given element.
+    'title' checks for the given title.
+    'url' checks for the given url.
+
+    Args:
+        driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+        find:
+            The function to be called when attempting to locate
+            an element. Must use either a explicit wait function
+            or the default _find_element fuinction.
+        method:
+            The str representation of the desired method.
+            Value must match one of the predefined methods
+            given above.
+
+    """
+    if (page_id is None and page is not None):
+        page_id = PageReader().get_page_id(*page)
+    elif (page is None and page_id is None):
+        raise ValueError('Either page or page_id must not be None')
+
+    method = page_id.get('method', 'element')
+    identifier = page_id.get('identifier', None)
     match method:
         case 'element':
-            # TODO: check for presence of element
+            try:
+                ele = None
+                ele = find(driver, **identifier)
+            except WebDriverException as e:
+                try:
+                    print("Exception: ", e, " trying again")
+                    ele = find(driver, **identifier)
+                except WebDriverException as ex:
+                    if (ele is None):
+                        _fail(soft,
+                              "Page with element, {identifier} is not open.",
+                              exception=ex)
         case 'title':
-            # TODO: check for correct title            
+            if (identifier != driver.title):
+                _fail(soft, 'Page with title {identifier} is not open')
         case 'url':
-            # TODO: check for correct url
+            if (identifier != driver.current_url):
+                _fail(soft, 'URL, {identifier} is not open')
         case _:
-            # TODO: fall through case, exception?
+            raise ValueError('{method} is not a recognized page identifier')
+    return
 
 
 def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
@@ -373,16 +427,8 @@ def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
     try:
         if (_is_displayed(driver, find=find, **kwargs)):
             return
-        elif (soft):
-            raise TassSoftAssertionError(
-                '''Soft Assertion failed: assert_displayed
-                -> Element is not displayed.''',
-                *kwargs)
         else:
-            raise TassHardAssertionError(
-                '''Hard Assertion failed: assert_displayed
-                -> Element is not displayed.''',
-                *kwargs)
+            _fail(soft, "assert_displayed Element is not displayed.")
     except WebDriverException as e:
         if (soft):
             raise TassSoftAssertionError(

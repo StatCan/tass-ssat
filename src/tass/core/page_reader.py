@@ -12,6 +12,12 @@ class PageReader(metaclass=Singleton):
         self._page_root = Path('pages')
         self._page_root.mkdir(exist_ok=True)
 
+    def _page(self, file_key, page_key):
+        if self.pages_loaded(file_key):
+            return self.page_dict[file_key][page_key]
+        else:
+            return self._load_pages(file_key)[page_key]
+
     def _load_pages(self, file_key):
         file_name = file_key + '.json'
         page = self._page_root.resolve() / file_name
@@ -20,16 +26,13 @@ class PageReader(metaclass=Singleton):
         return self.page_dict[file_key]
 
     def get_element(self, file_key, page_key, element_key):
-        if self.pages_loaded(file_key):
-            return self.page_dict[file_key][page_key][element_key]
-        else:
-            return self._load_pages(file_key)[page_key][element_key]
+        return self._page(file_key, page_key)['elements'][element_key]
 
-    def get_url(self, file_key, page_key, url_key):
-        if self.pages_loaded(file_key):
-            return self.page_dict[file_key][page_key][url_key]
-        else:
-            return self._load_pages(file_key)[page_key][url_key]
+    def get_url(self, file_key, page_key, url_key='url'):
+        return self._page(file_key, page_key)['urls'][url_key]
+
+    def get_page_id(self, file_key, page_key):
+        return self._page(file_key, page_key)['page_id']
 
     def pages_loaded(self, key):
         return key in self.page_dict
