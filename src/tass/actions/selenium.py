@@ -178,11 +178,10 @@ def load_page(driver, page, url_key='url', use_local=False):
             case the provided url is treated like a relative file path
             instead of a web URL.
     """
+    url = PageReader().get_url(*page, url_key)
     if (use_local):
-        path = PageReader().get_url(*page, url_key)
-        load_file(driver, path)
+        load_file(driver, url)
     else:
-        url = PageReader().get_url(*page, url_key)
         load_url(driver, url)
 
 
@@ -259,7 +258,7 @@ def read_css(driver, attribute, find=_find_element, **kwargs):
         return find(driver, **kwargs).value_of_css_property(attribute)
 
 
-def switch_frame(driver, frame, find=_find_element):
+def switch_frame(driver, frame, page=None, find=_find_element):
     """Change the active frame by name or element
 
     Execute the selenium switch_to.frame function against the locator
@@ -283,7 +282,11 @@ def switch_frame(driver, frame, find=_find_element):
     """
     try:
         # TODO: if/else logic needs to be revisited for POM implementation.
-        if (isinstance(frame, str)):
+        if (page is not None):
+            switch_frame(driver,
+                         PageReader().get_element(*page, frame),
+                         find=find)
+        elif (isinstance(frame, str)):
             driver.switch_to.frame(frame)
         else:
             driver.switch_to.frame(find(driver, **frame))
@@ -295,7 +298,7 @@ def switch_frame(driver, frame, find=_find_element):
             driver.switch_to.frame(find(driver, **frame))
 
 
-def switch_window(driver, title=None):
+def switch_window(driver, title=None, page=None):
     """Change to the next tab/window or switch to one wih a matching title.
 
     Execute the selenium switch_to.window function. If title
@@ -319,6 +322,10 @@ def switch_window(driver, title=None):
             if (handle != cur_handle):
                 driver.switch_to.window(handle)
                 return
+    elif (page is not None):
+        switch_window(driver,
+                      title=PageReader().get_page_title(*page))
+        return
     elif (isinstance(title, str)):
         for handle in driver.window_handles:
             if (handle == cur_handle):
@@ -371,12 +378,12 @@ def assert_page_is_open(driver, page=None, find=_find_element,
         raise ValueError('Either page or page_id must not be None')
 
     method = page_id.get('method', 'element')
-    identifier = page_id.get('identifier', None)
     match method:
         case 'element':
             try:
+                identifier = page_id.get('identifier', None)
                 ele = None
-                ele = find(driver, **identifier)
+                ele = find(driver, page=page, **identifier)
             except WebDriverException as e:
                 try:
                     print("Exception: ", e, " trying again")
@@ -387,9 +394,13 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                               "Page with element, {identifier} is not open.",
                               exception=ex)
         case 'title':
+            identifier = page_id.get('identifier',
+                                     PageReader().get_page_title(*page))
             if (identifier != driver.title):
                 _fail(soft, 'Page with title {identifier} is not open')
         case 'url':
+            identifier = page_id.get('identifier', None)
+            url = PageReader().get_url()
             if (identifier != driver.current_url):
                 _fail(soft, 'URL, {identifier} is not open')
         case _:

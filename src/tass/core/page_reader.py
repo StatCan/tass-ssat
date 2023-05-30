@@ -25,14 +25,17 @@ class PageReader(metaclass=Singleton):
             self.page_dict[file_key] = json.load(file)
         return self.page_dict[file_key]
 
-    def get_element(self, file_key, page_key, element_key):
-        return self._page(file_key, page_key)['elements'][element_key]
+    def get_element(self, file_key, page_key, element_key, default=None):
+        return self._page(file_key, page_key)['elements'].get(element_key, default)
 
-    def get_url(self, file_key, page_key, url_key='url'):
-        return self._page(file_key, page_key)['urls'][url_key]
+    def get_url(self, file_key, page_key, url_key='url', default=None):
+        return self._page(file_key, page_key)['urls'].get(url_key, default)
 
     def get_page_id(self, file_key, page_key):
         return self._page(file_key, page_key)['page_id']
+
+    def get_page_title(self, file_key, page_key):
+        return self._page(file_key, page_key)['title']
 
     def pages_loaded(self, key):
         return key in self.page_dict
