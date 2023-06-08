@@ -264,10 +264,8 @@ class TestSelenium(unittest.TestCase):
                     selenium.assert_page_is_open(
                         driver, page_id={
                                     'identifier': {
-                                        'locator': {
-                                            'by': 'id',
-                                            'value': 'noElement'
-                                            }
+                                        'by': 'id',
+                                        'value': 'noElement'
                                         },
                                     'method': 'element'
                                     },
@@ -316,10 +314,8 @@ class TestSelenium(unittest.TestCase):
                     selenium.assert_page_is_open(
                         driver, page_id={
                                     'identifier': {
-                                        'locator': {
-                                            'by': 'id',
-                                            'value': 'btnColor'
-                                            }
+                                        'by': 'id',
+                                        'value': 'btnColor'
                                         },
                                     'method': 'element'
                                     },
@@ -350,7 +346,7 @@ class TestSelenium(unittest.TestCase):
                 driver.get('file://' + url)
                 with self.assertRaises(TassHardAssertionError):
                     selenium.assert_page_is_open(
-                        driver, 'not the url', page_id={
+                        driver, page_id={
                                                 'identifier': 'not the url',
                                                 'method': 'url'})
 
@@ -366,10 +362,8 @@ class TestSelenium(unittest.TestCase):
                     selenium.assert_page_is_open(
                         driver, page_id={
                                     'identifier': {
-                                        'locator': {
-                                            'by': 'id',
-                                            'value': 'noElement'
-                                            }
+                                        'by': 'id',
+                                        'value': 'noElement'
                                         },
                                     'method': 'element'
                                     })
@@ -399,7 +393,7 @@ class TestSelenium(unittest.TestCase):
                 driver.get('file://' + url)
                 try:
                     selenium.assert_page_is_open(
-                        driver, 'file://' + url, page_id={
+                        driver, page_id={
                                                 'identifier': 'file://' + url,
                                                 'method': 'url'})
                 except TassAssertionError as e:
@@ -417,10 +411,8 @@ class TestSelenium(unittest.TestCase):
                     selenium.assert_page_is_open(
                         driver, page_id={
                                     'identifier': {
-                                        'locator': {
-                                            'by': 'id',
-                                            'value': 'btnColor'
-                                            }
+                                        'by': 'id',
+                                        'value': 'btnColor'
                                         },
                                     'method': 'element'
                                     })

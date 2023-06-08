@@ -372,40 +372,71 @@ def assert_page_is_open(driver, page=None, find=_find_element,
             given above.
 
     """
-    if (page_id is None and page is not None):
+    def _element(driver, find, element, page, soft):
+        ele = None
+        try:
+            ele = find(driver, element, page=page)
+        except WebDriverException:
+            try:
+                ele = find(driver, element, page=page)
+            except WebDriverException as e:
+                print('Exception raised: {}'.format(e))
+                _fail(soft, 'WebDriver exception raised', exception=e)
+
+        if (ele is None):
+            _fail(soft,
+                  'Element {identifier} not found. Page is not open')
+
+    def _title(driver, title, soft):
+        if (driver.title != title):
+            _fail(soft,
+                  'Expected title not found. Page is not open')
+
+    def _url(driver, url, soft):
+        if (driver.current_url != url):
+            _fail(soft,
+                  'Expected url not open. Page is not open')
+    if (page is not None):
         page_id = PageReader().get_page_id(*page)
+
+        match page_id.get('method', 'element'):
+            case 'element':
+                _element(driver,
+                         find,
+                         page_id['identifier'],
+                         page,
+                         soft)
+            case 'title':
+                title = PageReader() \
+                    .get_page_title(*page, default=page_id['identifier'])
+                _title(driver, title, soft)
+            case 'url':
+                url = PageReader() \
+                    .get_url(*page, default=page_id['identifier'])
+                _url(driver, url, soft)
+            case _:
+                raise ValueError(
+                    "Method, {page_id.get('method', 'element')} not supported")
+    elif (page_id is not None):
+
+        match page_id.get('method', 'element'):
+            case 'element':
+                _element(driver,
+                         find,
+                         page_id['identifier'],
+                         None,
+                         soft)
+            case 'title':
+                title = page_id['identifier']
+                _title(driver, title, soft)
+            case 'url':
+                url = page_id['identifier']
+                _url(driver, url, soft)
+            case _:
+                raise ValueError(
+                    "Method, {page_id.get('method', 'element')} not supported")
     elif (page is None and page_id is None):
         raise ValueError('Either page or page_id must not be None')
-
-    method = page_id.get('method', 'element')
-    match method:
-        case 'element':
-            try:
-                identifier = page_id.get('identifier', None)
-                ele = None
-                ele = find(driver, page=page, **identifier)
-            except WebDriverException as e:
-                try:
-                    print("Exception: ", e, " trying again")
-                    ele = find(driver, **identifier)
-                except WebDriverException as ex:
-                    if (ele is None):
-                        _fail(soft,
-                              "Page with element, {identifier} is not open.",
-                              exception=ex)
-        case 'title':
-            identifier = page_id.get('identifier',
-                                     PageReader().get_page_title(*page))
-            if (identifier != driver.title):
-                _fail(soft, 'Page with title {identifier} is not open')
-        case 'url':
-            identifier = page_id.get('identifier', None)
-            url = PageReader().get_url()
-            if (identifier != driver.current_url):
-                _fail(soft, 'URL, {identifier} is not open')
-        case _:
-            raise ValueError('{method} is not a recognized page identifier')
-    return
 
 
 def assert_displayed(driver, find=_find_element, soft=False, **kwargs):

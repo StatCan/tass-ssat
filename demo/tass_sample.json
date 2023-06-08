@@ -17,6 +17,13 @@
 					"parameters":["relative_path", "tests/pages/page1.html"]
 				}, 
 				{
+					"uuid":"sample-test-step-0-2",
+					"name":"Launch google.ca",
+					"status": "untested",
+					"action":["selenium","assert_page_is_open"],
+					"parameters":["page", ["sample","page1"]]
+				},
+				{
 					"uuid":"sample-test-step-1",
 					"name":"Type search query into google",
 					"status": "untested",
