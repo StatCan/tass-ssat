@@ -58,3 +58,10 @@ class PageReader(metaclass=Singleton):
 
     def is_empty(self):
         return bool(self.page_dict)
+
+    def add_page(self, page_key, page):
+        custom_key = 'custom'
+        if (not self.pages_loaded(custom_key)):
+            self.page_dict[custom_key] = {}
+        p = self.page_dict[custom_key]
+        p[page_key] = page
