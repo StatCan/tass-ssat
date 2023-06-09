@@ -9,6 +9,7 @@ from tass.exceptions.assertion_errors import TassAssertionError
 from tass.exceptions.assertion_errors import TassHardAssertionError
 from tass.exceptions.assertion_errors import TassSoftAssertionError
 import selenium.webdriver.support.expected_conditions as EC
+from selenium.webdriver.support.select import Select
 
 
 class TestSelenium(unittest.TestCase):
@@ -116,6 +117,48 @@ class TestSelenium(unittest.TestCase):
                 self.assertEqual(selenium.read_css(
                         driver, attribute='width',
                         locator={"by": "id", "value": "btn1"}), '300px')
+                driver.quit()
+
+    def test_SeleniumSelectDropdownByText(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get('file://' + url)
+                selenium.select_dropdown(driver, 'AA', 'text',
+                                         locator={
+                                            'by': 'id', 'value': 'dropdown'
+                                            })
+                sel = Select(driver.find_element('id', 'dropdown'))
+                self.assertEqual(sel.first_selected_option.text, 'AA')
+                driver.quit()
+
+    def test_SeleniumSelectDropdownByValue(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get('file://' + url)
+                selenium.select_dropdown(driver, 'last', 'value',
+                                         locator={
+                                            'by': 'id', 'value': 'dropdown'
+                                            })
+                sel = Select(driver.find_element('id', 'dropdown'))
+                self.assertEqual(sel.first_selected_option.text, 'AA')
+                driver.quit()
+
+    def test_SeleniumSelectDropdownByIndex(self):
+        url = os.path.join(pathlib.Path().resolve(), self.test_page_url)
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get('file://' + url)
+                selenium.select_dropdown(driver, 3, 'index',
+                                         locator={
+                                            'by': 'id', 'value': 'dropdown'
+                                            })
+                sel = Select(driver.find_element('id', 'dropdown'))
+                self.assertEqual(sel.first_selected_option.text, 'AA')
                 driver.quit()
 
     def test_SeleniumAssertDisplayedSuccess(self):
