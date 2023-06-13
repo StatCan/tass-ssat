@@ -1,5 +1,4 @@
 import pathlib
-import os
 from tass.core.page_reader import PageReader
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.select import Select
@@ -204,8 +203,8 @@ def load_file(driver, relative_path):
         relative_path:
             The file path to be loaded. Must be relative to the root directory.
     """
-    url = os.path.join(pathlib.Path().resolve(), relative_path)
-    driver.get('file://' + url)
+    url = pathlib.Path(relative_path).resolve().as_uri()
+    driver.get(url)
 
 
 def load_page(driver, page, url_key='url', use_local=False):
