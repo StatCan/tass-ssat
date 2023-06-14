@@ -118,13 +118,29 @@ class TestSelenium(unittest.TestCase):
                         locator={"by": "id", "value": "btn1"}), '300px')
                 driver.quit()
 
-    def test_SeleniumSwitchToFrame(self):
+    def test_SeleniumSwitchToFrameId(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
             driver = browser(self.config)
             with self.subTest(browser=driver.toJson()):
                 driver.get(url)
                 selenium.switch_frame(driver, frame='FrameA')
+                btnName = driver.find_element(
+                    *('id', 'btnColor')).get_attribute('name')
+                self.assertEqual(btnName, 'buttonAlpha')
+                driver.quit()
+
+    def test_SeleniumSwitchToFrameElement(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                driver.get(url)
+                selenium.switch_frame(driver, frame={
+                                    'locator': {
+                                        'by': 'xpath',
+                                        'value': '//iframe[@title="Iframe 2"]'
+                                    }})
                 btnName = driver.find_element(
                     *('id', 'btnColor')).get_attribute('name')
                 self.assertEqual(btnName, 'buttonAlpha')
