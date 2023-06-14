@@ -122,8 +122,8 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumSwitchToFrame(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            with self.subTest(browser=browser.browser):
-                driver = browser(self.config)
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
                 driver.get(url)
                 selenium.switch_frame(driver, frame='FrameA')
                 btnName = driver.find_element(
