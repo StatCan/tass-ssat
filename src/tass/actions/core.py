@@ -17,13 +17,11 @@ def store_value(key, value):
             The value to be stored. The value
             can be any type.
     """
-
     ValueStore().add_to_dict(key, value)
 
 
 def read_value(key):
-    """Retrieve a previously
-        stored value.
+    """Retrieve a previously stored value.
 
     Args:
         key:
@@ -35,7 +33,6 @@ def read_value(key):
         If the dictionary does not contain the given
         key then None is returned.
     """
-
     store = ValueStore()
     if store.contains(key):
         return store.get_data(key)

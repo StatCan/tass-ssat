@@ -17,6 +17,13 @@
 					"parameters":["relative_path", "tests/pages/page1.html"]
 				}, 
 				{
+					"uuid":"sample-test-step-0-2",
+					"name":"Launch google.ca",
+					"status": "untested",
+					"action":["selenium","assert_page_is_open"],
+					"parameters":["page", ["sample","page1"]]
+				},
+				{
 					"uuid":"sample-test-step-1",
 					"name":"Type search query into google",
 					"status": "untested",
@@ -28,35 +35,35 @@
 					"name":"Click the search button",
 					"status": "untested",
 					"action":["selenium","click"],
-					"parameters":["locator", {"by": "id", "value": "btnColor"}]
+					"parameters":["page", ["sample", "page1"],"locator", "btnColor"]
 				},
 				{
 					"uuid":"sample-test-step-3",
 					"name":"Read search query",
 					"status": "untested",
 					"action":["selenium","read_css"],
-					"parameters":["locator", {"by": "id", "value": "btnColor"}, "attribute", "background-color"]
+					"parameters":["page", ["sample", "page1"], "locator", "btnColor", "attribute", "background-color"]
 				},
 				{				
 					"uuid":"sample-test-step-4",
 					"name":"assert is displayed",
 					"action":["selenium","assert_displayed"],
 					"status": "untested",
-					"parameters":["soft", true, "locator", {"by": "id", "value": "btn-x"}]
+					"parameters":["soft", true, "page", ["sample", "page1"], "locator", "btnX"]
 				},
 				{
 					"uuid":"sample-test-step-5",
 					"name":"assert is displayed",
 					"status": "untested",
 					"action":["selenium","assert_displayed"],
-					"parameters":["soft", false, "locator", {"by": "id", "value": "btn-x"}]
+					"parameters":["soft", false, "page", ["sample", "page1"], "locator", "btnX"]
 				},
 				{
 					"uuid":"sample-test-step-6",
 					"name":"assert is displayed",
 					"status": "untested",
 					"action":["selenium","assert_displayed"],
-					"parameters":["soft", true, "locator", {"by": "id", "value": "btn-x"}]
+					"parameters":["soft", true, "page", ["sample", "page1"], "locator", "btnX"]
 				}
 			]
 			

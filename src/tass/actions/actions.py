@@ -21,5 +21,4 @@ def action(name, action):
         The function belonging to the specified class
         as determined by the action parameter.
     """
-
     return getattr(Actions[name.upper()].value, action)

@@ -1,13 +1,22 @@
 import pathlib
-import os
+from tass.core.page_reader import PageReader
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.select import Select
 from tass.exceptions.assertion_errors import TassHardAssertionError
 from tass.exceptions.assertion_errors import TassSoftAssertionError
 
 
-def _find_element(driver, locator):
-    return driver.find_element(**locator)
+def _find_element(driver, locator, page=None):
+    def _locate(page, locator):
+        print(locator)
+        if (isinstance(locator, str)):
+            return PageReader().get_element(*page, locator)
+        elif isinstance(locator, dict):
+            return locator
+        else:
+            msg = "Locator type not supported. Type: {}".format(type(locator))
+            raise TypeError(msg)
+    return driver.find_element(**_locate(page, locator))
 
 
 def _is_displayed(driver, find=_find_element, **kwargs):
@@ -39,9 +48,7 @@ def click(driver, find=_find_element, **kwargs):
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
             requires: locator.
-
     """
-
     try:
         find(driver, **kwargs).click()
     except WebDriverException as e:
@@ -77,9 +84,7 @@ def write(driver, find=_find_element, text='', **kwargs):
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
             requires: locator.
-
     """
-
     try:
         find(driver, **kwargs).send_keys(text)
     except WebDriverException as e:
@@ -161,9 +166,7 @@ def clear(driver, find=_find_element, **kwargs):
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
             requires: locator.
-
     """
-
     try:
         find(driver, **kwargs).clear()
     except WebDriverException as e:
@@ -183,9 +186,7 @@ def load_url(driver, url):
             to the open browser.
         url:
             The url to be loaded. Must be complete and correctly formatted.
-
     """
-
     driver.get(url)
 
 
@@ -201,10 +202,38 @@ def load_file(driver, relative_path):
             to the open browser.
         relative_path:
             The file path to be loaded. Must be relative to the root directory.
-
     """
-    url = os.path.join(pathlib.Path().resolve(), relative_path)
-    driver.get('file://' + url)
+    url = pathlib.Path(relative_path).resolve().as_uri()
+    driver.get(url)
+
+
+def load_page(driver, page, url_key='url', use_local=False):
+    """Load a page using the URL provided in the POM
+
+        Execute the selenium get function against the URL or
+        file path provided in the given page.
+
+        Args:
+            driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+            page:
+            The key combination for the POM page object.
+            url_key:
+            The key for the url in the required environment.
+            in the case of multiple URLs for the same page in
+            different environments. The default value is 'url'.
+            The default URL for the POM object should be 'url'.
+            use_local:
+            A flag that indicates if a local file should be used. In which
+            case the provided url is treated like a relative file path
+            instead of a web URL.
+    """
+    url = PageReader().get_url(*page, url_key)
+    if (use_local):
+        load_file(driver, url)
+    else:
+        load_url(driver, url)
 
 
 def read_attribute(driver, attribute, find=_find_element, **kwargs):
@@ -235,9 +264,7 @@ def read_attribute(driver, attribute, find=_find_element, **kwargs):
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
             requires: locator.
-
     """
-
     try:
         return find(driver, **kwargs).get_attribute(attribute)
     except WebDriverException as e:
@@ -273,7 +300,6 @@ def read_css(driver, attribute, find=_find_element, **kwargs):
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
             requires: locator.
-
     """
 
     try:
@@ -283,7 +309,7 @@ def read_css(driver, attribute, find=_find_element, **kwargs):
         return find(driver, **kwargs).value_of_css_property(attribute)
 
 
-def switch_frame(driver, frame, find=_find_element):
+def switch_frame(driver, frame, page=None, find=_find_element):
     """Change the active frame by name or element
 
     Execute the selenium switch_to.frame function against the locator
@@ -305,10 +331,13 @@ def switch_frame(driver, frame, find=_find_element):
             and 'value' as a locator.
 
     """
-
     try:
         # TODO: if/else logic needs to be revisited for POM implementation.
-        if (isinstance(frame, str)):
+        if (page is not None):
+            switch_frame(driver,
+                         PageReader().get_element(*page, frame),
+                         find=find)
+        elif (isinstance(frame, str)):
             driver.switch_to.frame(frame)
         else:
             driver.switch_to.frame(find(driver, **frame))
@@ -320,7 +349,7 @@ def switch_frame(driver, frame, find=_find_element):
             driver.switch_to.frame(find(driver, **frame))
 
 
-def switch_window(driver, title=None):
+def switch_window(driver, title=None, page=None):
     """Change to the next tab/window or switch to one wih a matching title.
 
     Execute the selenium switch_to.window function. If title
@@ -336,7 +365,6 @@ def switch_window(driver, title=None):
             The title (str) of a window or tab to be switched to.
             The title must be an exact match in order for it to be
             found and switched to correctly.
-
     """
     # TODO: Keep track of window handles to avoid loop?
     cur_handle = driver.current_window_handle
@@ -345,6 +373,10 @@ def switch_window(driver, title=None):
             if (handle != cur_handle):
                 driver.switch_to.window(handle)
                 return
+    elif (page is not None):
+        switch_window(driver,
+                      title=PageReader().get_page_title(*page))
+        return
     elif (isinstance(title, str)):
         for handle in driver.window_handles:
             if (handle == cur_handle):
@@ -357,6 +389,107 @@ def switch_window(driver, title=None):
 
 
 # / / / / / / / Assertions / / / / / / /
+def _fail(soft, message, exception=None, *args):
+    if (soft):
+        raise TassSoftAssertionError(
+                "Soft Assertion failed: " + message,
+                exception, *args)
+    else:
+        raise TassHardAssertionError(
+                "Hard Assertion failed: " + message,
+                exception, *args)
+
+
+def assert_page_is_open(driver, page=None, find=_find_element,
+                        soft=False, page_id=None):
+    """Assert the given page is open using the described method
+
+    Assert that the given page is open using one of the pre-defined methods.
+    'element' checks for the presence of a given element.
+    'title' checks for the given title.
+    'url' checks for the given url.
+
+    Args:
+        driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+        find:
+            The function to be called when attempting to locate
+            an element. Must use either a explicit wait function
+            or the default _find_element fuinction.
+        method:
+            The str representation of the desired method.
+            Value must match one of the predefined methods
+            given above.
+
+    """
+    def _element(driver, find, element, page, soft):
+        ele = None
+        try:
+            ele = find(driver, element, page=page)
+        except WebDriverException:
+            try:
+                ele = find(driver, element, page=page)
+            except WebDriverException as e:
+                print('Exception raised: {}'.format(e))
+                _fail(soft, 'WebDriver exception raised', exception=e)
+
+        if (ele is None):
+            _fail(soft,
+                  'Element {identifier} not found. Page is not open')
+
+    def _title(driver, title, soft):
+        if (driver.title != title):
+            _fail(soft,
+                  'Expected title not found. Page is not open')
+
+    def _url(driver, url, soft):
+        if (driver.current_url != url):
+            _fail(soft,
+                  'Expected url not open. Page is not open')
+    if (page is not None):
+        page_id = PageReader().get_page_id(*page)
+
+        match page_id.get('method', 'element'):
+            case 'element':
+                _element(driver,
+                         find,
+                         page_id['identifier'],
+                         page,
+                         soft)
+            case 'title':
+                title = PageReader() \
+                    .get_page_title(*page, default=page_id['identifier'])
+                _title(driver, title, soft)
+            case 'url':
+                url = PageReader() \
+                    .get_url(*page, default=page_id['identifier'])
+                _url(driver, url, soft)
+            case _:
+                raise ValueError(
+                    "Method, {page_id.get('method', 'element')} not supported")
+    elif (page_id is not None):
+
+        match page_id.get('method', 'element'):
+            case 'element':
+                _element(driver,
+                         find,
+                         page_id['identifier'],
+                         None,
+                         soft)
+            case 'title':
+                title = page_id['identifier']
+                _title(driver, title, soft)
+            case 'url':
+                url = page_id['identifier']
+                _url(driver, url, soft)
+            case _:
+                raise ValueError(
+                    "Method, {page_id.get('method', 'element')} not supported")
+    elif (page is None and page_id is None):
+        raise ValueError('Either page or page_id must not be None')
+
+
 def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
     """Assert the given element is displayed. Can be a soft of hard check
 
@@ -383,21 +516,12 @@ def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
             requires: locator.
-
     """
     try:
         if (_is_displayed(driver, find=find, **kwargs)):
             return
-        elif (soft):
-            raise TassSoftAssertionError(
-                '''Soft Assertion failed: assert_displayed
-                -> Element is not displayed.''',
-                *kwargs)
         else:
-            raise TassHardAssertionError(
-                '''Hard Assertion failed: assert_displayed
-                -> Element is not displayed.''',
-                *kwargs)
+            _fail(soft, "assert_displayed Element is not displayed.")
     except WebDriverException as e:
         if (soft):
             raise TassSoftAssertionError(
@@ -437,7 +561,6 @@ def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
             requires: locator.
-
     """
     try:
         if not (_is_displayed(driver, find=find, **kwargs)):
