@@ -28,7 +28,6 @@ class TestSelenium(unittest.TestCase):
 
         self.drivers = [CDriver, EDriver, FDriver]
 
-
     def test_SeleniumLoadURL(self):
         url = "https://www.google.ca"
         for browser in self.drivers:
