@@ -1,0 +1,54 @@
+{
+    "$schema": "http://json-schema.org/draft-07/shcema#",
+
+    "definitions":{
+        "Test_run": {
+            "type": "object",
+            "Properties": {
+                "tr_uuid": {"type": "string"},
+                "start_time": {"type": "string"},
+                "end_time": {"type": "string"},
+                "build": {"type": "string"},
+                "test_suites": {
+                    "type": "object",
+                    "Properties": {
+                        "row": {"type": "string"},
+                        "column": {"type": "string"}
+                        }
+                },
+                "test_cases": {
+                    "type": "object",
+                    "Properties": {
+                        "row": {"type": "string"},
+                        "column": {"type": "string"}
+                    }
+                }
+            }
+        },
+        "Test_suite": {
+            "type": "object",
+            "Properties": {
+                "ts_uuid": {"type": "string"},
+                "keywords": {"type": "string"},
+                "test_cases":{
+                    "type": "object",
+                    "Properties": {
+                        "row": {"type": "string"},
+                        "column": {"type": "string"}
+                    }
+                }
+            }
+        },
+        "Test_cases": {
+            "type": "object",
+            "Properties": {
+                "tc_uuid": {"type": "string"},
+                "title": {"type": "string"},
+                "uuid": {"type": "string"},
+                "title": {"type": "string"},
+                "action": {"type": "string"},
+                "parameter":{"type": "string"}
+            }
+        }
+    }
+}
