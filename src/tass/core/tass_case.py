@@ -78,5 +78,9 @@ class TassCase(TassItem):
 
 
 def _execute_step(step, driver):
-    params = dict(zip(it := iter(step.get('parameters', None)), it))
+    raw = step.get('parameters', None)
+    if (not isinstance(raw, dict)):
+        params = dict(zip(it := iter(raw), it))
+    else:
+        params = raw
     action(*step.get('action'))(driver=driver, **params)

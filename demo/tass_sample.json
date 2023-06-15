@@ -28,7 +28,10 @@
 					"name":"Type search query into google",
 					"status": "untested",
 					"action":["selenium","write"],
-					"parameters":["locator", {"by":"id", "value":"nameField"}, "text", "do a barrel roll"]
+					"parameters":{
+						"locator": {"by":"id", "value":"nameField"},
+						"text": "do a barrel roll"
+						}
 				},
 				{
 					"uuid":"sample-test-step-2",
