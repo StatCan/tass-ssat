@@ -333,14 +333,10 @@ def switch_frame(driver, frame, page=None, find=_find_element):
     """
     try:
         # TODO: if/else logic needs to be revisited for POM implementation.
-        if (page is not None):
-            switch_frame(driver,
-                         PageReader().get_element(*page, frame),
-                         find=find)
-        elif (isinstance(frame, str)):
+        if (isinstance(frame, str)):
             driver.switch_to.frame(frame)
         else:
-            driver.switch_to.frame(find(driver, **frame))
+            driver.switch_to.frame(find(driver, page=page, **frame))
     except WebDriverException as e:
         print("Exception: ", e, " trying again")
         if (isinstance(frame, str)):

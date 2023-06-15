@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Page Two</title>
+
+  </head>
+  <body>
+    <button type="button" name="buttonAlpha" id="btnColor" onclick="onClick(this)">Color Change Button</button>
+    <input type="text" name="nameAlpha" id="nameField" value="">
+    <script>
+
+      function onClick(btn) {
+        
+        btn.style.color = 'white';
+		setTimeout(()=> { 
+			btn.style.backgroundColor = colors[index]; 
+			index = index >= colors.length - 1 ? 0 : index + 1;}, 6000);
+        
+      }
+
+      let index = 0;
+
+      const colors = ['salmon', 'green', 'blue', 'purple'];
+
+
+</script>
+  </body>
+</html>
