@@ -27,8 +27,9 @@
 					"uuid":"sample-test-step-1",
 					"name":"Type search query into google",
 					"status": "untested",
-					"action":["selenium","write"],
+					"action":["selwait","wait_element_visible"],
 					"parameters":{
+						"action": ["selenium", "write"],
 						"locator": {"by":"id", "value":"nameField"},
 						"text": "do a barrel roll"
 						}

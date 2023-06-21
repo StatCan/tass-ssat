@@ -1,0 +1,29 @@
+{
+	"page1":
+	{
+		"title": "Page One",
+		"url": "tests/pages/page1.html",
+		"page_id":
+		{
+			"method": "element",
+			"identifier": "btnColor"
+		},
+		"elements" :{
+			"btnColor": 
+			{
+				"by": "id", 
+				"value": "btnColor"
+			},
+			"nameField":
+			{
+				"by":"id", 
+				"value":"nameField"
+			},
+			"btnX":
+			{
+				"by": "id",
+				"value": "btn-x"
+			}
+		}
+	}
+}

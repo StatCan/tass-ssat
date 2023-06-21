@@ -1,11 +1,28 @@
 from enum import Enum
-import tass.actions.core as core
-import tass.actions.selenium as selenium
+
+
+def importSelenium():
+    import tass.actions.selenium as selenium
+    return selenium
+
+
+def importSelWait():
+    import tass.actions.selenium_wait as selwait
+    return selwait
+
+
+def importCore():
+    import tass.actions.core as core
+    return core
 
 
 class Actions(Enum):
-    CORE = core
-    SELENIUM = selenium
+    CORE = importCore
+    SELENIUM = importSelenium
+    SELWAIT = importSelWait
+
+    def __call__(self):
+        return self.value()
 
 
 def action(name, action):
@@ -21,4 +38,5 @@ def action(name, action):
         The function belonging to the specified class
         as determined by the action parameter.
     """
-    return getattr(Actions[name.upper()].value, action)
+    module = getattr(Actions, name.upper())()
+    return getattr(module, action)

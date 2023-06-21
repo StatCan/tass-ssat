@@ -14,7 +14,7 @@ def newDriver(browser, config):
 
 class WebDriverWaitWrapper():
     """ Wrapper class for adding general features to browser driver classes."""
-    def wait_until(self, until_func, **kwargs):
+    def wait_until(self, until_func, time=None, **kwargs):
         """ Wait for element to meet condition before returning the WebElement
             This method is used to explicitly wait for a conditon to be met the
             expected condition (until_func). Once the condition is met,
@@ -35,7 +35,9 @@ class WebDriverWaitWrapper():
         Any Type:
             Returns the return value of the until_func.
         """
-        wait = WebDriverWait(self, self._config.get('explicit_wait', 10))
+        if (time is None):
+            time = self._config.get('explicit_wait', 10)
+        wait = WebDriverWait(self, time)
         return wait.until(until_func(**kwargs))
 
     def _config_options(self, browser_options, config):
