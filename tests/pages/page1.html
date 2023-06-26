@@ -12,6 +12,9 @@
     <li><button type="button" name="button1" id="btn1" style="color: black; background-color: yellow; width: 300px;">Button 1</button></li>
     <li><button type="button" name="button2" id="btn2" onclick="onClick(this)">Button 2</button></li>
 	<li style="display: none"><button type="button" name="buttonX" id="btn-x">Button X</button></li>
+	<li><button type="button" name="buttonY" id="btn-y" onclick="enable()">Button Y</button></li>
+	<li><button type="button" name="buttonZ" id="btn-z" onclick="onClick(this)" disabled>Button Z</button></li>
+	<li><button type="button" name="buttonA" id="btn-a" onclick="displayed()">Button A</button><button type="button" name="buttonB" id="btn-b" style="display: none;" onclick="onClick(this)">Button B</button></li>
     <li><a href="page2.html" id="nextBtn">NEXT</a>
 	
 	<iframe src="page2.html" height="200" width="300" title="Iframe 1" id="FrameA" name="FrameAlpha"></iframe>
@@ -25,8 +28,30 @@
 	</select>
     </ul>
     <script>
+	
+		function displayed() {
+			var btn = document.getElementById("btn-b");
+			if (btn.style.display == 'none'){
+				setTimeout(()=> { 
+					btn.style.display =  "block";}, 8000);
+  			} else {
+				setTimeout(()=> { 
+					btn.style.display = "none";}, 8000);
+			}
+		}
+	
+		function enable() {
+			var btn = document.getElementById("btn-z");
+			if (btn.disabled){
+				setTimeout(()=> { 
+					btn.disabled = false;}, 8000);
+  			} else {
+				setTimeout(()=> { 
+					btn.disabled = true;}, 8000);
+			}
+		}
 
-      function onClick(btn) {
+		function onClick(btn) {
         
         btn.style.color = 'white';
 		setTimeout(()=> { 
