@@ -42,6 +42,8 @@ def convert(path):
     print("Printing conf file")
     print(conf_file)
 
+    return conf_file
+
 def convert_test_case(test_case, conf, wb):
     conf["Test_cases"] = []
     for case in test_case:
@@ -69,9 +71,11 @@ def convert_test_suite(test_suite, conf, wb):
         ts["test_cases"] = []
         ts["keywords"] = []
         for row in wb[suite].iter_rows(min_row=2, min_col=2, max_col=2):
-            ts["test_cases"].append(row[0].value)
+            if row[0].value is not None:
+                ts["test_cases"].append(row[0].value)
         for row in wb[suite].iter_rows(min_row=1, min_col=4, max_col=4):
-            ts["keywords"].append(row[0].value)
+            if row[0].value is not None:
+                ts["keywords"].append(row[0].value)
         conf["Test_suites"].append(ts)
 
     return conf
@@ -87,9 +91,11 @@ def convert_test_run(test_run, conf, wb):
         tr["test_cases"] = []
         tr["test_suites"] = []
         for row in wb[run].iter_rows(min_row=3, min_col=2, max_col=2):
-            tr["test_suites"].append(row[0].value)
+            if row[0].value is not None:
+                tr["test_suites"].append(row[0].value)
         for row in wb[run].iter_rows(min_row=3, min_col=4, max_col=4):
-            tr["test_cases"].append(row[0].value)
+            if row[0].value is not None:
+                tr["test_cases"].append(row[0].value)
         conf["Test_runs"].append(tr)
 
     return conf

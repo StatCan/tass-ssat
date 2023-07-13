@@ -10,10 +10,10 @@ class TestConvert(unittest.TestCase):
 
 
     def test_Convert(self):
-        conf_file = conf.convert('tests/data/testfile.xlsx')
-        conf_file = json.dumps(conf_file)
+        conf_file = conf.convert('tests/data/test_run.xlsx')
+        conf_file = json.dumps(conf_file, indent = 4)
 
-        with open(file='tests/data/testfile.json', mode='r') as f:
+        with open(file='tests/data/test_run.json', mode='r') as f:
             conf_file2 = json.load(f)
 
         with open(file='tests/data/testfile2.json', mode='w') as f:
