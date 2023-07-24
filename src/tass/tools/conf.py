@@ -50,16 +50,24 @@ def convert_test_case(test_case, conf, wb):
         tc = {}
         tc["tc_uuid"] = wb[case]['B1'].value
         tc["title"] = wb[case]['D1'].value
-        tc["steps"] = []
+        tc["steps"] = {}
         for row in wb[case].iter_rows(min_row=3, max_col=4):
             steps = {}
-            tc["steps"].append(row[0].value)
             steps["uuid"] = row[0].value
             steps["title"] = row[1].value
             steps["action"] = row[2].value
             steps["parameter"] = row[3].value
-            conf["Steps"].append(steps)
+            if row[0].value in tc["steps"]:
+                if (tc["steps"][row[0].value]["uuid"] == steps["uuid"]) and (tc["steps"][row[0].value]["title"] == steps["title"]) and (tc["steps"][row[0].value]["action"] == steps["action"]) and (tc["steps"][row[0].value]["parameter"] == steps["parameter"]):
+                    pass   ## Do nothing
+                else:
+                    print("Different steps with uuid: " + row[0].value)
+            else:
+                print(steps)
+                tc["steps"][row[0].value] = steps
 
+        conf["Steps"] = (list(tc["steps"].values()))
+        tc["steps"] = list(tc["steps"].keys())
         conf["Test_cases"].append(tc)
     return conf
 
