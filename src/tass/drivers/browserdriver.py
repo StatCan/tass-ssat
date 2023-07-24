@@ -61,7 +61,7 @@ class ChromeDriver(webdriver.Chrome, WebDriverWaitWrapper):
         super().__init__(service=ChromeService(
             ChromeDriverManager().install()),
             options=self._config_options(webdriver.ChromeOptions,
-                        self._get_property('options')))
+                                         self._get_property('options')))
         self._implicit_wait_from_config()
 
     def toJson(self):
@@ -85,7 +85,7 @@ class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
         super().__init__(service=FirefoxService(
             GeckoDriverManager().install()),
             options=self._config_options(webdriver.FirefoxOptions,
-                            self._get_property('options')))
+                                         self._get_property('options')))
         self._implicit_wait_from_config()
         if ('--start-maximized' in self._get_property('options')):
             self.maximize_window()
@@ -110,7 +110,9 @@ class EdgeDriver(webdriver.Edge, WebDriverWaitWrapper):
         self._config = config
         super().__init__(service=EdgeService(
             EdgeChromiumDriverManager().install()),
-            options=self._config_options(webdriver.EdgeOptions, self._get_property('options')))
+            options=self._config_options(
+                            webdriver.EdgeOptions,
+                            self._get_property('options')))
         self._implicit_wait_from_config()
 
     def toJson(self):

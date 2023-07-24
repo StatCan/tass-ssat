@@ -28,7 +28,7 @@ def load(file_path):
     match test['file-type']:
         case 'test-run':
             return TassRun.create(path=file_path,
-                           **test['content'])
+                                  **test['content'])
 
 
 def main(args):

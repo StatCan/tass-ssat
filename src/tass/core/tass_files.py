@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 from tass.core.tass_items import TassFile
 from tass.core.tass_case import TassCase
@@ -46,6 +45,8 @@ class TassRun(TassFile):
             raise ke
 
         for case in self._raw_test_cases:
-            tasscase = TassCase.from_parent(parent=self, browser=browser, **case)
+            tasscase = TassCase.from_parent(parent=self,
+                                            browser=browser,
+                                            **case)
             yield tasscase
             self._completed_cases.append(tasscase)

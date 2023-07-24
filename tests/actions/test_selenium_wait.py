@@ -10,7 +10,8 @@ import selenium.webdriver.support.expected_conditions as EC
 
 class TestSeleniumWait(unittest.TestCase):
 
-    config = bc.load({"DEFAULT": {"options": ["--start-maximized", "--headless"]}})
+    config = bc.load({"DEFAULT": {
+                        "options": ["--start-maximized", "--headless"]}})
 
     test_page_url = 'tests/pages/page1.html'
 

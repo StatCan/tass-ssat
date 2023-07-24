@@ -14,7 +14,8 @@ from selenium.webdriver.support.select import Select
 
 class TestSelenium(unittest.TestCase):
 
-    config = bc.load({"DEFAULT": {"options": ["--start-maximized", "--headless"]}})
+    config = bc.load({"DEFAULT": {
+                        "options": ["--start-maximized", "--headless"]}})
 
     test_page_url = 'tests/pages/page1.html'
 
