@@ -22,20 +22,29 @@ class TassEncoder(json.JSONEncoder):
                 )
 
 
+def load(file_path):
+    with open(file_path) as file:
+        test = json.load(file)
+    match test['file-type']:
+        case 'test-run':
+            return TassRun.create(path=file_path,
+                           **test['content'])
+
+
 def main(args):
     """
     Starting point for execution of tests.
     """
     print(args.file)
-    with open(args.file) as file:
-        # open the test file and load into memory as TassRun
-        # TODO: TassRun or Tass Suite can be executed
-        test = TassRun(args.file, **json.load(file))
-        for case in test.collect():
-            # collect test cases from file
-            print(case)
-            case.execute_tass()
-            print('/ / / / / / / / / / / / / / / / / / / /')
+
+    # open the test file and load into memory as TassRun
+    # TODO: TassRun or Tass Suite can be executed
+    test = load(args.file)
+    for case in test.collect():
+        # collect test cases from file
+        print(case)
+        case.execute_tass()
+        print('/ / / / / / / / / / / / / / / / / / / /')
 
     # Write results to file
     Path('results').mkdir(exist_ok=True)
@@ -50,5 +59,4 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--file',
                         action='store', required=True)
-
     main(parser.parse_args())

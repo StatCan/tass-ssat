@@ -1,6 +1,7 @@
 import unittest
 import pathlib
 import tass.actions.selenium_wait as selwait
+import tass.config.browserconfig as bc
 from tass.drivers.browserdriver import ChromeDriver as CDriver
 from tass.drivers.browserdriver import FirefoxDriver as FDriver
 from tass.drivers.browserdriver import EdgeDriver as EDriver
@@ -9,11 +10,7 @@ import selenium.webdriver.support.expected_conditions as EC
 
 class TestSeleniumWait(unittest.TestCase):
 
-    config = {
-            "implicit_wait": 5,
-            "explicit_wait": 10,
-            "options": ["--start-maximized"]
-            }
+    config = bc.load({"DEFAULT": {"options": ["--start-maximized", "--headless"]}})
 
     test_page_url = 'tests/pages/page1.html'
 

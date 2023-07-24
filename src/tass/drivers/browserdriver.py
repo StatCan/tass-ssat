@@ -1,3 +1,4 @@
+import ast
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -36,13 +37,13 @@ class WebDriverWaitWrapper():
             Returns the return value of the until_func.
         """
         if (time is None):
-            time = self._config.get('explicit_wait', 10)
+            time = self._get_property('explicit_wait')
         wait = WebDriverWait(self, time)
         return wait.until(until_func(**kwargs))
 
-    def _config_options(self, browser_options, config):
+    def _config_options(self, browser_options, options):
         options_obj = browser_options()
-        for opt in config.get('options', []):
+        for opt in options:
             options_obj.add_argument(opt)
         return options_obj
 
@@ -50,7 +51,7 @@ class WebDriverWaitWrapper():
         """ Shortcut function to set the implicit wait
             based on the configuration file.
         """
-        self.implicitly_wait(self._config.get('implicit_wait', 10))
+        self.implicitly_wait(self._get_property('implicit_wait'))
 
 
 class ChromeDriver(webdriver.Chrome, WebDriverWaitWrapper):
@@ -59,7 +60,8 @@ class ChromeDriver(webdriver.Chrome, WebDriverWaitWrapper):
         self._config = config
         super().__init__(service=ChromeService(
             ChromeDriverManager().install()),
-            options=self._config_options(webdriver.ChromeOptions, config))
+            options=self._config_options(webdriver.ChromeOptions,
+                        self._get_property('options')))
         self._implicit_wait_from_config()
 
     def toJson(self):
@@ -72,6 +74,9 @@ class ChromeDriver(webdriver.Chrome, WebDriverWaitWrapper):
             'platform': caps['platformName']
         }
 
+    def _get_property(self, prop):
+        return ast.literal_eval(self._config.get('chrome', prop))
+
 
 class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
     """ Custom FirefoxDriver for selenium interactions."""
@@ -79,9 +84,10 @@ class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
         self._config = config
         super().__init__(service=FirefoxService(
             GeckoDriverManager().install()),
-            options=self._config_options(webdriver.FirefoxOptions, config))
+            options=self._config_options(webdriver.FirefoxOptions,
+                            self._get_property('options')))
         self._implicit_wait_from_config()
-        if ('--start-maximized' in config.get('options', [])):
+        if ('--start-maximized' in self._get_property('options')):
             self.maximize_window()
 
     def toJson(self):
@@ -94,6 +100,9 @@ class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
             'platform': caps['platformName']
         }
 
+    def _get_property(self, prop):
+        return ast.literal_eval(self._config.get('firefox', prop))
+
 
 class EdgeDriver(webdriver.Edge, WebDriverWaitWrapper):
     """ Custom EdgeDriver for selenium interactions."""
@@ -101,7 +110,7 @@ class EdgeDriver(webdriver.Edge, WebDriverWaitWrapper):
         self._config = config
         super().__init__(service=EdgeService(
             EdgeChromiumDriverManager().install()),
-            options=self._config_options(webdriver.EdgeOptions, config))
+            options=self._config_options(webdriver.EdgeOptions, self._get_property('options')))
         self._implicit_wait_from_config()
 
     def toJson(self):
@@ -113,3 +122,6 @@ class EdgeDriver(webdriver.Edge, WebDriverWaitWrapper):
             'driver-version': caps['msedge']['msedgedriverVersion'],
             'platform': caps['platformName']
         }
+
+    def _get_property(self, prop):
+        return ast.literal_eval(self._config.get('edge', prop))
