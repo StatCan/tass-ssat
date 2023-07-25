@@ -8,14 +8,14 @@ def convert(path):
     conf_file["Test_runs"] = []
     conf_file["Test_suites"] = []
     conf_file["Test_cases"] = []
-    conf_file["Steps"] = {}
+    conf_file["Steps"] = {} # Will be converted to list later.
     wb = openpyxl.load_workbook(path) # Open conf file.
 
-    test_run = []
-    test_suite = []
-    test_case = []
-    test_steps = []
+    test_run = [] # Holds all test_run worksheet names.
+    test_suite = [] # Holds all test_suite worksheet names.
+    test_case = [] # Holds all test_case worksheet names.
 
+    # Get all worksheet names per type.
     for sheet in wb.sheetnames:
         
         test_type = wb[sheet]['A1'].value
@@ -29,14 +29,13 @@ def convert(path):
         else:
             print('Not a tass Excel template.')
     
+    # Call the different convert methods for each type if they exist.
     if test_run:
         conf_file = convert_test_run(test_run, conf_file, wb)
     if test_suite:
         conf_file = convert_test_suite(test_suite, conf_file, wb)
     if test_case:
         conf_file = convert_test_case(test_case, conf_file, wb)
-##    print("Printing conf file")
-##    print(conf_file)
 
     return conf_file
 
@@ -54,9 +53,12 @@ def convert_test_case(test_case, conf, wb):
             steps["action"] = row[2].value
             steps["parameter"] = row[3].value
 
-            print("Printing tc[steps]")
-            print(tc["steps"])
-            tc["steps"].append(steps["uuid"]) 
+            # Adds the uuid to the corresponding test case list of steps.
+            tc["steps"].append(steps["uuid"])
+            # This block checks to see if a step with the same uuid but 
+            # different values already exists. If it does, the uuid is not 
+            # added to the list of steps and a message is printed.
+            # TODO: add better way of reporting (logger? exception?)
             if row[0].value in conf["Steps"]:
                 if ((conf["Steps"][row[0].value]["uuid"] == steps["uuid"]) 
                     and (conf["Steps"][row[0].value]["title"] == steps["title"])
@@ -67,11 +69,9 @@ def convert_test_case(test_case, conf, wb):
                     print("Different steps with uuid: " + row[0].value)
             else:
                 conf["Steps"][row[0].value] = steps
-
-##        conf["Steps"] = (list(tc["steps"].values()))
-##        tc["steps"] = list(tc["steps"].keys())
+        # Add the list of testcases to the main config file.
         conf["Test_cases"].append(tc)
-
+    # Convert dictionary to list as mentioned in convert(path) above.
     conf["Steps"] = (list(conf["Steps"].values()))
     return conf
 
