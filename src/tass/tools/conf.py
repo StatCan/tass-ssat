@@ -8,7 +8,7 @@ def convert(path):
     conf_file["Test_runs"] = []
     conf_file["Test_suites"] = []
     conf_file["Test_cases"] = []
-    conf_file["Steps"] = []
+    conf_file["Steps"] = {}
     wb = openpyxl.load_workbook(path) # Open conf file.
 
     test_run = []
@@ -29,18 +29,14 @@ def convert(path):
         else:
             print('Not a tass Excel template.')
     
-    print(test_run)
-    print(test_suite)
-    print(test_case)
-
     if test_run:
         conf_file = convert_test_run(test_run, conf_file, wb)
     if test_suite:
         conf_file = convert_test_suite(test_suite, conf_file, wb)
     if test_case:
         conf_file = convert_test_case(test_case, conf_file, wb)
-    print("Printing conf file")
-    print(conf_file)
+##    print("Printing conf file")
+##    print(conf_file)
 
     return conf_file
 
@@ -50,25 +46,33 @@ def convert_test_case(test_case, conf, wb):
         tc = {}
         tc["tc_uuid"] = wb[case]['B1'].value
         tc["title"] = wb[case]['D1'].value
-        tc["steps"] = {}
+        tc["steps"] = []
         for row in wb[case].iter_rows(min_row=3, max_col=4):
             steps = {}
             steps["uuid"] = row[0].value
             steps["title"] = row[1].value
             steps["action"] = row[2].value
             steps["parameter"] = row[3].value
-            if row[0].value in tc["steps"]:
-                if (tc["steps"][row[0].value]["uuid"] == steps["uuid"]) and (tc["steps"][row[0].value]["title"] == steps["title"]) and (tc["steps"][row[0].value]["action"] == steps["action"]) and (tc["steps"][row[0].value]["parameter"] == steps["parameter"]):
+
+            print("Printing tc[steps]")
+            print(tc["steps"])
+            tc["steps"].append(steps["uuid"]) 
+            if row[0].value in conf["Steps"]:
+                if ((conf["Steps"][row[0].value]["uuid"] == steps["uuid"]) 
+                    and (conf["Steps"][row[0].value]["title"] == steps["title"])
+                    and (conf["Steps"][row[0].value]["action"] == steps["action"]) 
+                    and (conf["Steps"][row[0].value]["parameter"] == steps["parameter"])):
                     pass   ## Do nothing
                 else:
                     print("Different steps with uuid: " + row[0].value)
             else:
-                print(steps)
-                tc["steps"][row[0].value] = steps
+                conf["Steps"][row[0].value] = steps
 
-        conf["Steps"] = (list(tc["steps"].values()))
-        tc["steps"] = list(tc["steps"].keys())
+##        conf["Steps"] = (list(tc["steps"].values()))
+##        tc["steps"] = list(tc["steps"].keys())
         conf["Test_cases"].append(tc)
+
+    conf["Steps"] = (list(conf["Steps"].values()))
     return conf
 
 def convert_test_suite(test_suite, conf, wb):

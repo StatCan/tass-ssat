@@ -52,7 +52,8 @@
                 "q2",
                 "q3",
                 "q4",
-                "q5"
+                "q5",
+                "q7"
             ]
         },
         {
@@ -63,7 +64,8 @@
                 "q2",
                 "q3",
                 "q4",
-                "q5"
+                "q5",
+                "q6"
             ]
         },
         {
@@ -74,7 +76,8 @@
                 "q2",
                 "q3",
                 "q4",
-                "q5"
+                "q5",
+                "q6"
             ]
         }
     ],
@@ -108,6 +111,18 @@
             "title": "Click next",
             "action": "selenium, click",
             "parameter": "para5"
+        },
+        {
+            "uuid": "q7",
+            "title": "asdf",
+            "action": "qewr",
+            "parameter": "zxcv"
+        },
+        {
+            "uuid": "q6",
+            "title": "asdf",
+            "action": "asdf",
+            "parameter": "asdf"
         }
     ]
 }
