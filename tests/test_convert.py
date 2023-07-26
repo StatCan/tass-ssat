@@ -2,16 +2,16 @@ import unittest
 from tass.tools import conf
 import json
 
+
 class TestConvert(unittest.TestCase):
     def setUp(self):
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         print("Beginning new test TestCase %s" % self._testMethodName)
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
-
     def test_Convert(self):
         conf_file = conf.convert('tests/data/test_run.xlsx')
-        conf_file = json.dumps(conf_file, indent = 4)
+        conf_file = json.dumps(conf_file, indent=4)
 
         with open(file='tests/data/test_run.json', mode='r') as f:
             conf_file2 = json.load(f)
