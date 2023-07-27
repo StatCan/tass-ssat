@@ -22,6 +22,7 @@ class TassEncoder(json.JSONEncoder):
                 )
 
 
+
 def main(args):
     """
     Starting point for execution of tests.
@@ -44,6 +45,35 @@ def main(args):
     result_path = Path().resolve() / "results" / file_name
     with open(result_path, 'w+', encoding='utf-8') as f:
         json.dump(test, f, indent=4, cls=TassEncoder)
+
+
+def read_file(file):
+    with open(file) as f:
+        _test = json.load(f)
+    steps = _test.get('Steps', [])
+    test_cases = _test.get('Test_cases', [])
+    test_suites = _test.get('Test_suites', [])
+    test_runs = _test.get('Test_runs', [])
+     
+    def read_cases(run):
+        for case in run.get('test_cases', []):
+            _steps = []
+            _case = next(filter(lambda _c: _c['tc_uuid']==case, test_cases))
+            for step in _case.get('steps', []):
+                _steps.append(next(filter(lambda _c: _c['uuid'] == step, steps)))
+            _case['steps'] = _steps
+            _cases.append(_case)
+        run['test_cases'] = _cases
+
+    for run in test_runs:
+        _suites = []
+        _cases = []
+
+        read_cases(run)   
+
+    return test_runs
+        
+
 
 
 if __name__ == '__main__':
