@@ -7,3 +7,4 @@ dependencies:
   - flake8
   - conda-build
   - python-build
+  - openpyxl
