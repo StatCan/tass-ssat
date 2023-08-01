@@ -14,9 +14,10 @@ class TassSuite(TassFile):
 
 class TassRun(TassFile):
 
-    def __init__(self,  path, test_cases, browser, **kwargs):
+    def __init__(self,  path, test_cases, test_suites, browser, **kwargs):
         super().__init__(path, **kwargs)
         self._raw_test_cases = test_cases
+        self._raw_test_suites = test_suites
         self._browser_name = browser
         self._start_time = 'not started'
         self._completed_cases = []
@@ -27,7 +28,7 @@ class TassRun(TassFile):
 
     def toJson(self):
         return {
-            "name": self.name,
+            "name": self.title,
             "uuid": self.uuid,
             "browser": self._browser_name,
             "test_start": self._start_time,

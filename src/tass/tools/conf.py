@@ -20,7 +20,6 @@ def convert(path):
     for sheet in wb.sheetnames:
 
         test_type = wb[sheet]['A1'].value
-
         if test_type == 'tr_uuid:':
             test_run.append(sheet)
         elif test_type == 'ts_uuid:':
@@ -45,15 +44,44 @@ def convert_test_case(test_case, conf, wb):
     conf["Test_cases"] = []
     for case in test_case:
         tc = {}
-        tc["tc_uuid"] = wb[case]['B1'].value
+        tc["uuid"] = wb[case]['B1'].value
         tc["title"] = wb[case]['D1'].value
         tc["steps"] = []
-        for row in wb[case].iter_rows(min_row=3, max_col=4):
+        for row in wb[case].iter_rows(min_row=3, max_col=6):
+            print(row)
             steps = {}
+            parameters = {}
+            row_num = row[0].row
             steps["uuid"] = row[0].value
             steps["title"] = row[1].value
-            steps["action"] = row[2].value
-            steps["parameter"] = row[3].value
+            print(row[2], row[2].value)
+            steps["action"] = row[2].value.split(',', 1)
+            # steps["parameter"] = row[3].value
+
+            # The locator value is split on the comma
+            if (row[3].value is not None):
+                locator = row[3].value.split(',')
+
+                if (len(locator) == 2):
+                    parameters['locator'] = {
+                        'by': locator[0],
+                        'value': locator[1]
+                    }
+                else:
+                    parameters['locator'] = locator[0]
+
+            if (row[4].value is not None):
+                parameters['page'] = row[4].value.split(',', 1)
+
+            if (row[5].value is not None):
+                parameters['action'] = row[5].value.split(',', 1)
+
+            for col in wb[case].iter_cols(min_row=row_num,
+                                          max_row=row_num,
+                                          min_col=7):
+                if (col[0].value is not None):
+                    header = wb[case].cell(2, col[0].column).value
+                    parameters[header] = col[0].value
 
             # Adds the uuid to the corresponding test case list of steps.
             tc["steps"].append(steps["uuid"])
@@ -66,12 +94,13 @@ def convert_test_case(test_case, conf, wb):
                    and (conf["Steps"][row[0].value]["title"] == steps["title"])
                    and (conf["Steps"][row[0].value]["action"] ==
                         steps["action"])
-                   and (conf["Steps"][row[0].value]["parameter"] ==
-                        steps["parameter"])):
+                   and (conf['Steps'][row[0].value]['parameters'] ==
+                        parameters)):
                     pass   # Do nothing
                 else:
                     print("Different steps with uuid: " + row[0].value)
             else:
+                steps['parameters'] = parameters
                 conf["Steps"][row[0].value] = steps
         # Add the list of testcases to the main config file.
         conf["Test_cases"].append(tc)
@@ -104,8 +133,8 @@ def convert_test_run(test_run, conf, wb):
         tr = {}
         tr["uuid"] = wb[run]['B1'].value
         tr["build"] = wb[run]['B2'].value
-        tr["start_time"] = wb[run]['D1'].value
-        tr["end_time"] = wb[run]['D2'].value
+        # tr["start_time"] = wb[run]['D1'].value
+        # tr["end_time"] = wb[run]['D2'].value
         tr["test_cases"] = []
         tr["test_suites"] = []
         for row in wb[run].iter_rows(min_row=3, min_col=2, max_col=2):
