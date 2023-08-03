@@ -88,10 +88,10 @@ def convert_test_case(test_case, conf, wb):
             # This block checks to see if a step with the same uuid but
             # different values already exists. If it does, the uuid is not
             # added to the list of steps and a message is printed.
+            # The title is not checked as it has no bearing on function.
             # TODO: add better way of reporting (logger? exception?)
             if row[0].value in conf["Steps"]:
                 if ((conf["Steps"][row[0].value]["uuid"] == steps["uuid"])
-                   and (conf["Steps"][row[0].value]["title"] == steps["title"])
                    and (conf["Steps"][row[0].value]["action"] ==
                         steps["action"])
                    and (conf['Steps'][row[0].value]['parameters'] ==
