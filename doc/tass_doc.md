@@ -9,10 +9,11 @@ used for a variety of web-based technologies.
 
 ## Installation
 
-TASS can be installed from the github repository, under releases: [[TODO:
-FIND RELEASE URL]]. We do most of the testing and use via miniforge, so we
-recommend using the conda package version of the framework. The pypi
-package should work but does not get the same amount of attention.
+TASS can be installed from the github repository, under [releases]
+(https://github.com/StatCan/tass-ssat/releases). We do most of the testing
+and use via miniforge, so we recommend using the conda package version of
+the framework. The pypi package should work but does not get the same
+amount of attention.
 
 ## Components of TASS
 
@@ -23,8 +24,8 @@ of these components will be explained below.
 
 ### Selenium
 
-Selenium is the framework that allows users to programatically control web
-browsers.
+[Selenium](https://www.selenium.dev) is the framework that allows users to
+programatically control web browsers.
 
 ### JSON Configuration Files
 
@@ -34,11 +35,22 @@ runs.
 ### Excel Configuration File Converter
 
 The Excel configuration file can be converted into the correct JSON files
-with a simple call.
+with a direct call or in a script.
+
+Direct call:
+TODO: Put in info for direct call.
+
+Script:
+```
+from tass.tools import conf
+
+my_file = conf.convert('path/to/excel/file.xlsx')
+```
 
 ## Using TASS
 
-TASS can be used from the commandline directly once installed
+TASS can be used from the commandline directly once installed along with
+proper parameters
 
 `python -m tass`
 
