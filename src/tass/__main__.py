@@ -61,10 +61,12 @@ def read_file(file):
     test_runs = _test.get('Test_runs', [])
 
     def read_cases(run):
+        _cases = []
         for case in run.get('test_cases', []):
             _steps = []
             _case = next(filter(lambda _c: _c['uuid'] == case, test_cases))
             for step in _case.get('steps', []):
+                print(step)
                 _steps.append(next(
                     filter(lambda _c: _c['uuid'] == step, steps)))
             _case['steps'] = _steps
@@ -73,8 +75,6 @@ def read_file(file):
 
     for run in test_runs:
         # _suites = []
-        _cases = []
-
         read_cases(run)
 
     return test_runs
