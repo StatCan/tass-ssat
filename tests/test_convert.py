@@ -10,10 +10,10 @@ class TestConvert(unittest.TestCase):
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
     def test_Convert(self):
-        conf_file = conf.convert('tests/data/test_run.xlsx')
+        conf_file = conf.convert('tests/data/simple_demo.xlsx')
         conf_file = json.dumps(conf_file, indent=4)
 
-        with open(file='tests/data/test_run.json', mode='r') as f:
+        with open(file='tests/data/simple_demo.json', mode='r') as f:
             conf_file2 = json.load(f)
 
         with open(file='tests/data/testfile2.json', mode='w') as f:
