@@ -75,3 +75,7 @@ a comprehensive testing or automation strategy.
 TASS has not been tested within a CI/CD pipeline context. TASS is expected
 to work within these pipelines, but this section of the documentation will
 be updated with more information once we confirm it works.
+
+## Actions
+
+The TASS framework automates browser interactions via actions. 
