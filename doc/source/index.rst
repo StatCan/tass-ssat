@@ -13,6 +13,7 @@ Welcome to TASS-SSAT's documentation!
    BestPractices
    ReleaseProcess
    tass_doc
+   module
 
 Indices and tables
 ==================
