@@ -6,17 +6,33 @@
 TASS-SSAT module documentation
 ==============================
 
+
+TASS Core
+#########
+
 .. automodule:: tass.actions.core
     :members:
+
+Selenium Actions
+################
 
 .. automodule:: tass.actions.selenium
     :members:
 
+Selenium Wait Actions
+#####################
+
 .. automodule:: tass.actions.selenium_wait
     :members:
 
+Browser Driver
+##############
+
 .. automodule:: tass.drivers.browserdriver
     :members:
+
+Supported Browsers
+##################
 
 .. automodule:: tass.drivers.supportedbrowsers
     :members:

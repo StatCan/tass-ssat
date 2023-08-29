@@ -78,4 +78,6 @@ under the License.
 
 ## Documentation
 
-Further documentation can be found in the docs folder.
+Further documentation can be found in the docs folder. The documentation
+can be built using the `sphinx-build -b html source build` from the `doc`
+folder.
