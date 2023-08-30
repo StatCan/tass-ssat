@@ -9,3 +9,4 @@ dependencies:
   - python-build
   - openpyxl
   - sphinx
+  - myst-parser
