@@ -10,8 +10,7 @@ class TestRailAPIClient(APIClient):
             base_url += "index.php?/api/v2/"
         else:
             base_url += "/index.php?/api/v2/"
-        super().__init__(self,
-                         base_url,
+        super().__init__(base_url,
                          auth,
                          ssl_verification_level)
 
@@ -24,7 +23,7 @@ class TestRailAPIClient(APIClient):
     def post(self, endpoint, payload):
         _request = self.start_request(endpoint, method="POST")
         _request.headers['Content-Type'] = 'application/json'
-        _request.data = bytes(json.dumps(payload), 'utf-8')
+        _request.data = bytes(json.dumps(payload or {}), 'utf-8')
         response = self.send_request(_request)
         return response        
 
@@ -35,4 +34,5 @@ class TestRailAPIClient(APIClient):
             _attachment = {'attachment': f}
         _request.files = _attachment
         response = self.send_request(_request)
+        return response
 
