@@ -35,4 +35,3 @@ class TestRailAPIClient(APIClient):
         _request.files = _attachment
         response = self.send_request(_request)
         return response
-
