@@ -1,14 +1,14 @@
 from tass.tools.testrail.items.item import TestRailItem
 from tass.tools.testrail.testrail import check_connection
 
-class Roles(TestRailItem):
+class Templates(TestRailItem):
     def __init__(self, api):
         self._api_client = api
 
-    # Roles
-    # Reference: https://support.testrail.com/hc/en-us/articles/7077853258772-Roles
+    # Templates
+    # Reference: https://support.testrail.com/hc/en-us/articles/7077938165780-Templates
 
     @check_connection
-    def get_roles(self):
-        endpoint = "get_roles"
+    def get_templates(self, project_id):
+        endpoint = f"get_templates/{project_id}"
         self._api_client.get(endpoint)
