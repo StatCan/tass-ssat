@@ -1,81 +1,25 @@
 import openpyxl
 from enum import StrEnum, auto
 
-# TODO: Cycle through excel specs
-# TODO: Parse each element
-# TODO: Separate pages
 
-
-# Element column/entry type
-
-    # Section -> Determines if is a visible page
-        # Col H -> determines if has page number
-    # Block -> Contains logic, meta values or question text. (Ignore?)
-        # Col B -> Type of entry. Logic, or text.
-    # Answer -> Element interaction. Text field, dropdown, radio, etc.
-        # Col B -> Type of element. Text, radio, etc. 
-    # XXXHeader -> Used to create "subsections". Ignore.
-    # Field -> Option in a dropdown, list of radio options, etc.
-    # Roster -> Meta info related to roster system. Ignore.
-    # Page Break -> Denotes the start of a new page
-
-'''
-REQUIREMENTS
-
-    - page break: current page is added to all pages, new empty page is created
-    - hidden flag: if section name contains hidden, it is not a visible page set flag to true
-        - if hidden flag is true, iterate to next page break.
-    - full roster flag: if a new page is started, and the roster row comes after the section row than all roster members are on a single page.
-        - use element value/id and instance value to find 
-    - single roster flag: if a new page is started, and the roster row comes before the section row, each page is instanced for the individual answering.
-        - can use element value/id only 
-
-'''
-
-'''
-PSEUDO CODE
-
-base_page = {eqgs_page}
-all_pages = {base_page}
-current_page = {}
-for row in rows:
-    if (row == section):
-        if (row == hidden):
-            continue to page break
-        else:
-            get section id
-        if (section first):
-            1 person/page
-        elif (roster first):
-            all persons/page
-    elif (row == page break):
-        start new page
-    elif (row == block):
-        if (row.type == question):
-            get question number
-    elif (row == answer):
-        TODO: work out type logic
-    elif (row == field):
-        if (answer type == radio):
-            get value/id
-        elif ()
-'''
-
-def Element(StrEnum):
+class Element(StrEnum):
     SECTION = auto()
     ANSWER = auto()
     ROSTER = auto()
     FIELD = auto()
     BREAK = "pagebreak"
-    END = 'endgroupheader'
+    GROUP = "groupheader"
+    ENDGROUP = 'endgroupheader'
 
-def ElementType(StrEnum):
+class ElementType(StrEnum):
     RADIO = auto()
     RADIOTEXT = auto()
     CHECK = auto()
+    CHECKSPECIFY = auto()
     DROPDOWN = auto()
     INTEGER = auto()
     TEXT = auto()
+    INFO = auto()
 
 
 def convert(path):
@@ -89,23 +33,19 @@ def convert(path):
     if spec_name not in wb.sheetnames:
         return # Throw some exception?
 
+    wb_out = openpyxl.Workbook()
+    specs_out = wb_out.active
+
+    specs_out.append(["Element Type", "ID", "Name", "Rostered"])
+
     specs = wb[spec_name]
 
-    eq_page = {"elements": {
-               "next": {"by": "id", "value": "__btnNext"},
-               "submit": {"by": "id", "value": "__btnSubmit"}
-            }
-    }
-    all_pages = {"eqgs": eq_page}
-    cur_page = {}
-    section_name = ""
+    elements = []
 
-    in_section = False
     hidden = False
-    full_roster = False
 
-    # Controlled by Element.END and page break
     field_type = None
+    radio_group = None
 
     for row in specs.iter_rows(min_row=2):
         if hidden:
@@ -113,26 +53,25 @@ def convert(path):
         else:
 
             row_type = row[0].value.lower()
-            if row_type == Element.BREAK:
-                hidden = False
-                full_roster = False
 
+            if field_type and row_type is not Element.FIELD:
                 field_type = None
 
-                if in_section:
-                    in_section = False
-                    # TODO: Add page to all pages, reset current page
-                    
-            
-            if row_type == Element.SECTION:
+            if row_type == Element.BREAK:
+                hidden = False
+                field_type = None
+                radio_group = None
+                if len(elements) > 0:
+                    for e in elements:
+                        specs_out.append(e)
+
+                    specs_out.append(["pagebreak"])
+                    elements = []
+                
+
+            elif row_type == Element.SECTION:
                 if row[7].value.lower().contains('hidden'):
                     hidden = True
-                else:
-                    section_name = row[2].value
-                    in_section = True
-            elif row_type == Element.ROSTER:
-                if in_section:
-                    full_roster = True
 
             elif row_type == Element.ANSWER:
                 element_type = row[1].value.lower()
@@ -141,13 +80,30 @@ def convert(path):
                         field_type = ElementType.RADIOTEXT
                     case ElementType.RADIO:
                         field_type = ElementType.RADIO
+                        radio_group = row[2].value
                     case ElementType.TEXT | ElementType.INTEGER:
-                        if full_roster:
-                            # TODO:text field with instance
-                            _e = {row[2].value:
-                                f"""//input[contains(@id, 'Instance') 
-                                and @value = {'{}'}]/following-sibling::*
-                                /descendant::input[contains(@name, {row[2].value})]
-                                """}
-                            cur_page.update()
+                        elements.append([ElementType.TEXT, row[2].value])
+                    case ElementType.DROPDOWN:
+                        elements.append([ElementType.DROPDOWN, row[2].value])
+                    case ElementType.CHECK | ElementType.CHECKSPECIFY:
+                        elements.append([ElementType.CHECK, row[2].value])
+                    case ElementType.INFO:
+                        elements.append([ElementType.INFO, row[2].value])
+
+            elif row_type == Element.FIELD:
+                if field_type == ElementType.RADIOTEXT:
+                    elements.append([ElementType.RADIOTEXT, row[5].value])
+
+                elif field_type == ElementType.RADIO:
+                    _id = f"{radio_group},{row[5].value}"
+                    _name = {row[7].value.lower().replace(' ', '-')}
+                    elements.append([ElementType.RADIO, _id, _name])
+
+    if len(elements)>0:
+        for e in elements:
+            specs_out.append(e)
+
+    wb_out.save("pages.xlsx")
+        
+
 
