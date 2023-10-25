@@ -70,7 +70,7 @@ def convert(path):
                 
 
             elif row_type == Element.SECTION:
-                if row[7].value.lower().contains('hidden'):
+                if "hidden" in row[7].value.lower():
                     hidden = True
 
             elif row_type == Element.ANSWER:
