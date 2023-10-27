@@ -5,6 +5,8 @@ class Cases(TestRailItem):
     def __init__(self, api):
         self._api_client = api
 
+    # API endpoint utilities linked to cases
+    
     def case_fields(self):
         return CaseFields(self._api_client)
 

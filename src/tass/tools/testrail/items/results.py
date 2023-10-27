@@ -5,6 +5,11 @@ class Results(TestRailItem):
     def __init__(self, api):
         self._api_client = api
 
+    # API endpoint utilities related to Results
+    
+    def result_fields(self):
+        return ResultFields(self._api_client)
+
     # Results
     # Reference: https://support.testrail.com/hc/en-us/articles/7077819312404-Results
 
