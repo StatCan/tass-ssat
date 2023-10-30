@@ -71,32 +71,32 @@ class Cases(TestRailItem):
         self._api_client.post(endpoint, _delete)
 
 
-    class CaseFields(Cases):
-        def __init__(self, api):
-            self._api_client = api
-    
-        # Case Fields
-        # Reference: https://support.testrail.com/hc/en-us/articles/7077281158164-Case-Fields
+class CaseFields(Cases):
+    def __init__(self, api):
+        self._api_client = api
 
-        @check_connection
-        def get_case_fields(self):
-            endpoint = "get_case_fields"
-            self._api_client.get(endpoint)
+    # Case Fields
+    # Reference: https://support.testrail.com/hc/en-us/articles/7077281158164-Case-Fields
 
-        @check_connection
-        def add_case_field(self, field):
-            endpoint = "add_case_field"
-            self._api_client.post(endpoint, field)
+    @check_connection
+    def get_case_fields(self):
+        endpoint = "get_case_fields"
+        self._api_client.get(endpoint)
+
+    @check_connection
+    def add_case_field(self, field):
+        endpoint = "add_case_field"
+        self._api_client.post(endpoint, field)
 
 
-    class CaseTypes(Cases):
-        def __init__(self, api):
-            self._api_client = api
+class CaseTypes(Cases):
+    def __init__(self, api):
+        self._api_client = api
 
-        # Case Types
-        # Reference: https://support.testrail.com/hc/en-us/articles/7077295487252-Case-Types
+    # Case Types
+    # Reference: https://support.testrail.com/hc/en-us/articles/7077295487252-Case-Types
 
-        @check_connection
-        def get_case_types(self):
-            endpoint = "get_case_types"
-            self._api_client.get(endpoint)
+    @check_connection
+    def get_case_types(self):
+        endpoint = "get_case_types"
+        self._api_client.get(endpoint)

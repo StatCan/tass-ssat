@@ -4,7 +4,6 @@ from tass.tools.testrail.testrail_apiclient import TestRailAPIClient
 
 def check_connection(func):
     def wrapper(api, *args):
-        breakpoint()
         if api._api_client is not None:
             func(api, *args)
         else:
@@ -29,11 +28,11 @@ class TestRail():
         return BDDs(self._api_client)
 
     def cases(self):
-        from tass.tools.testrail.items.attachments import Cases
+        from tass.tools.testrail.items.cases import Cases
         return Cases(self._api_client)
         
     def configurations(self):
-        from tass.tools.testrail.items.attachments import Configurations
+        from tass.tools.testrail.items.configurations import Configurations
         return Configurations(self._api_client)
         
     def groups(self):
@@ -49,11 +48,11 @@ class TestRail():
         return Plans(self._api_client)
         
     def priorities(self):
-        from tass.tools.testrail.items.plans import Priorities
+        from tass.tools.testrail.items.priorities import Priorities
         return Priorities(self._api_client)
         
     def projects(self):
-        from tass.tools.testrail.items.plans import Projects
+        from tass.tools.testrail.items.projects import Projects
         return Projects(self._api_client)
         
     def reports(self):
@@ -97,7 +96,7 @@ class TestRail():
         return Tests(self._api_client)
         
     def users(self):
-        from tass.tools.testrail.items.variables import Users
+        from tass.tools.testrail.items.users import Users
         return Users(self._api_client)
         
     def variables(self):
