@@ -21,6 +21,7 @@ class ElementType(StrEnum):
     TEXT = auto()
     PHONE = auto()
     EMAIL = auto()
+    POSTALNOVAL = "postalcodenoval"
     INFO = auto()
 
 
@@ -85,7 +86,7 @@ def convert(path):
                         print(ElementType.RADIO)
                         field_type = ElementType.RADIO
                         radio_group = row[2].value
-                    case ElementType.TEXT | ElementType.INTEGER | ElementType.PHONE | ElementType.EMAIL:
+                    case ElementType.TEXT | ElementType.INTEGER | ElementType.PHONE | ElementType.EMAIL | ElementType.POSTALNOVAL:
                         elements.append([ElementType.TEXT, row[2].value])
                     case ElementType.DROPDOWN:
                         elements.append([ElementType.DROPDOWN, row[2].value])
