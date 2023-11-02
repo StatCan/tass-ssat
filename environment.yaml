@@ -8,3 +8,5 @@ dependencies:
   - conda-build
   - python-build
   - openpyxl
+  - sphinx
+  - myst-parser
