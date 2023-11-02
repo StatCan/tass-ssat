@@ -21,6 +21,7 @@ class ElementType(StrEnum):
     TEXT = auto()
     PHONE = auto()
     EMAIL = auto()
+    COMMENTBOX = auto()
     POSTALNOVAL = "postalcodenoval"
     INFO = auto()
 
@@ -43,15 +44,26 @@ def convert(path):
     specs_out.append(["pagebreak"])
 
     specs = wb[spec_name]
+    
+    parse_sheet(specs, specs_out)
+    
+    submit_page_name = "Submit Page"
+    if (submit_page_name in wb.sheetnames):
+        specs = wb[submit_page_name]
+        parse_sheet(specs, specs_out)
 
+    wb_out.save("pages.xlsx")
+
+
+def parse_sheet(sheet, specs_out):
+ 
     elements = []
-
     hidden = False
-
+    
     field_type = None
     radio_group = None
 
-    for row in specs.iter_rows(min_row=2):
+    for row in sheet.iter_rows(min_row=2):
         row_type = row[0].value.lower()
         if row_type == Element.BREAK:
             hidden = False
@@ -86,7 +98,7 @@ def convert(path):
                         print(ElementType.RADIO)
                         field_type = ElementType.RADIO
                         radio_group = row[2].value
-                    case ElementType.TEXT | ElementType.INTEGER | ElementType.PHONE | ElementType.EMAIL | ElementType.POSTALNOVAL:
+                    case ElementType.TEXT | ElementType.INTEGER | ElementType.PHONE | ElementType.EMAIL | ElementType.POSTALNOVAL | ElementType.COMMENTBOX:
                         elements.append([ElementType.TEXT, row[2].value])
                     case ElementType.DROPDOWN:
                         elements.append([ElementType.DROPDOWN, row[2].value])
@@ -105,12 +117,9 @@ def convert(path):
                     _id = f"{radio_group},{row[5].value}"
                     _name = row[7].value.lower().replace(' ', '-')
                     elements.append([ElementType.RADIO, _id, _name])
-
+                    
     if len(elements)>0:
         for e in elements:
             specs_out.append(e)
-
-    wb_out.save("pages.xlsx")
-        
 
 
