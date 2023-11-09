@@ -37,13 +37,13 @@ def convert_to_excel(specs_path):
 
     spec_name = "Capture Specifications"
     if spec_name not in wb.sheetnames:
-        return  # Throw some exception?
+        return  "Specs not found"  # Throw some exception?
 
     wb_out = openpyxl.Workbook()
     specs_out = wb_out.active
     specs_out.title = "Pages"
 
-    specs_out.append(["Element Type", "ID", "Rostered"])
+    specs_out.append(["Element Type", "ID", "Rostered", "Title", "URL"])
     specs_out.append(["pagebreak"])
 
     specs = wb[spec_name]
@@ -145,7 +145,7 @@ def convert_to_json(pages_path):
     pages = {}
     page = {}
     elements = {}
-    
+    page_number = 0
     def parse_radio(id, val, rostered):
         if rostered:
             return f'//input[contains(@name, ".Instance") and @value={{}}]/following-sibling::*/descendant::input[contains(@name, ".{id}") and @value={val}]'
@@ -176,7 +176,7 @@ def convert_to_json(pages_path):
         else:
             return f'//input[@name="{id}"]'
     
-    for row in ws.iter_rows(min_row=2, max_col=3):
+    for row in ws.iter_rows(min_row=2, max_col=5):
         row_type = row[0].value
         element_id = row[1].value
         rostered = row[2].value
@@ -184,20 +184,36 @@ def convert_to_json(pages_path):
             # TODO: start new page, add existing page to pages
             # TODO: add page identity to page using id
             if not page and not elements:
-                continue
+
+                if row[1].value:
+                    page_number = row[1].value
+                else:
+                    page_number += 1
+                
+            else:
+                page["elements"] = elements
+                pages[f"p{page_number}"] = page
+                
+                page = {}
+                elements= {}
+                
+            page['title'] = row[3].value
+            page['url'] = row[4].value
+            page['page_id'] = {"method": "element", "identifier": {"by": "xpath", "value": f"//*[@id='__pageId' and @value='p{page_number}']"}}
             
-        elif row_type == "info":
+        elif row_type == ElementType.INFO:
             # TODO: XPATH for info fields
-        elif row_type == "check":
-            elements[element_id] = parse_check(element_id, rostered)
-        elif row_type == "radio":
+        elif row_type == ElementType.CHECK:
+            elements[element_id] = {"by": "xpath", "value": parse_check(element_id, rostered)}
+        elif row_type == ElementType.RADIO:
             _id, _val = element_id.split("-")
-            elements[element_id] = parse_radio(_id, _val, rostered)
-        elif row_type == "radiotext":
-            elements[element_id] = parse_radiotext(element_id, rostered)
-        elif row_type == "text":
-            elements[element_id] = parse_text(element_id, rostered)
-        elif row_type == "dropdown":
-            elements[element_id] = parse_dropdown(element_id, rostered)
+            elements[element_id] = {"by": "xpath", "value": parse_radio(_id, _val, rostered)}
+        elif row_type == ElementType.RADIOTEXT:
+            elements[element_id] = {"by": "xpath", "value": parse_radiotext(element_id, rostered)}
+        elif row_type == ElementType.TEXT:
+            elements[element_id] = {"by": "xpath", "value": parse_text(element_id, rostered)}
+        elif row_type == ElementType.DROPDOWN:
+            elements[element_id] = {"by": "xpath", "value": parse_dropdown(element_id, rostered)}
         else:
+            continue
             # TODO: Fallback condition. Error?
