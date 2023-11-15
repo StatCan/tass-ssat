@@ -1,4 +1,5 @@
 import openpyxl
+import json
 from pathlib import Path
 from enum import StrEnum, auto
 
@@ -128,24 +129,31 @@ def convert_to_excel(specs_path):
 
     wb_out.save("pages.xlsx")
     
-    return str(Path("specs.xlsx").resolve())
+    return str(Path("pages.xlsx").resolve())
 
 
-def convert_to_json(pages_path):
+def convert_to_json(pages_path, project_name):
     """ 
     Convert the results of convert to framework json format
     """
     
     wb = openpyxl.load_workbook(pages_path)
     
-    if ("Pages" in wb.sheetnames):
-        return  # TODO: Throw exception??
+    if ("Pages" not in wb.sheetnames):
+        return  "Pages sheet not found" # TODO: Throw exception??
     ws = wb["Pages"]
     
     pages = {}
     page = {}
     elements = {}
     page_number = 0
+    
+    def parse_info(id, rostered):
+        if rostered:
+            return f'//input[contains(@name, ".Instance") and @value={{}}]/following-sibling::*/descendant::div[contains(@id, "{id}")]'
+        else:
+            return f'//div[contains(@id, "{id}")]/ul/li[{{}}]'
+    
     def parse_radio(id, val, rostered):
         if rostered:
             return f'//input[contains(@name, ".Instance") and @value={{}}]/following-sibling::*/descendant::input[contains(@name, ".{id}") and @value={val}]'
@@ -177,18 +185,16 @@ def convert_to_json(pages_path):
             return f'//input[@name="{id}"]'
     
     for row in ws.iter_rows(min_row=2, max_col=5):
+        print("This is the row:", row)
         row_type = row[0].value
         element_id = row[1].value
         rostered = row[2].value
-        if row_type == 'pagebreak':
-            # TODO: start new page, add existing page to pages
-            # TODO: add page identity to page using id
+        if row_type == Element.BREAK:
+            print("Page Number:", page_number)
             if not page and not elements:
 
                 if row[1].value:
                     page_number = row[1].value
-                else:
-                    page_number += 1
                 
             else:
                 page["elements"] = elements
@@ -197,12 +203,14 @@ def convert_to_json(pages_path):
                 page = {}
                 elements= {}
                 
+                page_number += 1
+                
             page['title'] = row[3].value
             page['url'] = row[4].value
             page['page_id'] = {"method": "element", "identifier": {"by": "xpath", "value": f"//*[@id='__pageId' and @value='p{page_number}']"}}
             
         elif row_type == ElementType.INFO:
-            # TODO: XPATH for info fields
+            elements[element_id] = {"by": "xpath", "value": parse_info(element_id, rostered)}
         elif row_type == ElementType.CHECK:
             elements[element_id] = {"by": "xpath", "value": parse_check(element_id, rostered)}
         elif row_type == ElementType.RADIO:
@@ -217,3 +225,6 @@ def convert_to_json(pages_path):
         else:
             continue
             # TODO: Fallback condition. Error?
+            
+    with open(f'{project_name}.json', 'w', encoding='UTF-8') as out:
+        json.dump(pages, out, indent=4)
