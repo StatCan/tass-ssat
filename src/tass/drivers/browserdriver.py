@@ -6,10 +6,15 @@ from selenium.webdriver.firefox.service import Service as FirefoxService
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.edge.service import Service as EdgeService
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
+from webdriver_manager.core.driver_cache import DriverCacheManager
 
 
 def newDriver(browser, config):
     return browser(config)
+    
+
+def _driver_cache():
+    return DriverCacheManager(valid_range=3)
 
 
 class WebDriverWaitWrapper():
@@ -42,8 +47,12 @@ class WebDriverWaitWrapper():
 
     def _config_options(self, browser_options, config):
         options_obj = browser_options()
-        for opt in config.get('options', []):
-            options_obj.add_argument(opt)
+        # TODO: Add some default/checks in case of missing configs
+        options = config["options"]
+        for args in options.get('arguments', []):
+            options_obj.add_argument(args)
+        for prefs in options.get('preferences', []):
+            options_obj.set_preference(prefs[0], prefs[1])
         return options_obj
 
     def _implicit_wait_from_config(self):
@@ -57,9 +66,7 @@ class ChromeDriver(webdriver.Chrome, WebDriverWaitWrapper):
     """ Custom ChromeDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
-        super().__init__(service=ChromeService(
-            ChromeDriverManager().install()),
-            options=self._config_options(webdriver.ChromeOptions, config))
+        super().__init__(options=self._config_options(webdriver.ChromeOptions, config))
         self._implicit_wait_from_config()
 
     def toJson(self):
@@ -77,9 +84,7 @@ class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
     """ Custom FirefoxDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
-        super().__init__(service=FirefoxService(
-            GeckoDriverManager().install()),
-            options=self._config_options(webdriver.FirefoxOptions, config))
+        super().__init__(options=self._config_options(webdriver.FirefoxOptions, config))
         self._implicit_wait_from_config()
         if ('--start-maximized' in config.get('options', [])):
             self.maximize_window()
@@ -99,9 +104,7 @@ class EdgeDriver(webdriver.Edge, WebDriverWaitWrapper):
     """ Custom EdgeDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
-        super().__init__(service=EdgeService(
-            EdgeChromiumDriverManager().install()),
-            options=self._config_options(webdriver.EdgeOptions, config))
+        super().__init__(options=self._config_options(webdriver.EdgeOptions, config))
         self._implicit_wait_from_config()
 
     def toJson(self):

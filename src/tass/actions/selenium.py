@@ -6,19 +6,24 @@ from tass.exceptions.assertion_errors import TassHardAssertionError
 from tass.exceptions.assertion_errors import TassSoftAssertionError
 
 
-def locate(page, locator):
+def locate(page, locator, locator_args):
     print(locator)
     if (isinstance(locator, str)):
-        return PageReader().get_element(*page, locator)
+        _loc = PageReader().get_element(*page, locator)
     elif isinstance(locator, dict):
-        return locator
+        _loc = locator
     else:
         msg = "Locator type not supported. Type: {}".format(type(locator))
         raise TypeError(msg)
+        
+    if locator_args:
+        _loc['value'] = _loc['value'].format(*locator_args)
+        
+    return _loc
 
 
-def _find_element(driver, locator, page=None):
-    return driver.find_element(**locate(page, locator))
+def _find_element(driver, locator, locator_args=None, page=None):
+    return driver.find_element(**locate(page, locator, locator_args))
 
 
 def _is_displayed(driver, find=_find_element, **kwargs):

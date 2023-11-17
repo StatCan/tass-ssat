@@ -14,10 +14,13 @@ from selenium.webdriver.support.select import Select
 class TestSelenium(unittest.TestCase):
 
     config = {
-            "implicit_wait": 5,
-            "explicit_wait": 10,
-            "options": ["--start-maximized", "--headless"]
-            }
+		"implicit_wait":5,
+		"explicit_wait":10,
+		"options": {
+			"arguments": ["--start-maximized", "--headless"],
+			"preferences": []
+		}
+	}
 
     test_page_url = 'tests/pages/page1.html'
 
@@ -529,3 +532,13 @@ class TestSelenium(unittest.TestCase):
                 self.assertEqual(driver.title, pageOne)
 
             driver.quit()
+            
+    def test_SeleniumLocateFormated(self):
+        locator = {"by": "xpath", "value": "//testing/{}/{}/{}"}
+        args = ["locator", "formatting", "implementation"]
+        expected = "//testing/locator/formatting/implementation"
+        
+        loc_out = selenium.locate(None, locator, args)
+        
+        self.assertEqual(loc_out['value'], expected)
+        

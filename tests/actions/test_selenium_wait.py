@@ -10,10 +10,13 @@ import selenium.webdriver.support.expected_conditions as EC
 class TestSeleniumWait(unittest.TestCase):
 
     config = {
-            "implicit_wait": 5,
-            "explicit_wait": 10,
-            "options": ["--start-maximized"]
-            }
+		"implicit_wait":5,
+		"explicit_wait":10,
+		"options": {
+			"arguments": ["--start-maximized", "--headless"],
+			"preferences": []
+		}
+	}
 
     test_page_url = 'tests/pages/page1.html'
 
