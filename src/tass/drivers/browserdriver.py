@@ -1,20 +1,11 @@
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.firefox.service import Service as FirefoxService
-from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.edge.service import Service as EdgeService
-from webdriver_manager.microsoft import EdgeChromiumDriverManager
-from webdriver_manager.core.driver_cache import DriverCacheManager
-
 
 def newDriver(browser, config):
     return browser(config)
-    
-
-def _driver_cache():
-    return DriverCacheManager(valid_range=3)
 
 
 class WebDriverWaitWrapper():
