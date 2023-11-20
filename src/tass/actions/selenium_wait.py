@@ -3,7 +3,9 @@ from tass.actions.selenium import locate
 from tass.actions.actions import action as act
 
 
-def wait_element_clickable(driver, locator, locator_args=None, action=None, **kwargs):
+def wait_element_clickable(driver, locator,
+                           locator_args=None,
+                           action=None, **kwargs):
     """Wait until element is visible and enabled.
 
     Execute the specified action after waiting for the element
@@ -42,7 +44,9 @@ def wait_element_clickable(driver, locator, locator_args=None, action=None, **kw
     print('*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*')
 
 
-def wait_element_visible(driver, locator, locator_args=None, action=None, **kwargs):
+def wait_element_visible(driver, locator,
+                         locator_args=None,
+                         action=None, **kwargs):
     """Wait until element is visible.
 
     Execute the specified action after waiting for the element

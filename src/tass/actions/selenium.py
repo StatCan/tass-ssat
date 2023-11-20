@@ -15,10 +15,10 @@ def locate(page, locator, locator_args):
     else:
         msg = "Locator type not supported. Type: {}".format(type(locator))
         raise TypeError(msg)
-        
+
     if locator_args:
         _loc['value'] = _loc['value'].format(*locator_args)
-        
+
     return _loc
 
 
