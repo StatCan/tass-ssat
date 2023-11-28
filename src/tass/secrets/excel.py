@@ -6,8 +6,8 @@ from collections import namedtuple
 
 class Excel(secrets.DataSource):
 
-    def __init__(self, config):
-        super().__init__(config)
+    def __init__(self, config_path, config):
+        super().__init__(config_path, config)
     
 
     def _load_datasource(self, config):

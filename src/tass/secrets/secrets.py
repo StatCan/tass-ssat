@@ -4,18 +4,27 @@ from pathlib import Path
 
 class DataSource():
 
-    def __init__(self, config_path):
-        __path = Path(config_path).resolve()
-        self._config_path = __path
-        with open(__path) as conf:
-            config = json.load(conf)
+    def __init__(self, config_path, config):
+        _source = config['source']
+
+        self._name = _source['name']
+        self._config_path = config_path
         self._load_datasource(config)
+        self._load_saved_filters(config)
 
     def _load_datasource(self, config):
         raise NotImplementedError("Please implement this function.")
 
     def from_collection(self, collection):
         return self._collections[collection]
+    
+    def _load_saved_filters(self, config):
+        filters = config.get('saved-filters', [])
+        self._filters = {}
+        for s_filter in filters:
+            self._filters[s_filter['name']] = s_filter['filter']
+             
+            
         
     
 class Collection():

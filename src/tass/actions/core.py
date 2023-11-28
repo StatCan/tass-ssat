@@ -1,4 +1,5 @@
 from tass.core.valuestore import ValueStore
+from tass.core.secrets import Secrets
 
 
 def store_value(key, value):
@@ -38,3 +39,13 @@ def read_value(key):
         return store.get_data(key)
     else:
         return None
+
+def store_secret_value(key, value_key, stored_filter=None, **secret):
+    store = ValueStore()
+    secrets = Secrets()
+        
+    data = secrets.get_data_entry(**secret)
+
+    store.add_to_dict(key, data.get(value_key))
+
+    
