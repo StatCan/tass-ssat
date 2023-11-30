@@ -11,8 +11,12 @@ class DataSource():
         self._config_path = config_path
         self._load_datasource(config)
         self._load_saved_filters(config)
+        self._changed = False
 
     def _load_datasource(self, config):
+        raise NotImplementedError("Please implement this function.")
+
+    def save_changes(self):
         raise NotImplementedError("Please implement this function.")
 
     def from_collection(self, collection):
@@ -23,13 +27,26 @@ class DataSource():
         self._filters = {}
         for s_filter in filters:
             self._filters[s_filter['name']] = s_filter['filter']
+    
+    def update(self):
+        self._changed = True
+
+    @property
+    def filters(self):
+        return self._filters
              
             
         
     
 class Collection():
-    def __init__(self, *args, **kwargs):
+    def __init__(self, parent, *args, **kwargs):
         self._entries = self._load_entries(*args, **kwargs)
+        self._parent = parent
+        self._changed = False
+
+    def update(self):
+        self._changed = True
+        self._parent.update()
         
     def _load_entries(self, *args, **kwargs):
         raise NotImplementedError("Please implement this function.")
@@ -57,8 +74,20 @@ class Collection():
 
 
 class Entry():
-    def __init__(self, data):
+    def __init__(self, parent, data):
         self._data = data
+        self._parent = parent
+        self._changed = False
 
     def get(self, key):
         return self._data[key]
+
+    def update(self, key, new_value):
+        if key in self._data:
+            self._data[key] = new_value
+            self._changed = True
+            self._parent.update()
+
+    @property
+    def changed(self):
+        return self._changed

@@ -11,7 +11,7 @@ class Excel(secrets.DataSource):
     
 
     def _load_datasource(self, config):
-        _source_path = Path(config['source']['path']).resolve()
+        self._source_path = Path(config['source']['path']).resolve()
         _source = config['source']
         _all_collections = config['collections']
 
@@ -19,7 +19,7 @@ class Excel(secrets.DataSource):
 
 
         self._collections = self._load_collections(
-                                openpyxl.load_workbook(_source_path),
+                                openpyxl.load_workbook(self._source_path),
                                 _collections, config['entry-sets'])
         
         
@@ -29,18 +29,36 @@ class Excel(secrets.DataSource):
             _name = coll['name']
             _entry_set = [se for se in entry_sets if se['name'] == coll['entry-set']][0]
             _wsheet = source[_name]
-            _loaded[_name] = Excel.Sheet(_wsheet, _entry_set)
+            _loaded[_name] = Excel.Sheet(self, _wsheet, _entry_set)
         return _loaded
+
+    def save_changes(self):
+        if not self._changed:
+                return
+        wb = openpyxl.load_workbook(self._source_path)
+        for collection in self._collections.values():
+            if not collection._changed:
+                continue
+            ws = wb[collection._name]
+            for entry in collection._entries.values():
+                if entry.changed:
+                    row = entry.get('row')
+                    for column in collection._columns:
+                        col = column.column + 1
+                        cell = ws.cell(row=row, column=col)
+                        cell.value = entry.get(column.name)
+        
+        wb.save(self._source_path)
+
             
         
 
     class Sheet(secrets.Collection):
-        def __init__(self, collection, entry_set):
-            super().__init__(collection=collection, entry_set=entry_set)
+        def __init__(self, parent, collection, entry_set):
+            super().__init__(parent, collection=collection, entry_set=entry_set)
             
 
         def _load_entries(self, collection, entry_set):
-            breakpoint()
             self._columns = []
             self._name = collection.title
             _key = entry_set['key']
@@ -56,11 +74,11 @@ class Excel(secrets.DataSource):
                 entry = {"row": index}
                 for col in self._columns:
                     entry[col.name] = row[col.column].value
-                _entries[entry[_key]] = Excel.Row(entry)
+                _entries[entry[_key]] = Excel.Row(self, entry)
             
             return _entries
             
 
     class Row(secrets.Entry):
-        def __init__(self, data):
-            super().__init__(data)
+        def __init__(self, sheet, data):
+            super().__init__(sheet, data)

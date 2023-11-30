@@ -40,11 +40,35 @@ def read_value(key):
     else:
         return None
 
+def add_data_source(config_path):
+    secrets = Secrets()
+
+    secrets.add_source(config_path)
+
+def update_data_entry(key, new_value, stored_filter=None, **secret):
+    secrets = Secrets()
+    if (stored_filter):
+        _filter = secrets.get_data_source(stored_filter[0]).filters[stored_filter[1]]
+    else:
+        _filter = secret
+    entry = secrets.get_data_entry(**_filter)
+
+    secrets.update_data_entry(entry, key, new_value)
+
+def save_data_source(source):
+    secrets = Secrets()
+    secrets.save_source_changes(source)
+
+
 def store_secret_value(key, value_key, stored_filter=None, **secret):
     store = ValueStore()
     secrets = Secrets()
-        
-    data = secrets.get_data_entry(**secret)
+    
+    if (stored_filter):
+        _filter = secrets.get_data_source(stored_filter[0]).filters[stored_filter[1]]
+    else:
+        _filter = secret
+    data = secrets.get_data_entry(**_filter)
 
     store.add_to_dict(key, data.get(value_key))
 

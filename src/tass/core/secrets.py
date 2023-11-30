@@ -36,6 +36,18 @@ class Secrets(metaclass=Singleton):
     def get_data_entry(self, source, collection, **selection):
         return self.get_data_collection(source, collection).select(**selection)
 
+    def update_data_entry(self, entries, key, new_value):
+        if isinstance(entries, list):
+            for entry in entries:
+                entry.update(key, new_value)
+        else:
+            entries.update(key, new_value)
+        return entries
+
+    def save_source_changes(self, source):
+        s = self.get_data_source(source)
+        s.save_changes()
+
     def contains(self, key):
         return key in self._data_sources
 
