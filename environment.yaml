@@ -3,7 +3,6 @@ dependencies:
   - python=3.11
   - jsonschema
   - selenium>=4.7.2
-  - webdriver-manager=3.8.6
   - flake8
   - conda-build
   - python-build
