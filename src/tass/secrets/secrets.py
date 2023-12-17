@@ -51,6 +51,10 @@ class Collection():
     def _load_entries(self, *args, **kwargs):
         raise NotImplementedError("Please implement this function.")
 
+    @property
+    def entries(self):
+        return self._entries
+
     def select(self, where='key', comparison=None, value='', count=1):
         if where == 'key':
             return self._entries[value]
@@ -70,6 +74,9 @@ class Collection():
                         return entry
                     else:
                         matches.append(entry)
+                        if len(matches) == count:
+                            break
+            return matches
 
 
 
@@ -81,6 +88,9 @@ class Entry():
 
     def get(self, key):
         return self._data[key]
+
+    def has(self, key):
+        return key in self._data
 
     def update(self, key, new_value):
         if key in self._data:

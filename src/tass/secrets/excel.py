@@ -77,6 +77,10 @@ class Excel(secrets.DataSource):
                 _entries[entry[_key]] = Excel.Row(self, entry)
             
             return _entries
+
+        @property
+        def columns(self):
+            return self._columns
             
 
     class Row(secrets.Entry):

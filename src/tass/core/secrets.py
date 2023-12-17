@@ -27,7 +27,7 @@ class Secrets(metaclass=Singleton):
         self._data_sources[key] = source
 
     def get_data_source(self, source):
-        return self._data_sources[source]
+        return self._data_sources.get(source, None)
 
     def get_data_collection(self, source, collection):
         return self.get_data_source(source)\
