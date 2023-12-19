@@ -1,7 +1,3 @@
-import json
-from pathlib import Path
-
-
 class DataSource():
 
     def __init__(self, config_path, config):
@@ -21,23 +17,21 @@ class DataSource():
 
     def from_collection(self, collection):
         return self._collections[collection]
-    
+
     def _load_saved_filters(self, config):
         filters = config.get('saved-filters', [])
         self._filters = {}
         for s_filter in filters:
             self._filters[s_filter['name']] = s_filter['filter']
-    
+
     def update(self):
         self._changed = True
 
     @property
     def filters(self):
         return self._filters
-             
-            
-        
-    
+
+
 class Collection():
     def __init__(self, parent, *args, **kwargs):
         self._entries = self._load_entries(*args, **kwargs)
@@ -47,7 +41,7 @@ class Collection():
     def update(self):
         self._changed = True
         self._parent.update()
-        
+
     def _load_entries(self, *args, **kwargs):
         raise NotImplementedError("Please implement this function.")
 
@@ -66,7 +60,7 @@ class Collection():
             matches = []
             match comparison:
                 case 'equals' | 'e':
-                    compare = equals 
+                    compare = equals
 
             for key, entry in self._entries.items():
                 if compare(entry.get(where), value):
@@ -77,7 +71,6 @@ class Collection():
                         if len(matches) == count:
                             break
             return matches
-
 
 
 class Entry():

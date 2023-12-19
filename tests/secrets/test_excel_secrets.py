@@ -3,6 +3,7 @@ from tass.core.secrets import Secrets
 from tass.core.singleton import Singleton
 import tass.secrets.excel as excel
 
+
 class TestExcelSecrets(unittest.TestCase):
     def setUp(self):
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
@@ -15,7 +16,9 @@ class TestExcelSecrets(unittest.TestCase):
         Secrets().add_source(file)
 
         self.assertTrue(Singleton.exists(Secrets))
-        self.assertIsInstance(Secrets().get_data_source('excel-test'), excel.Excel)
+        self.assertIsInstance(
+            Secrets().get_data_source('excel-test'),
+            excel.Excel)
 
     def test_sheets(self):
         file = 'tests/data/excel_secrets_demo.json'
@@ -32,10 +35,14 @@ class TestExcelSecrets(unittest.TestCase):
     def test_entries(self):
         file = 'tests/data/excel_secrets_demo.json'
         Secrets().add_source(file)
-        excel  = Secrets().get_data_collection('excel-test', 'CollectionB')
+        excel = Secrets().get_data_collection('excel-test', 'CollectionB')
 
-        self.assertTrue(all(map((lambda e : e.has('Test') and e.has('Sample') and e.has('Third')), excel.entries.values())))
-        self.assertTrue(all(map((lambda e : e[0] == e[1].get('Sample')), excel.entries.items())))
+        self.assertTrue(all(map((lambda e: e.has('Test') and
+                                e.has('Sample') and
+                                e.has('Third')),
+                            excel.entries.values())))
+        self.assertTrue(all(map((lambda e: e[0] == e[1].get('Sample')),
+                            excel.entries.items())))
 
     def test_select_key(self):
         file = 'tests/data/excel_secrets_demo.json'
@@ -51,14 +58,12 @@ class TestExcelSecrets(unittest.TestCase):
         excel = Secrets().get_data_collection('excel-test', 'CollectionB')
 
         entry = excel.select(where='Sample', comparison='e', value='c')
-        entry2 = excel.select(where='Third', comparison='e', value='X', count=4)
+        entry2 = excel.select(where='Third', comparison='e',
+                              value='X', count=4)
 
         self.assertEqual(entry.get('Test'), 1002)
         self.assertEqual(len(entry2), 4)
-        self.assertTrue(all(map((lambda e: e.get('Third')=='X'), entry2)))
-
+        self.assertTrue(all(map((lambda e: e.get('Third') == 'X'), entry2)))
 
     def tearDown(self):
         Singleton.reset(Secrets)
-
-    

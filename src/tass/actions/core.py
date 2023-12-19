@@ -40,6 +40,7 @@ def read_value(key):
     else:
         return None
 
+
 def add_data_source(config_path):
     """Add a new data source from a configuration file.
 
@@ -50,11 +51,11 @@ def add_data_source(config_path):
         config_path:
             The file path to the json format
             configuration for the new data source.
-            
     """
     secrets = Secrets()
 
     secrets.add_source(config_path)
+
 
 def update_data_entry(key, new_value, stored_filter=None, **secret):
     """Update an existing data entry in memory.
@@ -80,12 +81,14 @@ def update_data_entry(key, new_value, stored_filter=None, **secret):
     """
     secrets = Secrets()
     if (stored_filter):
-        _filter = secrets.get_data_source(stored_filter[0]).filters[stored_filter[1]]
+        _filter = secrets.get_data_source(
+            stored_filter[0]).filters[stored_filter[1]]
     else:
         _filter = secret
     entry = secrets.get_data_entry(**_filter)
 
     secrets.update_data_entry(entry, key, new_value)
+
 
 def save_data_source(source):
     """Save the specified source to file.
@@ -104,7 +107,7 @@ def store_secret_value(key, value_key, stored_filter=None, **secret):
 
     Get a value from an entry and store it using
     ValueStore. The filter used must return exactly
-    1 entry. 
+    1 entry.
 
     Args:
         key:
@@ -125,15 +128,15 @@ def store_secret_value(key, value_key, stored_filter=None, **secret):
     """
     store = ValueStore()
     secrets = Secrets()
-    
+
     if (stored_filter):
-        _filter = secrets.get_data_source(stored_filter[0]).filters[stored_filter[1]]
+        _filter = secrets.get_data_source(
+            stored_filter[0]).filters[stored_filter[1]]
     else:
         _filter = secret
     data = secrets.get_data_entry(**_filter)
 
     if isinstance(data, list) and data.len() > 1:
-        raise TypeError("Can only store data from a single entry. Filter must have count of 1.")
+        raise TypeError("""Can only store data from a single entry.
+        Filter must have count of 1.""")
     store.add_to_dict(key, data.get(value_key))
-
-    

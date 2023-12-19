@@ -9,6 +9,7 @@ def _secret_type(secret_type):
         case 'excel':
             return Excel
 
+
 class Secrets(metaclass=Singleton):
     def __init__(self):
         self._data_sources = {}

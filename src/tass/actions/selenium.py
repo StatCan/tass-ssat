@@ -98,6 +98,7 @@ def write(driver, find=_find_element, text='', **kwargs):
         print("Exception: ", e, " trying again")
         find(driver, **kwargs).send_keys(text)
 
+
 def write_stored_value(driver, find=_find_element, text_key='', **kwargs):
     """Send a stored string to an element in the DOM
 
@@ -125,6 +126,7 @@ def write_stored_value(driver, find=_find_element, text_key='', **kwargs):
     from tass.actions.core import read_value
     text = read_value(text_key)
     write(driver, find=find, text=text, **kwargs)
+
 
 def select_dropdown(driver, value, using, find=_find_element, **kwargs):
     """Select an option from a dropdown using text, value, or index in the DOM
