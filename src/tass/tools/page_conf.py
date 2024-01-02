@@ -25,6 +25,7 @@ class ElementType(StrEnum):
     PHONE = auto()
     EMAIL = auto()
     COMMENTBOX = auto()
+    CURRENCY = auto()
     POSTALNOVAL = "postalcodenoval"
     INFO = auto()
 
@@ -96,6 +97,7 @@ def convert_to_excel(specs_path):
                                 ElementType.INTEGER |
                                 ElementType.PHONE |
                                 ElementType.EMAIL |
+                                ElementType.CURRENCY |
                                 ElementType.POSTALNOVAL |
                                 ElementType.COMMENTBOX):
                             ele.append([ElementType.TEXT, row[2].value])
@@ -188,13 +190,15 @@ def convert_to_json(pages_path, project_name):
         print("This is the row:", row)
         row_type = row[0].value
         element_id = row[1].value
-        rostered = row[2].value
+        rostered = row[2].value and row[2].value == 1
         if row_type == Element.BREAK:
             print("Page Number:", page_number)
             if not page and not elements:
 
                 if row[1].value:
                     page_number = row[1].value
+                else:
+                    page_number += 1
                 
             else:
                 page["elements"] = elements
@@ -204,9 +208,11 @@ def convert_to_json(pages_path, project_name):
                 elements= {}
                 
                 page_number += 1
-                
-            page['title'] = row[3].value
-            page['url'] = row[4].value
+            
+            if (row[3].value and row[3].value != ''):
+                page['title'] = row[3].value
+            if (row[4].value and row[4].value != ''):
+                page['url'] = row[4].value
             page['page_id'] = {"method": "element", "identifier": {"by": "xpath", "value": f"//*[@id='__pageId' and @value='p{page_number}']"}}
             
         elif row_type == ElementType.INFO:
