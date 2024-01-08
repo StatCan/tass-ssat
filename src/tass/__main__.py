@@ -33,7 +33,7 @@ def main(args):
         j_runs = read_file(file)
     runs = []
     for run in j_runs:
-        test = TassRun(args.file, browser=args.browser, **run)
+        test = TassRun(args.file, browser=args.browser.lower(), **run)
 
         for case in test.collect():
             # collect test cases from file

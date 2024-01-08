@@ -36,9 +36,9 @@ class PageReader(metaclass=Singleton):
             print('One or more keys not found. Falling back to default')
             return default
 
-    def get_url(self, file_key, page_key, default=None):
+    def get_url(self, file_key, page_key, url_key='url', default=None):
         try:
-            return self._page(file_key, page_key).get('url', default)
+            return self._page(file_key, page_key).get(url_key, default)
         except KeyError:
             print('One or more keys not found. Falling back to default')
             return default
