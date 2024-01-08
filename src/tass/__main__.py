@@ -33,7 +33,7 @@ def main(args):
         j_runs = read_file(file)
     runs = []
     for run in j_runs:
-        test = TassRun(args.file, browser=args.browser.lower(), **run)
+        test = TassRun(args.file, browser=args.browser, **run)
 
         for case in test.collect():
             # collect test cases from file
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--file',
                         action='store', required=True)
-    parser.add_argument('--browser',
+    parser.add_argument('--browser', type=str.lower,
                         action='store', required=True)
 
     main(parser.parse_args())
