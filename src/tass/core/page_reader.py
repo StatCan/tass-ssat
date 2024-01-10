@@ -27,8 +27,12 @@ class PageReader(metaclass=Singleton):
 
     def get_element(self, file_key, page_key, element_key, default=None, llist=[]):
         if [file_key, page_key] in llist:
+            # If page has already been checked return None
+            # Prevents possible infinite loops (a calls b calls a...)
             return None
         try:
+            # llist is copied due to mutability.
+            # In short changing llist directly affects all future calls as well
             _list = llist.copy()
             _list.append([file_key, page_key])
             page = self._page(file_key, page_key)
@@ -49,8 +53,12 @@ class PageReader(metaclass=Singleton):
 
     def get_url(self, file_key, page_key, url_key='url', default=None, llist=[]):
         if [file_key, page_key] in llist:
+            # If page has already been checked return None
+            # Prevents possible infinite loops (a calls b calls a...)
             return None
         try:
+            # llist is copied due to mutability.
+            # In short changing llist directly affects all future calls as well
             _list = llist.copy()
             _list.append([file_key, page_key])
             page = self._page(file_key, page_key)
@@ -70,8 +78,12 @@ class PageReader(metaclass=Singleton):
 
     def get_page_title(self, file_key, page_key, default=None, llist=[]):
         if [file_key, page_key] in llist:
+            # If page has already been checked return None
+            # Prevents possible infinite loops (a calls b calls a...)
             return None
         try:
+            # llist is copied due to mutability.
+            # In short changing llist directly affects all future calls as well
             _list = llist.copy()
             _list.append([file_key, page_key])
             page = self._page(file_key, page_key)
@@ -92,8 +104,12 @@ class PageReader(metaclass=Singleton):
 
     def get_page_id(self, file_key, page_key, llist=[]):
         if [file_key, page_key] in llist:
+            # If page has already been checked return None
+            # Prevents possible infinite loops (a calls b calls a...)
             return None
         try:
+            # llist is copied due to mutability.
+            # In short changing llist directly affects all future calls as well
             _list = llist.copy()
             _list.append([file_key, page_key])
             page = self._page(file_key, page_key)
