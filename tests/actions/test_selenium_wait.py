@@ -14,7 +14,7 @@ class TestSeleniumWait(unittest.TestCase):
             "implicit_wait": 5,
             "explicit_wait": 10,
             "options": {
-                "arguments": ["--start-maximized"],
+                "arguments": ["--start-maximized", "--headless"],
                 "preferences": []
             }
             }})

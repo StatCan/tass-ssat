@@ -38,7 +38,7 @@ class WebDriverWaitWrapper():
     def _config_options(self, browser_options, options):
         options_obj = browser_options()
         # TODO: Add some default/checks in case of missing configs
-        options = config["options"]
+    
         for args in options.get('arguments', []):
             options_obj.add_argument(args)
         for prefs in options.get('preferences', []):
