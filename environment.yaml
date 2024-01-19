@@ -2,8 +2,10 @@ name: tass_ssat-dev
 dependencies:
   - python=3.11
   - jsonschema
-  - selenium
-  - webdriver-manager
+  - selenium>=4.7.2
   - flake8
   - conda-build
   - python-build
+  - openpyxl
+  - sphinx
+  - myst-parser

@@ -7,6 +7,7 @@ class TestPageReader(unittest.TestCase):
     page = {
         "title": "Page One",
         "url": "tests/pages/page1.html",
+        "alt-url": "alt/url",
         "page_id":
         {
             "method": "element",
@@ -49,6 +50,11 @@ class TestPageReader(unittest.TestCase):
         PageReader().add_page('test', self.page)
         url = PageReader().get_url('custom', 'test')
         self.assertEqual(url, self.page['url'])
+
+    def test_getAlternateUrl(self):
+        PageReader().add_page('test', self.page)
+        url = PageReader().get_url('custom', 'test', 'alt-url')
+        self.assertEqual(url, self.page['alt-url'])
 
     def test_getTitle(self):
         PageReader().add_page('test', self.page)

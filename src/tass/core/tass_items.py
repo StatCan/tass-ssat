@@ -4,16 +4,16 @@ import tass.config.browserconfig as browserconfig
 class TassItem():
 
     def __init__(self, parent=None, name=None, uuid=None, build=None,
-                 config=None):
+                 title=None, config=None):
         self._parent = parent
-        self._name = name
+        self._title = title
         self._uuid = uuid
         self._build = build
         self._config = config
 
     @property
-    def name(self):
-        return self._name
+    def title(self):
+        return self._title
 
     @property
     def uuid(self):

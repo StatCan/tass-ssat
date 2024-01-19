@@ -6,19 +6,24 @@ from tass.exceptions.assertion_errors import TassHardAssertionError
 from tass.exceptions.assertion_errors import TassSoftAssertionError
 
 
-def locate(page, locator):
+def locate(page, locator, locator_args):
     print(locator)
     if (isinstance(locator, str)):
-        return PageReader().get_element(*page, locator)
+        _loc = PageReader().get_element(*page, locator)
     elif isinstance(locator, dict):
-        return locator
+        _loc = locator
     else:
         msg = "Locator type not supported. Type: {}".format(type(locator))
         raise TypeError(msg)
 
+    if locator_args:
+        _loc['value'] = _loc['value'].format(*locator_args)
 
-def _find_element(driver, locator, page=None):
-    return driver.find_element(**locate(page, locator))
+    return _loc
+
+
+def _find_element(driver, locator, locator_args=None, page=None):
+    return driver.find_element(**locate(page, locator, locator_args))
 
 
 def _is_displayed(driver, find=_find_element, **kwargs):
@@ -92,6 +97,35 @@ def write(driver, find=_find_element, text='', **kwargs):
     except WebDriverException as e:
         print("Exception: ", e, " trying again")
         find(driver, **kwargs).send_keys(text)
+
+
+def write_stored_value(driver, find=_find_element, text_key='', **kwargs):
+    """Send a stored string to an element in the DOM
+
+    Execute the selenium send_keys(str) function against the locator
+    that is part of the kwargs argument. If a WebDriverException
+    occurs the action is attempted a second time before
+    allowing the exception to be raised to the next level.
+
+    Args:
+        driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+        find:
+            The function to be called when attempting to locate
+            an element. Must use either a explicit wait function
+            or the default _find_element fuinction.
+        text_key:
+            The str key used to store a str using ValueStore.
+        **kwargs:
+            Dictionary containing additional parameters. Contents
+            of the dictionary will vary based on the find function used.
+            By default, _find_element is used and thus kwargs
+            requires: locator.
+    """
+    from tass.actions.core import read_value
+    text = read_value(text_key)
+    write(driver, find=find, text=text, **kwargs)
 
 
 def select_dropdown(driver, value, using, find=_find_element, **kwargs):

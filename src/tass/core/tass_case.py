@@ -67,7 +67,7 @@ class TassCase(TassItem):
 
     def toJson(self):
         return {
-            "name": self.name,
+            "name": self.title,
             "uuid": self.uuid,
             "start_time": self._start_time,
             "status": self._status,

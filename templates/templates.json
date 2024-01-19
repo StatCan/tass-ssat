@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": "http://json-schema.org/draft-07/schema",
 
     "definitions": {
         "Test_run": {
@@ -26,6 +26,11 @@
 		}
 	    }
 	},
+        "Test_runs":{
+            "type": "array",
+            "items": {"$ref": "#definitions/Test_run"},
+            "default": []
+        },
 	"Test_suite": {
             "type": "object",
 	    "Properties": {
@@ -42,6 +47,11 @@
 		}
 	    }
 	},
+        "Test_suites":{
+            "type": "array",
+            "items": {"$ref": "#/definitions/Test_suite"},
+            "default": []
+        },
 	"Test_case": {
             "type": "object",
 	    "Properties": {
@@ -49,12 +59,17 @@
 		"title": "string",
 		"steps": {
 		    "type": "array",
-		    "items": {"$ref": "#/definitions/Step/"},
+		    "items": {"type": "string"},
 		    "default": []
 		},
 		"pass_cond": "string"
 	    }
 	},
+        "Test_cases": {
+            "type": "array",
+            "items": {"$ref": "#/definitions/Test_case"},
+            "default": []
+        },
 	"Step": {
             "type": "object",
 	    "Properties": {
@@ -69,6 +84,11 @@
 		"pass_cond": "string"
 	    }
 	},
+        "Steps": {
+            "type": "array",
+            "items": {"$ref": "#/definitions/Step"},
+            "default": []
+        },
 	"Meta": {
 	    "type": "object",
 	    "Properties": {
@@ -107,9 +127,13 @@
     "type": "object",
     "properties": {
         "Test_run": {"$ref": "#/definitions/Test_run"},
+        "Test_runs": {"$ref": "#/definitions/Test_runs"},
 	"Test_suite": {"$ref": "#/definitions/Test_suite"},
+        "Test_suites": {"$ref": "#/definitions/Test_suites"},
 	"Test_case": {"$ref": "#/definitions/Test_case"},
+        "Test_cases": {"$ref": "#/definitions/Test_cases"},
 	"Step": {"$ref": "#/definitions/Step"},
+        "Steps": {"$ref": "#/definitions/Steps"},
 	"Meta": {"$ref": "#/definitions/Meta"},
 	"Report": {"$ref": "#/definitions/Report"},
 	"Status": {"$ref": "#/definitions/Status"}
