@@ -84,7 +84,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--file',
                         action='store', required=True)
-    parser.add_argument('--browser',
+    parser.add_argument('--browser', type=str.lower,
                         action='store', required=True)
 
     main(parser.parse_args())

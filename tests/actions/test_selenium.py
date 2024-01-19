@@ -1,6 +1,7 @@
 import unittest
 import pathlib
 import tass.actions.selenium as selenium
+from tass.core.page_reader import PageReader
 from tass.drivers.browserdriver import ChromeDriver as CDriver
 from tass.drivers.browserdriver import FirefoxDriver as FDriver
 from tass.drivers.browserdriver import EdgeDriver as EDriver
@@ -47,6 +48,65 @@ class TestSelenium(unittest.TestCase):
                 selenium.load_file(driver, self.test_page_url)
                 self.assertEqual(driver.title, "Page One")
                 driver.quit()
+
+    def test_SeleniumLoadLocalPage(self):
+        page = {
+            "title": "Page One",
+            "url": "tests/pages/page1.html",
+            "alt-url": "alt/url",
+            "page_id":
+            {
+                "method": "element",
+                "identifier": "btnColor"
+            },
+            "elements":
+            {
+                "btnColor":
+                {
+                    "by": "id",
+                    "value": "btnColor"
+                },
+                "nameField":
+                {
+                    "by": "id",
+                    "value": "nameField"
+                },
+                "btnX":
+                {
+                    "by": "id",
+                    "value": "btn-x"
+                }
+            }
+        }
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                PageReader().add_page('test', page)
+                selenium.load_page(driver, ('custom', 'test'), use_local=True)
+                self.assertEqual(driver.title, "Page One")
+                driver.quit()
+                PageReader.reset()
+
+    def test_SeleniumLoadPage(self):
+        page = {
+            "title": "Google",
+            "url": "http://www.google.ca",
+            "page_id":
+            {
+                "method": "title",
+                "identifier": "Google"
+            },
+            "elements":
+            {}
+        }
+        for browser in self.drivers:
+            driver = browser(self.config)
+            with self.subTest(browser=driver.toJson()):
+                PageReader().add_page('test', page)
+                selenium.load_page(driver, ('custom', 'test'))
+                self.assertEqual(driver.title, "Google")
+                driver.quit()
+                PageReader.reset()
 
     def test_SeleniumClick(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
