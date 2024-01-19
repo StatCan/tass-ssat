@@ -3,7 +3,7 @@ import tass.config.browserconfig as browserconfig
 
 class TassItem():
 
-    def __init__(self, parent=None, name=None, uuid=None, build=None,
+    def __init__(self, parent=None, uuid=None, build=None,
                  title=None, config=None):
         self._parent = parent
         self._title = title
@@ -33,7 +33,7 @@ class TassItem():
 
     @classmethod
     def from_parent(cls, parent,
-                    name, uuid,
+                    title, uuid,
                     build=None, config=None,
                     **kwargs):
         if (config is None) and \
@@ -45,17 +45,17 @@ class TassItem():
 
         _build = 'dev' if build is not None else parent.build
 
-        return cls(parent=parent, name=name,
+        return cls(parent=parent, title=title,
                    uuid=uuid, build=_build,
                    config=_config, **kwargs)
 
     @classmethod
-    def create(cls, name, uuid,
+    def create(cls, title, uuid,
                build='dev', config=None,
                **kwargs):
         _config = browserconfig.load(config)
 
-        return cls(parent=DefaultTassItem(), name=name,
+        return cls(parent=DefaultTassItem(), title=title,
                    uuid=uuid, build=build,
                    config=_config, **kwargs)
 
@@ -64,7 +64,7 @@ class DefaultTassItem(TassItem):
 
     def __init__(self):
         super().__init__(parent=None,
-                         name='Default Tass Item',
+                         title='Default Tass Item',
                          uuid="!0001",
                          build="dev",
                          config=browserconfig.load(None)

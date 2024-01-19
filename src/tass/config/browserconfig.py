@@ -31,14 +31,21 @@ def _default_browser_configs():
         "DEFAULT": {
             "implicit_wait": 5,
             "explicit_wait": 20,
-            "options": ["--start-maximized"],
+            "options": {
+                "arguments": ["--start-maximized"],
+                "preferences": []
+            },
             "name": "default"
         },
         "chrome": {
             "name": "chrome"
         },
         "firefox": {
-            "name": "firefox"
+            "name": "firefox",
+            "options": {
+			    "arguments": ["--start-maximized"],
+			    "preferences": [["app.update.auto", False], ["app.update.enabled", False]]
+		    }
         },
         "edge": {
             "name": "edge"
