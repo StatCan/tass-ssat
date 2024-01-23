@@ -6,15 +6,15 @@ import tass.tools.convert.page_conf as page_conf
 conversions = [
         "scenario",
         "specs",
-        "page"
+        "pages"
     ]
 
 
 def scenario(source):
     return conf.convert(source)
 
-def specs(source):
-    return page_conf.convert_to_excel(source)
+def specs(source, target):
+    return page_conf.convert_to_excel(source, target)
 
 def page(source, target):
     return page_conf.convert_to_json(source, target)
@@ -27,7 +27,8 @@ def main(args):
     if method == conversions[0]:
         return scenario(args.source)
     elif method == conversions[1]:
-        return specs(args.source)
+        if args.target and isinstance(args.target, str):
+            return specs(args.source, args.target)
     elif method == conversions[2]:
         if args.target and isinstance(args.target, str):
             return page(args.source, args.target)

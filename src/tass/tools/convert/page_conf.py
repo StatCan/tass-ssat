@@ -30,7 +30,7 @@ class ElementType(StrEnum):
     INFO = auto()
 
 
-def convert_to_excel(specs_path):
+def convert_to_excel(specs_path, project_name):
     """
     Helper tool to convert EQ specs to Page model
     """
@@ -129,7 +129,7 @@ def convert_to_excel(specs_path):
         specs = wb[submit_page_name]
         parse_sheet(specs, specs_out)
 
-    wb_out.save("pages.xlsx")
+    wb_out.save(project_name + ".xlsx")
 
     return str(Path("pages.xlsx").resolve())
 
