@@ -22,15 +22,6 @@ class TassEncoder(json.JSONEncoder):
                 )
 
 
-def load(file_path):
-    with open(file_path) as file:
-        test = json.load(file)
-    match test['file-type']:
-        case 'test-run':
-            return TassRun.create(path=file_path,
-                                  **test['content'])
-
-
 def main(args):
     """
     Starting point for execution of tests.
@@ -91,9 +82,10 @@ def read_file(file):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--file',
+    parser.add_argument('--file', "-f",
                         action='store', required=True)
-    parser.add_argument('--browser', type=str.lower,
+    parser.add_argument('--browser', "-b",
+                        type=str.lower,
                         action='store', required=True)
 
     main(parser.parse_args())

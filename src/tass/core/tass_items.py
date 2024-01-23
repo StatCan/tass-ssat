@@ -43,7 +43,7 @@ class TassItem():
         else:
             _config = browserconfig.load(config)
 
-        _build = 'dev' if build is not None else parent.build
+        _build = 'dev' if build is None else parent.build
 
         return cls(parent=parent, title=title,
                    uuid=uuid, build=_build,
