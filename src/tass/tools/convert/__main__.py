@@ -11,12 +11,15 @@ conversions = [
 
 
 def scenario(source):
+    print("Converting Excel:", source, "scenario to JSON\n\n")
     return conf.convert(source)
 
 def specs(source, target):
+    print("Converting Excel specs:", source, " to page summary for:", target, "\n\n")
     return page_conf.convert_to_excel(source, target)
 
 def page(source, target):
+    print("Converting page summary:", source, " to JSON POM for:", target, "\n\n")
     return page_conf.convert_to_json(source, target)
 
 
