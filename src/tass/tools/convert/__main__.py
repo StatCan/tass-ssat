@@ -21,7 +21,6 @@ def page(source, target):
 
 
 def main(args):
-    breakpoint()
     method = args.convert
 
     if method == conversions[0]:
