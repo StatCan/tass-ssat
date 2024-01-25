@@ -1,6 +1,7 @@
 import unittest
 import pathlib
 import tass.actions.selenium as selenium
+import tass.config.browserconfig as bc
 from tass.core.page_reader import PageReader
 from tass.drivers.browserdriver import ChromeDriver as CDriver
 from tass.drivers.browserdriver import FirefoxDriver as FDriver
@@ -14,14 +15,14 @@ from selenium.webdriver.support.select import Select
 
 class TestSelenium(unittest.TestCase):
 
-    config = {
-        "implicit_wait": 5,
-        "explicit_wait": 10,
-        "options": {
-            "arguments": ["--start-maximized", "--headless"],
-            "preferences": []
-        }
-    }
+    config = bc.load({"DEFAULT": {
+            "implicit_wait": 5,
+            "explicit_wait": 10,
+            "options": {
+                "arguments": ["--start-maximized", "--headless"],
+                "preferences": []
+            }
+            }})
 
     test_page_url = 'tests/pages/page1.html'
 

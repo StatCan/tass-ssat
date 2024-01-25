@@ -1,10 +1,15 @@
+import tass.config.browserconfig as browserconfig
+
+
 class TassItem():
 
-    def __init__(self, parent=None, title=None, uuid=None, build=None):
+    def __init__(self, parent=None, uuid=None, build=None,
+                 title=None, config=None):
         self._parent = parent
         self._title = title
         self._uuid = uuid
-        self._build = build if build else parent.build
+        self._build = build
+        self._config = config
 
     @property
     def title(self):
@@ -21,6 +26,49 @@ class TassItem():
     @property
     def build(self):
         return self._build
+
+    @property
+    def config(self):
+        return self._config
+
+    @classmethod
+    def from_parent(cls, parent,
+                    title, uuid,
+                    build=None, config=None,
+                    **kwargs):
+        if (config is None) and \
+           (parent is not None) and \
+           (parent.config is not None):
+            _config = parent.config
+        else:
+            _config = browserconfig.load(config)
+
+        _build = 'dev' if build is None else parent.build
+
+        return cls(parent=parent, title=title,
+                   uuid=uuid, build=_build,
+                   config=_config, **kwargs)
+
+    @classmethod
+    def create(cls, title, uuid,
+               build='dev', config=None,
+               **kwargs):
+        _config = browserconfig.load(config)
+
+        return cls(parent=DefaultTassItem(), title=title,
+                   uuid=uuid, build=build,
+                   config=_config, **kwargs)
+
+
+class DefaultTassItem(TassItem):
+
+    def __init__(self):
+        super().__init__(parent=None,
+                         title='Default Tass Item',
+                         uuid="!0001",
+                         build="dev",
+                         config=browserconfig.load(None)
+                         )
 
 
 class TassFile(TassItem):
