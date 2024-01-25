@@ -33,6 +33,39 @@ class TestPageReader(unittest.TestCase):
         }
     }
 
+    page2 = {
+        "title": "Page Basic",
+        "alt-url": "not/a/url",
+        "page_id":
+        {
+            "method": "element",
+            "identifier": "btnColor"
+        },
+        "elements":
+        {
+            "btnColor":
+            {
+                "by": "id",
+                "value": "btnColor"
+            },
+            "nameField":
+            {
+                "by": "id",
+                "value": "nameField"
+            },
+            "btnX":
+            {
+                "by": "id",
+                "value": "btn-x"
+            }
+        }
+    }
+
+    page1 = {
+        "title": "Page Two",
+        "inherits": [["custom","page-two"], ["custom", "page-one"]]
+    }
+
     def tearDown(self):
         PageReader.reset()
 
@@ -65,3 +98,16 @@ class TestPageReader(unittest.TestCase):
         PageReader().add_page('test', self.page)
         element = PageReader().get_element('custom', 'test', 'btnColor')
         self.assertEqual(element, self.page['elements']['btnColor'])
+
+    def test_pageInheritance(self):
+        PageReader().add_page('page-one', self.page)
+        PageReader().add_page('page-two', self.page2)
+        PageReader().add_page('test', self.page1)
+
+        title = PageReader().get_page_title('custom', 'test')
+        alt_url = PageReader().get_url('custom', 'test', url_key='alt-url')
+        url = PageReader().get_url('custom', 'test')
+
+        self.assertEqual(title, self.page1['title'])
+        self.assertEqual(alt_url, self.page2['alt-url'])
+        self.assertEqual(url, self.page['url'])

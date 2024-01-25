@@ -25,33 +25,108 @@ class PageReader(metaclass=Singleton):
             self.page_dict[file_key] = json.load(file)
         return self.page_dict[file_key]
 
-    def get_element(self, file_key, page_key, element_key, default=None):
+    def get_element(self, file_key, page_key, element_key, default=None, llist=[]):
+        if [file_key, page_key] in llist:
+            # If page has already been checked return None
+            # Prevents possible infinite loops (a calls b calls a...)
+            return None
         try:
-            return self._page(
-                            file_key,
-                            page_key)['elements'].get(
-                                            element_key,
-                                            default)
+            # llist is copied due to mutability.
+            # In short changing llist directly affects all future calls as well
+            _list = llist.copy()
+            _list.append([file_key, page_key])
+            page = self._page(file_key, page_key)
+            if ('elements' in page 
+                and element_key in page['elements']):
+              
+                return page['elements'][element_key]
+            elif ('inherits' in page):
+                for f, p in page['inherits']:
+                    element = self.get_element(f, p, element_key,
+                        default=default, llist=_list)
+                    if element:
+                        return element
+
         except KeyError:
             print('One or more keys not found. Falling back to default')
-            return default
+        return default
 
-    def get_url(self, file_key, page_key, url_key='url', default=None):
+    def get_url(self, file_key, page_key, url_key='url', default=None, llist=[]):
+        if [file_key, page_key] in llist:
+            # If page has already been checked return None
+            # Prevents possible infinite loops (a calls b calls a...)
+            return None
         try:
-            return self._page(file_key, page_key).get(url_key, default)
+            # llist is copied due to mutability.
+            # In short changing llist directly affects all future calls as well
+            _list = llist.copy()
+            _list.append([file_key, page_key])
+            page = self._page(file_key, page_key)
+
+            if url_key in page:
+                return page[url_key]
+            elif ('inherits' in page):
+                for f, p in page['inherits']:
+                    url = self.get_url(f, p, url_key,
+                        default=default, llist=_list)
+                    if url:
+                        return url
+
         except KeyError:
             print('One or more keys not found. Falling back to default')
-            return default
+        return default
 
-    def get_page_title(self, file_key, page_key, default=None):
+    def get_page_title(self, file_key, page_key, default=None, llist=[]):
+        if [file_key, page_key] in llist:
+            # If page has already been checked return None
+            # Prevents possible infinite loops (a calls b calls a...)
+            return None
         try:
-            return self._page(file_key, page_key).get('title', default)
+            # llist is copied due to mutability.
+            # In short changing llist directly affects all future calls as well
+            _list = llist.copy()
+            _list.append([file_key, page_key])
+            page = self._page(file_key, page_key)
+
+            if 'title' in page:
+
+                return page['title']
+
+            elif ('inherits' in page):
+                for f, p in page['inherits']:
+                    title = self.get_page_title(f, p,
+                        default=default, llist=_list)
+                    if title:
+                        return title
         except KeyError:
             print('One or more keys not found. Falling back to default')
-            return default
+        return default
 
-    def get_page_id(self, file_key, page_key):
-        return self._page(file_key, page_key).get('page_id', None)
+    def get_page_id(self, file_key, page_key, llist=[]):
+        if [file_key, page_key] in llist:
+            # If page has already been checked return None
+            # Prevents possible infinite loops (a calls b calls a...)
+            return None
+        try:
+            # llist is copied due to mutability.
+            # In short changing llist directly affects all future calls as well
+            _list = llist.copy()
+            _list.append([file_key, page_key])
+            page = self._page(file_key, page_key)
+
+            if 'page_id' in page:
+                return page['page_id']
+
+            elif ('inherits' in page):
+                    for f, p in page['inherits']:
+                        page_id = self.get_page_id(f, p,
+                            default=default, llist=_list)
+                        if page_id:
+                            return page_id
+        
+        except KeyError:
+            print('One or more keys not found. Falling back to default')
+        return default
 
     def pages_loaded(self, key):
         return key in self.page_dict
