@@ -1,5 +1,5 @@
 import unittest
-from tass.tools import conf
+from tass.tools.convert import conf
 import json
 
 
