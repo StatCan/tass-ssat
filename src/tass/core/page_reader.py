@@ -39,13 +39,13 @@ class PageReader(metaclass=Singleton):
             if ('elements' in page 
                 and element_key in page['elements']):
               
-                return page['elements'][element_key]
+                return page['elements'][element_key].copy()
             elif ('inherits' in page):
                 for f, p in page['inherits']:
                     element = self.get_element(f, p, element_key,
                         default=default, llist=_list)
                     if element:
-                        return element
+                        return element.copy()
 
         except KeyError:
             print('One or more keys not found. Falling back to default')
