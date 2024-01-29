@@ -30,7 +30,7 @@ def main(args):
     method = args.convert
 
     if method == conversions[0]:
-        return scenario(args.source)
+        return scenario(args.source, args.target)
     elif method == conversions[1]:
         if args.target and isinstance(args.target, str):
             return specs(args.source, args.target)
