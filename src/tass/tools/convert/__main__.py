@@ -10,9 +10,12 @@ conversions = [
     ]
 
 
-def scenario(source):
+def scenario(source, target):
     print("Converting Excel:", source, "scenario to JSON\n\n")
-    return conf.convert(source)
+    s = conf.convert(source)
+    t = target + ".json"
+    json.dump(s, open(t, 'w+', encoding='utf-8'), indent=4)
+    return s
 
 def specs(source, target):
     print("Converting Excel specs:", source, " to page summary for:", target, "\n\n")
