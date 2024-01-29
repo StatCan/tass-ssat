@@ -221,6 +221,7 @@ def convert_to_json(pages_path, project_name):
 
             else:
                 page["elements"] = elements
+                page["inherits"] = [["eqgs", "basic"]]
                 pages[f"p{page_number}"] = page
 
                 page = {}
