@@ -15,14 +15,23 @@ from selenium.webdriver.support.select import Select
 
 class TestSelenium(unittest.TestCase):
 
-    config = bc.load({"DEFAULT": {
+    config = bc.load(
+        {"DEFAULT": {
             "implicit_wait": 5,
             "explicit_wait": 10,
             "options": {
                 "arguments": ["--start-maximized", "--headless"],
                 "preferences": []
+                }
+            },
+            "firefox": {
+            "name": "firefox",
+            "options": {
+			    "arguments": ["--start-maximized", "--headless"],
+			    "preferences": [["app.update.auto", False], ["app.update.enabled", False]]
+		        }
             }
-            }})
+        })
 
     test_page_url = 'tests/pages/page1.html'
 
