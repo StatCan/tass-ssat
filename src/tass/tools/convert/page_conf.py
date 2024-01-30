@@ -152,56 +152,61 @@ def convert_to_json(pages_path, project_name):
 
     def parse_info(id, rostered):
         if rostered:
-            return f'''//input[contains(@name, ".Instance") and @value={{}}]
-            /following-sibling::*/descendant::div[contains(@id, "{id}")]'''
+            return (
+                f'//input[contains(@name, ".Instance") and @value={{}}]'
+                f'/following-sibling::*/descendant::div[contains(@id, "{id}")]'
+            )
         else:
             return f'//div[contains(@id, "{id}")]/ul/li[{{}}]'
 
     def parse_radio(id, val, rostered):
         if rostered:
-            return f'''
-            //input[contains(@name, ".Instance") and @value={{}}]
-            /following-sibling::*
-            /descendant::input[contains(@name, ".{id}") and @value={val}]
-            '''
+            return (
+                f'//input[contains(@name, ".Instance") and @value={{}}]'
+                '/following-sibling::*'
+                f'/descendant::input[contains(@name, ".{id}")'
+                f' and @value={val}]'
+            )
         else:
             return f'//input[contains(@name, ".{id}") and @value={val}]'
 
     def parse_radiotext(id, rostered):
         if rostered:
-            return f'''
-            //input[contains(@name, ".Instance") and @value={{}}]
-            /following-sibling::*/descendant::input[@value="{id}"]
-            '''
+            return (
+                f'//input[contains(@name, ".Instance") and @value={{}}]'
+                f'/following-sibling::*/descendant::input[@value="{id}"]'
+            )
         else:
             return f'//input[@value="{id}"]'
 
     def parse_check(id, rostered):
         if rostered:
-            return f'''
-            //input[contains(@name, ".Instance") and @value={{}}]
-            /following-sibling::*
-            /descendant::input[contains(@name, ".{id}") and @type="checkbox"]
-            '''
+            return (
+                f'//input[contains(@name, ".Instance") and @value={{}}]'
+                '/following-sibling::*'
+                f'/descendant::input[contains(@name, ".{id}")'
+                ' and @type="checkbox"]'
+            )
         else:
             return f'//input[@name="{id}" and @type="checkbox"]'
 
     def parse_dropdown(id, rostered):
         if rostered:
-            return f'''
-            //input[contains(@name, ".Instance") and @value={{}}]
-            /following-sibling::*/descendant::select[contains(@name, ".{id}")]
-            '''
+            return (
+                f'//input[contains(@name, ".Instance") and @value={{}}]'
+                '/following-sibling::*'
+                f'/descendant::select[contains(@name, ".{id}")]'
+            )
         else:
             return f'//select[@name="{id}"]'
 
     def parse_text(id, rostered):
         if rostered:
-            return f'''
-            //input[contains(@name, ".Instance") and @value={{}}]
-            /following-sibling::*
-            /descendant::input[contains(@name, ".{id}")]
-            '''
+            return (
+                f'//input[contains(@name, ".Instance") and @value={{}}]'
+                '/following-sibling::*'
+                f'/descendant::input[contains(@name, ".{id}")]'
+            )
         else:
             return f'//input[@name="{id}"]'
 
