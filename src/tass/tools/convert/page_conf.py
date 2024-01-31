@@ -1,6 +1,4 @@
 import openpyxl
-import json
-from pathlib import Path
 from enum import StrEnum, auto
 
 
@@ -30,7 +28,7 @@ class ElementType(StrEnum):
     INFO = auto()
 
 
-def convert_to_excel(specs_path, project_name):
+def convert_to_excel(specs_path):
     """
     Helper tool to convert EQ specs to Page model
     """
@@ -129,12 +127,10 @@ def convert_to_excel(specs_path, project_name):
         specs = wb[submit_page_name]
         parse_sheet(specs, specs_out)
 
-    wb_out.save(project_name + ".xlsx")
-
-    return str(Path("pages.xlsx").resolve())
+    return wb_out
 
 
-def convert_to_json(pages_path, project_name):
+def convert_to_json(pages_path):
     """
     Convert the results of convert to framework json format
     """
@@ -280,5 +276,4 @@ def convert_to_json(pages_path, project_name):
             continue
             # TODO: Fallback condition. Error?
 
-    with open(f'{project_name}.json', 'w', encoding='UTF-8') as out:
-        json.dump(pages, out, indent=4)
+    return pages
