@@ -16,21 +16,28 @@ from selenium.webdriver.support.select import Select
 class TestSelenium(unittest.TestCase):
 
     config = bc.load(
-        {"DEFAULT": {
-            "implicit_wait": 5,
-            "explicit_wait": 10,
-            "options": {
-                "arguments": ["--start-maximized", "--headless"],
-                "preferences": []
-                }
-            },
+        {
+            "DEFAULT": {
+                "implicit_wait": 5,
+                "explicit_wait": 10,
+                "options": {
+                    "arguments": ["--start-maximized", "--headless"],
+                    "preferences": []
+                    }
+                },
             "firefox": {
-            "name": "firefox",
-            "options": {
-			    "arguments": ["--start-maximized", "--headless"],
-			    "preferences": [["app.update.auto", False], ["app.update.enabled", False]]
-		        }
-            }
+                "name": "firefox",
+                "options": {
+                    "arguments": [
+                        "--start-maximized",
+                        "--headless"
+                        ],
+                    "preferences": [
+                        ["app.update.auto", False],
+                        ["app.update.enabled", False]
+                        ]
+                    }
+                }
         })
 
     test_page_url = 'tests/pages/page1.html'
@@ -91,11 +98,15 @@ class TestSelenium(unittest.TestCase):
         for browser in self.drivers:
             driver = browser(self.config)
             with self.subTest(browser=driver.toJson()):
-                PageReader().add_page('test', page)
-                selenium.load_page(driver, ('custom', 'test'), use_local=True)
-                self.assertEqual(driver.title, "Page One")
-                driver.quit()
-                PageReader.reset()
+                try:
+                    PageReader().add_page('test', page)
+                    selenium.load_page(driver,
+                                       ('custom', 'test'),
+                                       use_local=True)
+                    self.assertEqual(driver.title, "Page One")
+                    driver.quit()
+                finally:
+                    PageReader.reset()
 
     def test_SeleniumLoadPage(self):
         page = {
@@ -112,11 +123,13 @@ class TestSelenium(unittest.TestCase):
         for browser in self.drivers:
             driver = browser(self.config)
             with self.subTest(browser=driver.toJson()):
-                PageReader().add_page('test', page)
-                selenium.load_page(driver, ('custom', 'test'))
-                self.assertEqual(driver.title, "Google")
-                driver.quit()
-                PageReader.reset()
+                try:
+                    PageReader().add_page('test', page)
+                    selenium.load_page(driver, ('custom', 'test'))
+                    self.assertEqual(driver.title, "Google")
+                    driver.quit()
+                finally:
+                    PageReader.reset()
 
     def test_SeleniumClick(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
@@ -611,3 +624,40 @@ class TestSelenium(unittest.TestCase):
         loc_out = selenium.locate(None, locator, args)
 
         self.assertEqual(loc_out['value'], expected)
+
+    def test_SeleniumLocateFormattedPage(self):
+        page = {
+            "title": "Page One",
+            "url": "tests/pages/page1.html",
+            "alt-url": "alt/url",
+            "page_id":
+            {
+                "method": "element",
+                "identifier": "btnColor"
+            },
+            "elements":
+            {
+                "btnColor":
+                {
+                    "by": "id",
+                    "value": "btn{}"
+                }
+            }
+        }
+        try:
+            PageReader().add_page('test', page)
+
+            args = ["Color"]
+            locator = "btnColor"
+            loc_out = selenium.locate(["custom", "test"], locator, args)
+            self.assertEqual(loc_out['value'], 'btnColor')
+
+            args = ["Red"]
+            locator = PageReader().get_element(
+                                    "custom",
+                                    "test",
+                                    "btnColor")
+            loc_out = selenium.locate(["custom", "test"], locator, args)
+            self.assertEqual(loc_out['value'], 'btnRed')
+        finally:
+            PageReader.reset()
