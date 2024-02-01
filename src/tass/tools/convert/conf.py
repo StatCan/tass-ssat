@@ -62,7 +62,7 @@ def convert_test_case(test_case, conf, wb):
             for col in wb[case].iter_cols(min_row=row_num,
                                           max_row=row_num,
                                           min_col=4):
-            
+
                 if (col[0].value is not None):
                     header = wb[case].cell(2, col[0].column).value
 
@@ -82,6 +82,9 @@ def convert_test_case(test_case, conf, wb):
 
                     elif (col[0].value is not None and 'action' in header):
                         parameters['action'] = col[0].value.split(',', 1)
+                    
+                    elif (col[0].value is not None and header == 'locator_args'):
+                        parameters['locator_args'] = col[0].value.split(',')
 
                     else:
                         parameters[header] = col[0].value
