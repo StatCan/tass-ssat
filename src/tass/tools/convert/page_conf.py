@@ -206,7 +206,7 @@ def convert_to_json(pages_path):
         else:
             return f'//input[@name="{id}"]'
 
-    for row in ws.iter_rows(min_row=2, max_col=5):
+    for count, row in enumerate(ws.iter_rows(min_row=2, max_col=6), 1):
         print("This is the row:", row)
         row_type = row[0].value
         element_id = row[1].value
@@ -222,6 +222,15 @@ def convert_to_json(pages_path):
 
             else:
                 page["elements"] = elements
+                if row[5].value:
+                    _split = row[5].value.split(',')
+                    inherits = map(list, zip(_split[::2], _split[1::2]))
+                    page['inherits'] = list(inherits)
+                elif count == ws.max_row:
+                    page['inherits'] = [['eqgs', 'submit']]
+                else:
+                    page['inherits'] = [['eqgs', 'basic']]
+                    
                 pages[f"p{page_number}"] = page
 
                 page = {}
