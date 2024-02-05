@@ -40,7 +40,7 @@ built it.
 
 The testing framework can be invoked from your CLI with the command
 
-`python -m tass --file ./path/to/config/file`.
+`python -m tass --file ./path/to/config/file --browser <chrome|firefox|edge>`.
 
 #### Demo
 
