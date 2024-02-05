@@ -206,7 +206,7 @@ def convert_to_json(pages_path):
         else:
             return f'//input[@name="{id}"]'
 
-    for count, row in enumerate(ws.iter_rows(min_row=2, max_col=6), 1):
+    for count, row in enumerate(ws.iter_rows(min_row=2, max_col=6), 2):
         print("This is the row:", row)
         row_type = row[0].value
         element_id = row[1].value
