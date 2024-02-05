@@ -63,7 +63,7 @@ class TestPageReader(unittest.TestCase):
 
     page1 = {
         "title": "Page Two",
-        "inherits": [["custom","page-two"], ["custom", "page-one"]]
+        "inherits": [["custom", "page-two"], ["custom", "page-one"]]
     }
 
     def tearDown(self):

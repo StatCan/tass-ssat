@@ -230,7 +230,7 @@ def convert_to_json(pages_path):
                     page['inherits'] = [['eqgs', 'submit']]
                 else:
                     page['inherits'] = [['eqgs', 'basic']]
-                    
+
                 pages[f"p{page_number}"] = page
 
                 page = {}
