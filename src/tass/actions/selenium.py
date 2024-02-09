@@ -369,13 +369,19 @@ def switch_frame(driver, frame, page=None, find=_find_element):
     """
     try:
         # TODO: if/else logic needs to be revisited for POM implementation.
-        if (isinstance(frame, str)):
+        if page:
+            _frame = PageReader().get_element(*page, frame)
+            switch_frame(driver, _frame, page=None, find=find)
+        elif (isinstance(frame, str)):
             driver.switch_to.frame(frame)
         else:
             driver.switch_to.frame(find(driver, page=page, **frame))
     except WebDriverException as e:
         print("Exception: ", e, " trying again")
-        if (isinstance(frame, str)):
+        if page:
+            _frame = PageReader().get_element(*page, frame)
+            switch_frame(driver, _frame, page=None, find=find)
+        elif (isinstance(frame, str)):
             driver.switch_to.frame(frame)
         else:
             driver.switch_to.frame(find(driver, **frame))
@@ -400,15 +406,16 @@ def switch_window(driver, title=None, page=None):
     """
     # TODO: Keep track of window handles to avoid loop?
     cur_handle = driver.current_window_handle
-    if (title is None):
+    if (page):
+        switch_window(driver,
+                      title=PageReader().get_page_title(*page),
+                      page=None)
+        return
+    elif (title is None):
         for handle in driver.window_handles:
             if (handle != cur_handle):
                 driver.switch_to.window(handle)
                 return
-    elif (page is not None):
-        switch_window(driver,
-                      title=PageReader().get_page_title(*page))
-        return
     elif (isinstance(title, str)):
         for handle in driver.window_handles:
             if (handle == cur_handle):
@@ -417,7 +424,9 @@ def switch_window(driver, title=None, page=None):
                 driver.switch_to.window(handle)
                 if (driver.title == title):
                     return
-    raise ValueError('No window with title: {}'.format(title))
+
+    driver.switch_to.window(cur_handle)
+    raise ValueError('No other window with title: {}'.format(title))
 
 
 # / / / / / / / Assertions / / / / / / /
