@@ -43,9 +43,12 @@ def _default_browser_configs():
         "firefox": {
             "name": "firefox",
             "options": {
-			    "arguments": ["--start-maximized"],
-			    "preferences": [["app.update.auto", False], ["app.update.enabled", False]]
-		    }
+                "arguments": ["--start-maximized"],
+                "preferences": [
+                    ["app.update.auto", False],
+                    ["app.update.enabled", False]
+                ]
+            }
         },
         "edge": {
             "name": "edge"

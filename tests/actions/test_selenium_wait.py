@@ -10,14 +10,28 @@ import selenium.webdriver.support.expected_conditions as EC
 
 class TestSeleniumWait(unittest.TestCase):
 
-    config = bc.load({"DEFAULT": {
-            "implicit_wait": 5,
-            "explicit_wait": 10,
-            "options": {
-                "arguments": ["--start-maximized", "--headless"],
-                "preferences": []
-            }
-            }})
+    config = bc.load(
+        {
+            "DEFAULT": {
+                "implicit_wait": 5,
+                "explicit_wait": 10,
+                "options": {
+                    "arguments": ["--start-maximized", "--headless"],
+                    "preferences": []
+                    }
+                },
+            "firefox": {
+                "name": "firefox",
+                "options": {
+                    "arguments": ["--start-maximized", "--headless"],
+                    "preferences":
+                        [
+                            ["app.update.auto", False],
+                            ["app.update.enabled", False]
+                        ]
+                    }
+                }
+        })
 
     test_page_url = 'tests/pages/page1.html'
 

@@ -57,7 +57,7 @@ class ChromeDriver(webdriver.Chrome, WebDriverWaitWrapper):
         self._config = config
         super().__init__(options=self._config_options(
                                     webdriver.ChromeOptions,
-                                         self._get_property('options')))
+                                    self._get_property('options')))
         self._implicit_wait_from_config()
 
     def toJson(self):
@@ -80,7 +80,7 @@ class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
         self._config = config
         super().__init__(options=self._config_options(
                                     webdriver.FirefoxOptions,
-                                         self._get_property('options')))
+                                    self._get_property('options')))
         self._implicit_wait_from_config()
         if ('--start-maximized' in self._get_property('options')):
             self.maximize_window()
@@ -103,7 +103,7 @@ class EdgeDriver(webdriver.Edge, WebDriverWaitWrapper):
     """ Custom EdgeDriver for selenium interactions."""
     def __init__(self, config):
         self._config = config
-        super().__init__(options=self._config_options(                                    
+        super().__init__(options=self._config_options(
                             webdriver.EdgeOptions,
                             self._get_property('options')))
         self._implicit_wait_from_config()

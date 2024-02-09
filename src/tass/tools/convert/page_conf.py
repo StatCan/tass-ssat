@@ -1,6 +1,4 @@
 import openpyxl
-import json
-from pathlib import Path
 from enum import StrEnum, auto
 
 
@@ -30,7 +28,7 @@ class ElementType(StrEnum):
     INFO = auto()
 
 
-def convert_to_excel(specs_path, project_name):
+def convert_to_excel(specs_path):
     """
     Helper tool to convert EQ specs to Page model
     """
@@ -129,12 +127,10 @@ def convert_to_excel(specs_path, project_name):
         specs = wb[submit_page_name]
         parse_sheet(specs, specs_out)
 
-    wb_out.save(project_name + ".xlsx")
-
-    return str(Path("pages.xlsx").resolve())
+    return wb_out
 
 
-def convert_to_json(pages_path, project_name):
+def convert_to_json(pages_path):
     """
     Convert the results of convert to framework json format
     """
@@ -152,60 +148,65 @@ def convert_to_json(pages_path, project_name):
 
     def parse_info(id, rostered):
         if rostered:
-            return f'''//input[contains(@name, ".Instance") and @value={{}}]
-            /following-sibling::*/descendant::div[contains(@id, "{id}")]'''
+            return (
+                f'//input[contains(@name, ".Instance") and @value={{}}]'
+                f'/following-sibling::*/descendant::div[contains(@id, "{id}")]'
+            )
         else:
             return f'//div[contains(@id, "{id}")]/ul/li[{{}}]'
 
     def parse_radio(id, val, rostered):
         if rostered:
-            return f'''
-            //input[contains(@name, ".Instance") and @value={{}}]
-            /following-sibling::*
-            /descendant::input[contains(@name, ".{id}") and @value={val}]
-            '''
+            return (
+                f'//input[contains(@name, ".Instance") and @value={{}}]'
+                '/following-sibling::*'
+                f'/descendant::input[contains(@name, ".{id}")'
+                f' and @value={val}]'
+            )
         else:
             return f'//input[contains(@name, ".{id}") and @value={val}]'
 
     def parse_radiotext(id, rostered):
         if rostered:
-            return f'''
-            //input[contains(@name, ".Instance") and @value={{}}]
-            /following-sibling::*/descendant::input[@value="{id}"]
-            '''
+            return (
+                f'//input[contains(@name, ".Instance") and @value={{}}]'
+                f'/following-sibling::*/descendant::input[@value="{id}"]'
+            )
         else:
             return f'//input[@value="{id}"]'
 
     def parse_check(id, rostered):
         if rostered:
-            return f'''
-            //input[contains(@name, ".Instance") and @value={{}}]
-            /following-sibling::*
-            /descendant::input[contains(@name, ".{id}") and @type="checkbox"]
-            '''
+            return (
+                f'//input[contains(@name, ".Instance") and @value={{}}]'
+                '/following-sibling::*'
+                f'/descendant::input[contains(@name, ".{id}")'
+                ' and @type="checkbox"]'
+            )
         else:
             return f'//input[@name="{id}" and @type="checkbox"]'
 
     def parse_dropdown(id, rostered):
         if rostered:
-            return f'''
-            //input[contains(@name, ".Instance") and @value={{}}]
-            /following-sibling::*/descendant::select[contains(@name, ".{id}")]
-            '''
+            return (
+                f'//input[contains(@name, ".Instance") and @value={{}}]'
+                '/following-sibling::*'
+                f'/descendant::select[contains(@name, ".{id}")]'
+            )
         else:
             return f'//select[@name="{id}"]'
 
     def parse_text(id, rostered):
         if rostered:
-            return f'''
-            //input[contains(@name, ".Instance") and @value={{}}]
-            /following-sibling::*
-            /descendant::input[contains(@name, ".{id}")]
-            '''
+            return (
+                f'//input[contains(@name, ".Instance") and @value={{}}]'
+                '/following-sibling::*'
+                f'/descendant::input[contains(@name, ".{id}")]'
+            )
         else:
             return f'//input[@name="{id}"]'
 
-    for row in ws.iter_rows(min_row=2, max_col=5):
+    for count, row in enumerate(ws.iter_rows(min_row=2, max_col=6), 2):
         print("This is the row:", row)
         row_type = row[0].value
         element_id = row[1].value
@@ -221,6 +222,15 @@ def convert_to_json(pages_path, project_name):
 
             else:
                 page["elements"] = elements
+                if row[5].value:
+                    _split = row[5].value.split(',')
+                    inherits = map(list, zip(_split[::2], _split[1::2]))
+                    page['inherits'] = list(inherits)
+                elif count == ws.max_row:
+                    page['inherits'] = [['eqgs', 'submit']]
+                else:
+                    page['inherits'] = [['eqgs', 'basic']]
+
                 pages[f"p{page_number}"] = page
 
                 page = {}
@@ -275,5 +285,4 @@ def convert_to_json(pages_path, project_name):
             continue
             # TODO: Fallback condition. Error?
 
-    with open(f'{project_name}.json', 'w', encoding='UTF-8') as out:
-        json.dump(pages, out, indent=4)
+    return pages
