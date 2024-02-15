@@ -11,9 +11,9 @@ class Reports(TestRailItem):
     @check_connection
     def get_reports(self, project_id):
         endpoint = f"get_reports/{project_id}"
-        self._api_client.get(endpoint)
+        return self._api_client.get(endpoint)
 
     @check_connection
     def run_report(self, report_template_id):
         endpoint = f"run_report/{report_template_id}"
-        self._api_client.get(endpoint)
+        return self._api_client.get(endpoint)

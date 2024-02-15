@@ -16,37 +16,37 @@ class Results(TestRailItem):
     @check_connection
     def get_results(self, test_id, **filters):
         endpoint = self._filtered_endpoint(f"get_results/{test_id}", filters)
-        self._api_client.get(endpoint)
+        return self._api_client.get(endpoint)
 
     @check_connection
     def get_results_for_case(self, run_id, case_id, **filters):
         endpoint = self._filtered_endpoint(f"get_results_for_case/{run_id}/{case_id}", filters)
-        self._api_client().get(endpoint)
+        return self._api_client().get(endpoint)
 
     @check_connection
     def get_results_for_run(self, run_id, **filters):
         endpoint = self._filtered_endpoint(f"get_results_for_run/{case_id}", filters)
-        self._api_client().get(endpoint)
+        return self._api_client().get(endpoint)
 
     @check_connection
     def add_result(self, test_id, result):
         endpoint = f"add_result/{test_id}"
-        self._api_client.post(endpoint, result)
+        return self._api_client.post(endpoint, result)
 
     @check_connection
     def add_result_for_case(self, run_id, case_id, result):
         endpoint = f"add_result_for_case/{run_id}/{case_id}"
-        self._api_client.post(endpoint, result)
+        return self._api_client.post(endpoint, result)
 
     @check_connection
     def add_results(self, run_id, results):
         endpoint = f"add_results/{run_id}"
-        self._api_client.post(endpoint, results)
+        return self._api_client.post(endpoint, results)
 
     @check_connection
     def add_results_for_cases(self, run_id, results):
         endpoint = f"add_results_for_cases/{run_id}"
-        self._api_client.post(endpoint, results)
+        return self._api_client.post(endpoint, results)
 
 
     class ResultFields(TestRailItem):
@@ -59,4 +59,4 @@ class Results(TestRailItem):
         @check_connection
         def get_result_fields(self):
             endpoint = "get_result_fields"
-            self._api_client.get(endpoint)
+            return self._api_client.get(endpoint)

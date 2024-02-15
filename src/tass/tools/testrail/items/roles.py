@@ -11,4 +11,4 @@ class Roles(TestRailItem):
     @check_connection
     def get_roles(self):
         endpoint = "get_roles"
-        self._api_client.get(endpoint)
+        return self._api_client.get(endpoint)

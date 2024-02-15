@@ -11,9 +11,9 @@ class Statuses(TestRailItem):
     @check_connection
     def get_case_statuses(self):
         endpoint = "get_case_statuses"
-        self._api_client.get(endpoint)
+        return self._api_client.get(endpoint)
 
     @check_connection
     def get_statuses(self):
         endpoint = "get_statuses"
-        self._api_client.get(endpoint)
+        return self._api_client.get(endpoint)

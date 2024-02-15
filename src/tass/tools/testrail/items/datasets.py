@@ -11,24 +11,24 @@ class DataSets(TestRailItem):
     @check_connection
     def get_dataset(self, dataset_id):
         endpoint = f"get_dataset/{dataset_id}"
-        self._api_client.get(endpoint)
+        return self._api_client.get(endpoint)
 
     @check_connection
     def get_datasets(self, project_id):
         endpoint = f"get_datasets/{project_id}"
-        self._api_client.get(endpoint)
+        return self._api_client.get(endpoint)
 
     @check_connection
     def add_dataset(self, project_id, dataset):
         endpoint = f"add_dataset/{project_id}"
-        self._api_client.post(endpoint, dataset)
+        return self._api_client.post(endpoint, dataset)
 
     @check_connection
     def update_dataset(self, dataset_id, dataset):
         endpoint = f"update_dataset/{dataset_id}"
-        self._api_client.post(endpoint, dataset)
+        return self._api_client.post(endpoint, dataset)
 
     @check_connection
     def delete_dataset(self, dataset_id):
         endpoint = f"delete_dataset/{dataset_id}"
-        self._api_client.post(endpoint, {})
+        return self._api_client.post(endpoint, {})

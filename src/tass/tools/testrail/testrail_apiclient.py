@@ -22,8 +22,7 @@ class TestRailAPIClient(APIClient):
                 # TODO: report error
                 return {"status": f"{response.status_code}: {response.reason}",
                         "message": response.text['error']}
-                }
-            elif:
+            else:
                 # TODO: unexpected response, implementation?
                 # Unexpected response
                 return response

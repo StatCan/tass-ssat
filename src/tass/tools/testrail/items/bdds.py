@@ -11,9 +11,9 @@ class BDDs(TestRailItem):
     @check_connection
     def get_bdd(self, case_id):
         endpoint = f"get_bdd/{case_id}"
-        self._api_client.get(endpoint)
+        return self._api_client.get(endpoint)
 
     @check_connection
     def add_bdd(self, section_id, bdd):
         endpoint = f"add_bdd/{section_id}"
-        self._api_client.post(endpoint, bdd)
+        return self._api_client.post(endpoint, bdd)

@@ -11,24 +11,24 @@ class Suites(TestRailItem):
     @check_connection
     def get_suite(self, suite_id):
         endpoint = f"get_suite/{suite_id}"
-        self._api_client.get(endpoint)
+        return self._api_client.get(endpoint)
 
     @check_connection
     def get_suites(self, project_id):
         endpoint = f"get_suites/{project_id}"
-        self._api_client.get(endpoint)
+        return self._api_client.get(endpoint)
 
     @check_connection
     def add_suite(self, project_id, suite):
         endpoint = f"add_suite/{project_id}"
-        self._api_client.post(endpoint, suite)
+        return self._api_client.post(endpoint, suite)
 
     @check_connection
     def update_suite(self, suite_id, suite):
         endpoint = f"update_suite/{suite_id}"
-        self._api_client.post(endpoint, suite)
+        return self._api_client.post(endpoint, suite)
 
     @check_connection
     def delete_suite(self, suite_id, soft=False):
         endpoint = f"delete_suite/{suite_id}"
-        self._api_client.post(endpoint, {"soft": 1 if soft else 0})
+        return self._api_client.post(endpoint, {"soft": 1 if soft else 0})

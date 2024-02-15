@@ -11,9 +11,9 @@ class Tests(TestRailItem):
     @check_connection
     def get_test(self, test_id, **filters):
         endpoint = self._filtered_endpoint(f"get_test/{test_id}", filters)
-        self._api_client.get(endpoint)
+        return self._api_client.get(endpoint)
 
     @check_connection
     def get_tests(self, run_id, **filters):
         endpoint = self._filtered_endpoint(f"get_tests/{run_id}", filters)
-        self._api_client.get(endpoint)
+        return self._api_client.get(endpoint)

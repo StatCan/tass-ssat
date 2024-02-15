@@ -11,4 +11,4 @@ class Templates(TestRailItem):
     @check_connection
     def get_templates(self, project_id):
         endpoint = f"get_templates/{project_id}"
-        self._api_client.get(endpoint)
+        return self._api_client.get(endpoint)

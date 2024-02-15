@@ -11,4 +11,4 @@ class Priorities(TestRailItem):
     @check_connection
     def get_priorities(self):
         endpoint = "get_priorities"
-        self._api_client.get(endpoint)
+        return self._api_client.get(endpoint)
