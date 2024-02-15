@@ -40,7 +40,7 @@ built it.
 
 The testing framework can be invoked from your CLI with the command
 
-`python -m tass --file ./path/to/config/file`.
+`python -m tass --file ./path/to/config/file --browser <chrome|firefox|edge>`.
 
 #### Demo
 
@@ -78,4 +78,6 @@ under the License.
 
 ## Documentation
 
-Further documentation can be found in the docs folder.
+Further documentation can be found in the docs folder. The documentation
+can be built using the `sphinx-build -b html source build` from the `doc`
+folder.

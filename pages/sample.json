@@ -23,7 +23,13 @@
 			{
 				"by": "id",
 				"value": "btn-x"
+			},
+			"btnFormat":
+			{
+				"by": "id",
+				"value": "btn{}"
 			}
+
 		}
 	}
 }

@@ -59,29 +59,36 @@ def convert_test_case(test_case, conf, wb):
             # steps["parameter"] = row[3].value
 
             # The locator value is split on the comma
-            if (row[3].value is not None):
-                locator = row[3].value.split(',')
-
-                if (len(locator) == 2):
-                    parameters['locator'] = {
-                        'by': locator[0],
-                        'value': locator[1]
-                    }
-                else:
-                    parameters['locator'] = locator[0]
-
-            if (row[4].value is not None):
-                parameters['page'] = row[4].value.split(',', 1)
-
-            if (row[5].value is not None):
-                parameters['action'] = row[5].value.split(',', 1)
-
             for col in wb[case].iter_cols(min_row=row_num,
                                           max_row=row_num,
-                                          min_col=7):
+                                          min_col=4):
+
                 if (col[0].value is not None):
                     header = wb[case].cell(2, col[0].column).value
-                    parameters[header] = col[0].value
+
+                    if (col[0].value is not None and header == 'locator'):
+                        locator = col[0].value.split(',')
+
+                        if (len(locator) == 2):
+                            parameters['locator'] = {
+                                'by': locator[0],
+                                'value': locator[1]
+                            }
+                        else:
+                            parameters['locator'] = locator[0]
+
+                    elif (col[0].value is not None and header == 'page'):
+                        parameters['page'] = col[0].value.split(',', 1)
+
+                    elif (col[0].value is not None and 'action' in header):
+                        parameters['action'] = col[0].value.split(',', 1)
+
+                    elif (col[0].value is not None
+                            and header == 'locator_args'):
+                        parameters['locator_args'] = col[0].value.split(',')
+
+                    else:
+                        parameters[header] = col[0].value
 
             # Adds the uuid to the corresponding test case list of steps.
             tc["steps"].append(steps["uuid"])

@@ -45,10 +45,10 @@ class TassCase(TassItem):
             self._status = 'passed'
         self.driver.quit()
 
-    def __init__(self, *, steps=[], browser_config={}, **kwargs):
+    def __init__(self, *, steps=[], browser, **kwargs):
         # TODO: Include Pages after confirming data structure
         super().__init__(**kwargs)
-        self._browser_config = browser_config
+        self._browser = browser
         self._steps = steps
         self._driver = None
         self._start_time = 'not started'
@@ -58,7 +58,7 @@ class TassCase(TassItem):
     @property
     def driver(self):
         if (self._driver is None):
-            self._driver = newDriver(**self._browser_config)
+            self._driver = newDriver(self._browser, self._config)
         return self._driver
 
     @property
