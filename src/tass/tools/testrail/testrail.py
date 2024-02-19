@@ -5,7 +5,7 @@ from tass.tools.testrail.testrail_apiclient import TestRailAPIClient
 def check_connection(func):
     def wrapper(api, *args):
         if api._api_client is not None:
-            func(api, *args)
+            return func(api, *args)
         else:
             print("Not connected.")
     return wrapper
