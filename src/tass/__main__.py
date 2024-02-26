@@ -1,8 +1,11 @@
 import argparse
 import json
+import tass.log.logging
 from pathlib import Path
 from tass.core.tass_files import TassRun
 
+
+log = logging.getLogger(__name__)
 
 class TassEncoder(json.JSONEncoder):
     # Convert Python objects to JSON equivalent.
@@ -26,9 +29,10 @@ def main(args):
     """
     Starting point for execution of tests.
     """
-    print(args.file)
+    log.info('Using: {}', args.file)
     with open(args.file) as file:
         # open the test file and load into memory as TassRun
+        log.debug('Succesfully opened {}', file)
         # TODO: TassRun or Tass Suite can be executed
         j_runs = read_file(file)
     runs = []
@@ -55,10 +59,17 @@ def main(args):
 
 def read_file(file):
     _test = json.load(file)
+    log.info("Loading ")
+    
     steps = _test.get('Steps', [])
+    log.debug("Loaded steps: {}", steps)
+
     test_cases = _test.get('Test_cases', [])
+    log.debug("Loaded cases: {}", test_cases)
+
     # test_suites = _test.get('Test_suites', [])
     test_runs = _test.get('Test_runs', [])
+    log.debug("Loaded runs: {}", test_runs)
 
     def read_cases(run):
         _cases = []
