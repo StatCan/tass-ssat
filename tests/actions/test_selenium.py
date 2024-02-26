@@ -616,6 +616,66 @@ class TestSelenium(unittest.TestCase):
 
             driver.quit()
 
+
+    def test_SeleniumSwitchWindowByPageTitle(self):
+        google = {
+            "title": "Google",
+            "url": "http://www.google.ca",
+            "page_id":
+            {
+                "method": "title",
+            },
+            "elements":
+            {}
+        }
+
+        github = {
+            "title": "GitHub: Let’s build from here · GitHub",
+            "url": "https://www.github.com",
+            "page_id":
+            {
+                "method": "title",
+            },
+            "elements":
+            {}
+        }
+
+        page_1 = {
+            "title": "Page One",
+            "url": pathlib.Path(self.test_page_url).resolve().as_uri(),
+            "page_id":
+            {
+                "method": "title",
+            },
+            "elements":
+            {}
+        }
+        try:
+            PageReader().add_page('google', google)
+            PageReader().add_page('github', github)
+            PageReader().add_page('page1', page_1)
+
+            for browser in self.drivers:
+                driver = browser(self.config)
+                with self.subTest(browser=driver.toJson()):
+                    driver.get(google['url'])
+                    driver.switch_to.new_window('tab')
+                    driver.get(github['url'])
+                    driver.switch_to.new_window('tab')
+                    driver.get(page_1['url'])
+                    self.assertEqual(driver.title, page_1['title'])
+                    selenium.switch_window(driver, page=('custom', 'google'))
+                    self.assertEqual(driver.title, google['title'])
+                    selenium.switch_window(driver, page=('custom', 'github'))
+                    self.assertEqual(driver.title, github['title'])
+                    selenium.switch_window(driver, page=('custom', 'page1'))
+                    self.assertEqual(driver.title, page_1['title'])
+
+                driver.quit()
+        finally:
+            PageReader.reset()
+
+
     def test_SeleniumLocateFormated(self):
         locator = {"by": "xpath", "value": "//testing/{}/{}/{}"}
         args = ["locator", "formatting", "implementation"]
@@ -624,6 +684,7 @@ class TestSelenium(unittest.TestCase):
         loc_out = selenium.locate(None, locator, args)
 
         self.assertEqual(loc_out['value'], expected)
+
 
     def test_SeleniumLocateFormattedPage(self):
         page = {
