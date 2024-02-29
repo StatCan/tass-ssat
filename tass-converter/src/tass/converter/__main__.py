@@ -1,7 +1,7 @@
 import argparse
 import json
-import tass.tools.convert.conf as conf
-import tass.tools.convert.page_conf as page_conf
+from . import conf as conf
+from . import page_conf as page_conf
 from pathlib import Path
 
 

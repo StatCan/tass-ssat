@@ -1,7 +1,7 @@
 import argparse
 import json
 from pathlib import Path
-from tass.base.core.tass_files import TassRun
+from .core.tass_files import TassRun
 
 
 class TassEncoder(json.JSONEncoder):
