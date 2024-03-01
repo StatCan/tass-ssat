@@ -10,6 +10,9 @@ authors = [
     {name = "Tyler Desjardins", email="josephgillestyler.desjardins@statcan.gc.ca"},
 ]
 requires-python = ">3.8"
+dependencies = [
+    "selenium>=4.7.2"
+]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: Apache Software License",

@@ -20,7 +20,11 @@ docs/best_practices.md. Also, create your conda environment via
 
 The conda environment will contain all the of the dependencies at the
 correct versions. To run tests, make sure you have an editable install
-with `pip install -e .` from the root directory.
+with `pip install -e <module>` from the root directory. Where `<module>`
+is replaced with the desired component of TASS:
+
+- tass-base
+- tass-converter
 
 #### Build Pypi Package
 
@@ -31,27 +35,41 @@ package. The package will be in the `dist` folder in your repository.
 #### Build Conda Package
 
 To build the conda package, navigate to the root of the directory and type
-`conda build conda-recipe`. The package can be found in a folder specified
-in the command output. You can always install it via `conda install
---use-local tass` if you wish to install it in the same environment you
-built it.
+`conda build <module>/conda-recipe`. The package can be found in a folder specified
+in the command output. You can always install it via `conda install --use-local <module>` 
+if you wish to install it in the same environment you built it.
+
+### Installation
+
+The framework can be installed by downloading the appropriate 
+release and then running the install command.
+
+#### pip
+
+Download the .whl file for the desired release version. Using the CLI 
+with pip and python >=3.10 enter the command `pip install <path/to/wheel/file>`
+
+#### conda
+
+Download the .tar.bz2 file for the desired release version. Using your conda environment
+enter the command `conda install <path/to/tar.bz2/file>`. After this instllation is
+successful enter the command `conda install --use-local <module name>` to install
+dependencies.
 
 ### Utilization
 
 The testing framework can be invoked from your CLI with the command
 
-`python -m tass --file ./path/to/config/file --browser <chrome|firefox|edge>`.
+`python -m tass.base --file/-f ./path/to/config/file --browser/-b <chrome|firefox|edge>`.
 
 #### Demo
 
 The repository comes with a working demo. Clone the repository, then
 create and active your conda environment. Assuming the working
 directory is the root of the git repository, you can run the demo with
-`python -m ./tass/ --file demo/tass_sample.json`. Please note that the
-tass_sample.json file will need to be adjusted if you want to run the demo
-with a different browser than Google Chrome.
+`python -m tass.base --file/-f demo/tass_sample.json --browser/-b <chrome|firefox|edge>`. 
 
-This short demo will go through some of the actions Selenium actions TASS
+This short demo will go through some of the actions TASS
 supports on a test webpage. The test webpage is locally present in the
 repository.
 
