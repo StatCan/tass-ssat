@@ -3,7 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 
 
-def newDriver(browser, config):
+def new_driver(browser, config):
     return browser(config)
 
 

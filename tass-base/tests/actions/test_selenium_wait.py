@@ -38,7 +38,7 @@ class TestSeleniumWait(unittest.TestCase):
         })
 
     test_page_url = (
-        str(pathlib.Path(__file__).parent.parent.resolve()) 
+        str(pathlib.Path(__file__).parents[1].resolve())
         + '/pages/page1.html')
 
     def setUp(self):

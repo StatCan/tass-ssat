@@ -1,6 +1,5 @@
 import selenium.webdriver.support.expected_conditions as EC
-from .selenium import locate
-from .action import action as act
+from . import selenium as sel
 
 
 def wait_element_clickable(driver, locator,
@@ -29,7 +28,7 @@ def wait_element_clickable(driver, locator,
             of the dictionary will vary based on the find function used.
     """
     def _wait(driver, locator, locator_args=None, page=None, time=None):
-        mark = tuple(locate(page, locator, locator_args).values())
+        mark = tuple(sel.locate(page, locator, locator_args).values())
         return driver.wait_until(EC.element_to_be_clickable, time=time,
                                  mark=mark)
 
@@ -37,10 +36,10 @@ def wait_element_clickable(driver, locator,
     if (action is None):
         _wait(driver, locator, locator_args, **kwargs)
     else:
-        act(*action)(driver,
-                     find=_wait,
-                     locator=locator,
-                     **kwargs)
+        getattr(sel, action[1])(driver,
+                                find=_wait,
+                                locator=locator,
+                                **kwargs)
     print('*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*')
 
 
@@ -70,7 +69,7 @@ def wait_element_visible(driver, locator,
             of the dictionary will vary based on the find function used.
     """
     def _wait(driver, locator, locator_args=None, time=None, page=None):
-        mark = tuple(locate(page, locator, locator_args).values())
+        mark = tuple(sel.locate(page, locator, locator_args).values())
         return driver.wait_until(EC.visibility_of_element_located, time=time,
                                  locator=mark)
 
@@ -78,8 +77,8 @@ def wait_element_visible(driver, locator,
     if (action is None):
         _wait(driver, locator, locator_args, **kwargs)
     else:
-        act(*action)(driver,
-                     find=_wait,
-                     locator=locator,
-                     **kwargs)
+        getattr(sel, action[1])(driver,
+                                find=_wait,
+                                locator=locator,
+                                **kwargs)
     print('*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*')
