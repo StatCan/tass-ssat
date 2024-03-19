@@ -4,25 +4,49 @@ from . import selenium as sel
 from . import selenium_wait as selwait
 
 
-class SeleniumActionManager(ActionManager):
-    def __init__(self, browser, config):
-        print("started selenium action manager")
-        super().__init__(sel)
-        self._driver = new_driver(browser, config)
+def get_manager(browser, config):
+    managers = {}
+    selenium = SeleniumActionManager(browser, config)
+    waiter = selenium.wait_manager()
 
-    def wait_manager(self):
-        return SeleniumActionManager.SeleniumWaitActionManager(self._driver)
+    managers['selenium'] = selenium
+    managers['selwait'] = waiter
+
+    return managers
+
+
+class BrowserDriverActionManager(ActionManager):
+    def __init__(self, module, manager):
+        super().__init__(module)
+        self._manager = manager
 
     def action(self, command, *args, **kwargs):
-        super().action(command, driver=self._driver, *args, **kwargs)
+        if not self._manager['driver']:
+            self._manager['driver'] = new_driver(
+                                            self._manager['browser'],
+                                            self._manager['config'])
+        driver = self._manager['driver']
+        super().action(command, driver=driver, *args, **kwargs)
 
     def quit(self):
-        self._driver.quit()
+        if self._manager['driver']:
+            self._manager['driver'].quit()
+            self._manager['driver'] = None
 
-    class SeleniumWaitActionManager(ActionManager):
-        def __init__(self, driver):
-            super().__init__(selwait)
-            self._driver = driver
 
-        def action(self, command, *args, **kwargs):
-            super().action(command, driver=self._driver, *args, **kwargs)
+class SeleniumActionManager(BrowserDriverActionManager):
+    def __init__(self, browser, config):
+        manager = {
+            'browser': browser,
+            'config': config,
+            'driver': None
+            }
+        super().__init__(sel, manager)
+
+    def wait_manager(self):
+        return SeleniumWaitActionManager(self._manager)
+
+
+class SeleniumWaitActionManager(BrowserDriverActionManager):
+    def __init__(self, manager):
+        super().__init__(selwait, manager)

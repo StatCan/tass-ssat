@@ -1,22 +1,33 @@
 import importlib
 
 
+modules = {
+    "selenium":
+        'tass.base.actions.selenium_action_manager',
+    "core":
+        'tass.base.actions.core_action_manager',
+    "selwait":
+        'tass.base.actions.selenium_action_manager'
+}
+
+
 def get_manager(module_name, **kwargs):
+    # Try to import the required module
     module = _import_module(module_name)
-    manager = getattr(module, f'{module_name.capitalize()}ActionManager')
-    return manager(**kwargs)
+
+    manager = module.get_manager(**kwargs)
+    return manager
 
 
 def _import_module(module_name):
     try:
-        imp = f"tass.base.actions.{module_name}_action_manager"
+        # Try to import the specified module action manager
+        imp = modules[module_name]
         return importlib.import_module(imp)
-        # TODO: Import module
     except ImportError as e:
         print(e)
         raise e
         # TODO: log error
-        # TODO: try to install?
 
 
 class ActionManager():
@@ -28,4 +39,7 @@ class ActionManager():
         return _action(*args, **kwargs)
 
     def quit(self):
+        # Method called at the end of every case
+        # include any cleanup/resetting required
+        # to make each case encapsulated.
         raise NotImplementedError('quit function not implemented')

@@ -70,6 +70,10 @@ def read_file(file):
                 _steps.append(next(
                     filter(lambda _c: _c['uuid'] == step, steps)))
             _case['steps'] = _steps
+
+            managers = set([_m['action'][0].lower() for _m in _steps])
+            _case['managers'] = managers
+
             _cases.append(_case)
         run['test_cases'] = _cases
 

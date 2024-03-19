@@ -43,7 +43,7 @@ class TassCase(TassItem):
         else:
             self._status = 'passed'
 
-    def __init__(self, *, steps=[], browser, **kwargs):
+    def __init__(self, *, steps=[], browser, managers, **kwargs):
         # TODO: Include Pages after confirming data structure
         super().__init__(**kwargs)
         self._browser = browser
@@ -52,19 +52,16 @@ class TassCase(TassItem):
         self._status = 'untested'
         self._errors = []
         self._managers = {}
-
-        self._init_managers('selenium', 'selenium',
-                            browser=self._browser,
-                            config=self._config)
-        self._init_managers('selwait',
-                            self._managers['selenium'].wait_manager())
-        self._init_managers('core', 'core')
-
-    def _init_managers(self, key, manager, **kwargs):
-        if (isinstance(manager, str)):
-            self._managers[key] = get_manager(manager, **kwargs)
-        else:
-            self._managers[key] = manager
+        for manager in managers:
+            if (manager not in self._managers):
+                match manager:
+                    case 'selenium' | 'selwait':
+                        self._managers.update(get_manager(
+                                                manager,
+                                                browser=browser,
+                                                config=self.config))
+                    case _:
+                        self._managers.update(get_manager(manager))
 
     def _quit_managers(self):
         for manager in self._managers.values():

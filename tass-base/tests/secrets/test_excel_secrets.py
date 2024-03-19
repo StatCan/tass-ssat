@@ -15,7 +15,6 @@ class TestExcelSecrets(unittest.TestCase):
         self.assertFalse(Singleton.exists(Secrets))
         path = '/data/excel_secrets_demo.json'
         directory = str(pathlib.Path(__file__).parents[1].resolve())
-        breakpoint()
         file = directory + path
         Secrets().add_source(file)
 
