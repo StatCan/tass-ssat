@@ -6,8 +6,13 @@ from . import selenium_wait as selwait
 
 def get_manager(browser, config):
     managers = {}
-    selenium = SeleniumActionManager(browser, config)
-    waiter = selenium.wait_manager()
+    manager = {
+            'browser': browser,
+            'config': config,
+            'driver': None
+            }
+    selenium = SeleniumActionManager(manager)
+    waiter = SeleniumActionManager(manager, module=selwait)
 
     managers['selenium'] = selenium
     managers['selwait'] = waiter
@@ -15,8 +20,8 @@ def get_manager(browser, config):
     return managers
 
 
-class BrowserDriverActionManager(ActionManager):
-    def __init__(self, module, manager):
+class SeleniumActionManager(ActionManager):
+    def __init__(self, manager, module=sel):
         super().__init__(module)
         self._manager = manager
 
@@ -32,21 +37,3 @@ class BrowserDriverActionManager(ActionManager):
         if self._manager['driver']:
             self._manager['driver'].quit()
             self._manager['driver'] = None
-
-
-class SeleniumActionManager(BrowserDriverActionManager):
-    def __init__(self, browser, config):
-        manager = {
-            'browser': browser,
-            'config': config,
-            'driver': None
-            }
-        super().__init__(sel, manager)
-
-    def wait_manager(self):
-        return SeleniumWaitActionManager(self._manager)
-
-
-class SeleniumWaitActionManager(BrowserDriverActionManager):
-    def __init__(self, manager):
-        super().__init__(selwait, manager)
