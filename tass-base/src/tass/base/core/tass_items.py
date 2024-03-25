@@ -4,12 +4,13 @@ from ..config import browserconfig as bc
 class TassItem():
 
     def __init__(self, parent=None, uuid=None, build=None,
-                 title=None, config=None):
+                 title=None, config=None, **kwargs):
         self._parent = parent
         self._title = title
         self._uuid = uuid
         self._build = build
         self._config = config
+        self._var = kwargs
 
     @property
     def title(self):

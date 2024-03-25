@@ -26,6 +26,7 @@ class TassCase(TassItem):
                     "status": "failed",
                     "status_message": soft_fail.message
                     }
+                # TODO: Do not update step. Convert to step result object/dict
                 step.update(error)
                 self._errors.append(step)
             except TassHardAssertionError as fail:
@@ -44,7 +45,7 @@ class TassCase(TassItem):
             self._status = 'passed'
 
     def __init__(self, *, steps=[], browser, managers, **kwargs):
-        # TODO: Include Pages after confirming data structure
+        # TODO: Remove browser from here. browser is not needed 
         super().__init__(**kwargs)
         self._browser = browser
         self._steps = steps
@@ -62,6 +63,14 @@ class TassCase(TassItem):
                                                 config=self.config))
                     case _:
                         self._managers.update(get_manager(manager))
+
+    def __repr__(self):
+        return (
+            f"TassCase(steps={self._steps}, browser={self._browser}, "
+            f"managers={self._managers.keys()}, parent={self.parent}, "
+            f"title={self.title}, uuid={self.uuid}, build={self.build}, "
+            f"config={self.config})"
+            )
 
     def _quit_managers(self):
         for manager in self._managers.values():
