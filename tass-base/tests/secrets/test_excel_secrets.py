@@ -14,7 +14,7 @@ class TestExcelSecrets(unittest.TestCase):
     def test_creation(self):
         self.assertFalse(Singleton.exists(Secrets))
         path = '/data/excel_secrets_demo.json'
-        directory = str(pathlib.Path(__file__).parent.parent.resolve())
+        directory = str(pathlib.Path(__file__).parents[1].resolve())
         file = directory + path
         Secrets().add_source(file)
 
@@ -25,7 +25,7 @@ class TestExcelSecrets(unittest.TestCase):
 
     def test_sheets(self):
         path = '/data/excel_secrets_demo.json'
-        directory = str(pathlib.Path(__file__).parent.parent.resolve())
+        directory = str(pathlib.Path(__file__).parents[1].resolve())
         file = directory + path
         Secrets().add_source(file)
         excel = Secrets().get_data_collection('excel-test', 'CollectionA')
@@ -39,7 +39,7 @@ class TestExcelSecrets(unittest.TestCase):
 
     def test_entries(self):
         path = '/data/excel_secrets_demo.json'
-        directory = str(pathlib.Path(__file__).parent.parent.resolve())
+        directory = str(pathlib.Path(__file__).parents[1].resolve())
         file = directory + path
         Secrets().add_source(file)
         excel = Secrets().get_data_collection('excel-test', 'CollectionB')
@@ -53,7 +53,7 @@ class TestExcelSecrets(unittest.TestCase):
 
     def test_select_key(self):
         path = '/data/excel_secrets_demo.json'
-        directory = str(pathlib.Path(__file__).parent.parent.resolve())
+        directory = str(pathlib.Path(__file__).parents[1].resolve())
         file = directory + path
         Secrets().add_source(file)
         excel = Secrets().get_data_collection('excel-test', 'CollectionA')
@@ -63,7 +63,7 @@ class TestExcelSecrets(unittest.TestCase):
 
     def test_select_equals(self):
         path = '/data/excel_secrets_demo.json'
-        directory = str(pathlib.Path(__file__).parent.parent.resolve())
+        directory = str(pathlib.Path(__file__).parents[1].resolve())
         file = directory + path
         Secrets().add_source(file)
         excel = Secrets().get_data_collection('excel-test', 'CollectionB')
