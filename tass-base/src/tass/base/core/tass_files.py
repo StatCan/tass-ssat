@@ -2,6 +2,7 @@ from datetime import datetime
 from .tass_items import TassFile
 from .tass_case import TassCase
 from ..drivers import supportedbrowsers as Browsers
+from ..log.logging import getLogger
 
 
 class TassSuite(TassFile):
@@ -12,6 +13,8 @@ class TassSuite(TassFile):
 
 
 class TassRun(TassFile):
+
+    logger = getLogger(__name__)
 
     def __init__(self,  path, test_cases, test_suites, browser, **kwargs):
         super().__init__(path, **kwargs)
@@ -37,17 +40,24 @@ class TassRun(TassFile):
     def collect(self):
         # TODO: Collect all test cases as TassItems,
         # then collect all TestSuites and yield TassItems
-        self._start_time = datetime.now().strftime("%d-%m-%Y--%H_%M_%S")
+        
         try:
             browser = Browsers.browser(self._browser_name)
+            self.logger.debug('Compatible browser selected (%s): %s', self.uuid, browser)
         except (KeyError) as ke:
-            print('')
-            print('Not a supported browser: ', self._browser_name)
+            self.logger.error("Unsupported browser selected (%s): %s", self.uuid, self._browser_name)
             raise ke
+
+        self._start_time = datetime.now().strftime("%d-%m-%Y--%H_%M_%S")
+        self.logger.debug("Start time (%s): %s", self.uuid, self._start_time)
 
         for case in self._raw_test_cases:
             tasscase = TassCase.from_parent(parent=self,
                                             browser=browser,
                                             **case)
+
+            self.logger.debug("Collected: %r", tasscase)
             yield tasscase
+
             self._completed_cases.append(tasscase)
+            self.logger.debug("Added to completed cases: %s", tasscase.uuid)
