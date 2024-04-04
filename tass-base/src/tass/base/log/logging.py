@@ -1,8 +1,9 @@
 import logging
 import logging.config
 import json
-# TODO: load logger configs here.
+from pathlib import Path
 
+Path("./log").mkdir(parents=True, exist_ok=True)
 CONFIG_PATH = "configs/log-config.json"
 
 with open(CONFIG_PATH) as f:
