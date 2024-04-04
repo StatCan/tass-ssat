@@ -1,0 +1,19 @@
+package:
+  name: tass-base
+  version: 0.5.0
+
+source:
+  path: ../
+
+build:
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - pip
+  run:
+    - python >3.8
+    - selenium >=4.7.2

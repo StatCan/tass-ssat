@@ -39,8 +39,7 @@
                 "q2",
                 "q3",
                 "q4",
-                "q5",
-                "q6a"
+                "q5"
             ]
         }
     ],
@@ -53,7 +52,7 @@
                 "load_file"
             ],
             "parameters": {
-                "relative_path": "demo/demo-html/page1.html"
+                "relative_path": "tests/pages/page1.html"
             }
         },
         {
@@ -165,24 +164,6 @@
                     "page1"
                 ],
                 "soft": "true"
-            }
-        },
-        {
-            "uuid": "q6a",
-            "title": "Click a button",
-            "action": [
-                "selenium",
-                "click"
-            ],
-            "parameters": {
-                "locator": "btnFormat",
-                "page": [
-                    "sample",
-                    "page1"
-                ],
-                "locator_args": [
-                    "Color"
-                ]
             }
         }
     ]
