@@ -10,9 +10,6 @@ def new_driver(browser, config):
 
 class TassDriverWrapper():
     """ Wrapper class for adding general features to browser driver classes."""
-
-    logger = getLogger(__name__)
-
     def wait_until(self, until_func, time=None, **kwargs):
         """ Wait for element to meet condition before returning the WebElement
             This method is used to explicitly wait for a conditon to be met the
@@ -63,6 +60,7 @@ class TassDriverWrapper():
 class ChromeDriver(TassDriverWrapper, webdriver.Chrome):
     """ Custom ChromeDriver for selenium interactions."""
     def __init__(self, config):
+        self.logger = getLogger(__name__, 'chrome')
         self._config = config
         super().__init__(options=self._config_options(
                                     webdriver.ChromeOptions,
@@ -86,6 +84,7 @@ class ChromeDriver(TassDriverWrapper, webdriver.Chrome):
 class FirefoxDriver(TassDriverWrapper, webdriver.Firefox):
     """ Custom FirefoxDriver for selenium interactions."""
     def __init__(self, config):
+        self.logger = getLogger(__name__, 'firefox')
         self._config = config
         super().__init__(options=self._config_options(
                                     webdriver.FirefoxOptions,
@@ -111,6 +110,7 @@ class FirefoxDriver(TassDriverWrapper, webdriver.Firefox):
 class EdgeDriver(TassDriverWrapper, webdriver.Edge):
     """ Custom EdgeDriver for selenium interactions."""
     def __init__(self, config):
+        self.logger = getLogger(__name__, 'edge')
         self._config = config
         super().__init__(options=self._config_options(
                             webdriver.EdgeOptions,

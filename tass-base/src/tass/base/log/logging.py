@@ -11,5 +11,8 @@ with open(CONFIG_PATH) as f:
     logging.config.dictConfig(config)
 
 def getLogger(*name):
-    logger = logging.getLogger('.'.join(['tass', *name]))
+    if (name[0].startswith('tass')):
+        logger = logging.getLogger('.'.join(name))
+    else:
+        logger = logging.getLogger('.'.join(['tass', *name]))
     return logger
