@@ -40,12 +40,14 @@ class TassRun(TassFile):
     def collect(self):
         # TODO: Collect all test cases as TassItems,
         # then collect all TestSuites and yield TassItems
-        
+
         try:
             browser = Browsers.browser(self._browser_name)
-            self.logger.debug('Compatible browser selected (%s): %s', self.uuid, browser)
+            self.logger.debug('Compatible browser selected (%s): %s',
+                              self.uuid, browser)
         except (KeyError) as ke:
-            self.logger.error("Unsupported browser selected (%s): %s", self.uuid, self._browser_name)
+            self.logger.error("Unsupported browser selected (%s): %s",
+                              self.uuid, self._browser_name)
             raise ke
 
         self._start_time = datetime.now().strftime("%d-%m-%Y--%H_%M_%S")

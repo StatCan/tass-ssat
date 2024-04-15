@@ -43,10 +43,12 @@ def main(args):
 
         for case in test.collect():
             # collect test cases from file
-            log.info(">>>>> Starting Test Case: %s - (%s) <<<<<", case.title, case.uuid)
+            log.info(">>>>> Starting Test Case: %s - (%s) <<<<<",
+                     case.title, case.uuid)
             log.debug("Test Case details: %r", case)
             case.execute_tass()
-            log.info("<<<<< Finished Test Case: %s - (%s) >>>>>", case.title, case.uuid)
+            log.info("<<<<< Finished Test Case: %s - (%s) >>>>>",
+                     case.title, case.uuid)
 
         runs.append(test)
 
@@ -87,11 +89,11 @@ def read_file(file):
             for step in _case.get('steps', []):
                 log.info("Looking for Step uuid: %s", step)
                 _step = next(filter(lambda _c: _c['uuid'] == step, steps))
-                
+
                 log.info("Found step: %s", _step['title'])
                 log.debug("Step details: %r", _step)
                 _steps.append(_step)
-                
+
             _case['steps'] = _steps
 
             managers = set([_m['action'][0].lower() for _m in _steps])
