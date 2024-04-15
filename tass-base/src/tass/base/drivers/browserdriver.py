@@ -1,13 +1,14 @@
 import ast
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
+from ..log.logging import getLogger
 
 
 def new_driver(browser, config):
     return browser(config)
 
 
-class WebDriverWaitWrapper():
+class TassDriverWrapper():
     """ Wrapper class for adding general features to browser driver classes."""
     def wait_until(self, until_func, time=None, **kwargs):
         """ Wait for element to meet condition before returning the WebElement
@@ -50,10 +51,16 @@ class WebDriverWaitWrapper():
         """
         self.implicitly_wait(self._get_property('implicit_wait'))
 
+    def find_element(self, by, value):
+        element = super().find_element(by, value)
+        self.logger.debug("Found element >>> tag: %s, location: %s", element.tag_name, element.rect)
+        return element
 
-class ChromeDriver(webdriver.Chrome, WebDriverWaitWrapper):
+
+class ChromeDriver(TassDriverWrapper, webdriver.Chrome):
     """ Custom ChromeDriver for selenium interactions."""
     def __init__(self, config):
+        self.logger = getLogger(__name__, 'chrome')
         self._config = config
         super().__init__(options=self._config_options(
                                     webdriver.ChromeOptions,
@@ -74,9 +81,10 @@ class ChromeDriver(webdriver.Chrome, WebDriverWaitWrapper):
         return ast.literal_eval(self._config.get('chrome', prop))
 
 
-class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
+class FirefoxDriver(TassDriverWrapper, webdriver.Firefox):
     """ Custom FirefoxDriver for selenium interactions."""
     def __init__(self, config):
+        self.logger = getLogger(__name__, 'firefox')
         self._config = config
         super().__init__(options=self._config_options(
                                     webdriver.FirefoxOptions,
@@ -99,9 +107,10 @@ class FirefoxDriver(webdriver.Firefox, WebDriverWaitWrapper):
         return ast.literal_eval(self._config.get('firefox', prop))
 
 
-class EdgeDriver(webdriver.Edge, WebDriverWaitWrapper):
+class EdgeDriver(TassDriverWrapper, webdriver.Edge):
     """ Custom EdgeDriver for selenium interactions."""
     def __init__(self, config):
+        self.logger = getLogger(__name__, 'edge')
         self._config = config
         super().__init__(options=self._config_options(
                             webdriver.EdgeOptions,

@@ -4,35 +4,48 @@ from selenium.webdriver.support.select import Select
 from ..core.page_reader import PageReader
 from ..exceptions.assertion_errors import TassHardAssertionError
 from ..exceptions.assertion_errors import TassSoftAssertionError
+from ..log.logging import getLogger
+
+
+logger = getLogger(__name__)
 
 
 def locate(page, locator, locator_args):
-    print(locator)
+    logger.debug("Locator: %s -- Args: %s", locator, locator_args)
     if (isinstance(locator, str)):
+        logger.debug("Getting locator (%s) from POM: %s", locator, page)
         _loc = PageReader().get_element(*page, locator)
     elif isinstance(locator, dict):
+        logger.debug("Locator provided directly...")
         _loc = locator
     else:
         msg = "Locator type not supported. Type: {}".format(type(locator))
+        logger.error(msg)
         raise TypeError(msg)
 
     if locator_args:
+        logger.debug("Filling in blanks in locator using: %s", locator_args)
         _loc['value'] = _loc['value'].format(*locator_args)
 
+    logger.debug("Using locator: %s", _loc)
     return _loc
 
 
 def _find_element(driver, locator, locator_args=None, page=None):
+    logger.debug("Searching for element...")
     return driver.find_element(**locate(page, locator, locator_args))
 
 
 def _is_displayed(driver, find=_find_element, **kwargs):
     try:
-        return find(driver, **kwargs).is_displayed()
+        display = find(driver, **kwargs).is_displayed()
+        logger.debug("Found element, displayed=%s", display)
+        return display
     except WebDriverException as e:
-        print("Exception: ", e, " trying again")
-        return find(driver, **kwargs).is_displayed()
-
+        logger.warning("Something went wrong, %s -- Trying again", e)
+        display = find(driver, **kwargs).is_displayed()
+        logger.debug("Attempt 2 >> Found element, displayed=%s", display)
+        return display
 
 def click(driver, find=_find_element, **kwargs):
     """Click an element in the DOM
@@ -58,9 +71,11 @@ def click(driver, find=_find_element, **kwargs):
     """
     try:
         find(driver, **kwargs).click()
+        logger.debug("Element clicked.")
     except WebDriverException as e:
-        print("Exception: ", e, " trying again")
+        logger.warning("Something went wrong, %s -- Trying again", e)
         find(driver, **kwargs).click()
+        logger.debug("Attempt 2 >> Element clicked.")
 
 
 def write(driver, find=_find_element, text='', **kwargs):
@@ -94,9 +109,11 @@ def write(driver, find=_find_element, text='', **kwargs):
     """
     try:
         find(driver, **kwargs).send_keys(text)
+        logger.debug("Typed: '%s'", text)
     except WebDriverException as e:
-        print("Exception: ", e, " trying again")
+        logger.warning("Something went wrong, %s -- Trying again", e)
         find(driver, **kwargs).send_keys(text)
+        logger.debug("Attempt 2 >> Typed: '%s'", text)
 
 
 def write_stored_value(driver, find=_find_element, text_key='', **kwargs):
@@ -165,20 +182,25 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
     match using:
         case 'text':
             select = Select.select_by_visible_text
+            logger.debug('Selecting with visible text')
         case 'value':
             select = Select.select_by_value
+            logger.debug('Selecting using option value')
         case 'index':
             select = Select.select_by_index
+            logger.debug("Selecting using option index")
         case _:
             raise ValueError('Select method {using} is not a valid method.')
 
     try:
         dropdown = Select(find(driver, **kwargs))
         select(dropdown, value)
+        logger.debug("Dropdown selected: '%s' -- using: '%s'", value, using)
     except WebDriverException as e:
-        print("Exception: ", e, " trying again")
+        logger.warning("Something went wrong, %s -- Trying again", e)
         dropdown = Select(find(driver, **kwargs))
         select(dropdown, value)
+        logger.debug("Attempt 2 >> Dropdown selected: '%s' -- using: '%s'", value, using)
 
 
 def clear(driver, find=_find_element, **kwargs):
@@ -205,9 +227,11 @@ def clear(driver, find=_find_element, **kwargs):
     """
     try:
         find(driver, **kwargs).clear()
+        logger.debug("Element cleared.")
     except WebDriverException as e:
-        print("Exception: ", e, " trying again")
+        logger.warning("Something went wrong, %s -- Trying again", e)
         find(driver, **kwargs).clear()
+        logger.debug("Attempt 2 >> Element cleared.")
 
 
 def load_url(driver, url):
@@ -224,6 +248,7 @@ def load_url(driver, url):
             The url to be loaded. Must be complete and correctly formatted.
     """
     driver.get(url)
+    logger.debug("Loaded url in browser: %s", url)
 
 
 def load_file(driver, relative_path):
@@ -240,7 +265,9 @@ def load_file(driver, relative_path):
             The file path to be loaded. Must be relative to the root directory.
     """
     url = pathlib.Path(relative_path).resolve().as_uri()
+    logger.debug("Looking for file to open at: %s", url)
     driver.get(url)
+    logger.debug("Loaded local file in browser.")
 
 
 def load_page(driver, page, url_key='url', use_local=False):
@@ -266,6 +293,7 @@ def load_page(driver, page, url_key='url', use_local=False):
             instead of a web URL.
     """
     url = PageReader().get_url(*page, url_key)
+    logger.debug("Read url from POM: %s", url)
     if (use_local):
         load_file(driver, url)
     else:
@@ -302,10 +330,14 @@ def read_attribute(driver, attribute, find=_find_element, **kwargs):
             requires: locator.
     """
     try:
-        return find(driver, **kwargs).get_attribute(attribute)
+        attr = find(driver, **kwargs).get_attribute(attribute)
+        logger.debug("Element has attribute: '%s'='%s'", attribute, attr)
     except WebDriverException as e:
-        print("Exception: ", e, " trying again")
-        return find(driver, **kwargs).get_attribute(attribute)
+        logger.warning("Something went wrong, %s -- Trying again", e)
+        attr = find(driver, **kwargs).get_attribute(attribute)
+        logger.debug("Attempt 2 >> Element has attribute: '%s'='%s'", attribute, attr)
+    
+    return attr
 
 
 def read_css(driver, attribute, find=_find_element, **kwargs):
@@ -339,10 +371,14 @@ def read_css(driver, attribute, find=_find_element, **kwargs):
     """
 
     try:
-        return find(driver, **kwargs).value_of_css_property(attribute)
+        prop = find(driver, **kwargs).value_of_css_property(attribute)
+        logger.debug("Element has CSS property: '%s'='%s'", attribute, prop)
     except WebDriverException as e:
-        print("Exception: ", e, " trying again")
-        return find(driver, **kwargs).value_of_css_property(attribute)
+        logger.warning("Something went wrong, %s -- Trying again", e)
+        prop = find(driver, **kwargs).value_of_css_property(attribute)
+        logger.debug("Attempt 2 >> Element has CSS property: '%s'='%s'", attribute, prop)
+        
+    return prop
 
 
 def switch_frame(driver, frame, page=None, find=_find_element):
@@ -368,23 +404,31 @@ def switch_frame(driver, frame, page=None, find=_find_element):
 
     """
     try:
-        # TODO: if/else logic needs to be revisited for POM implementation.
         if page:
             _frame = PageReader().get_element(*page, frame)
+            logger.debug("Found frame in POM.")
             switch_frame(driver, _frame, page=None, find=find)
         elif (isinstance(frame, str)):
             driver.switch_to.frame(frame)
+            logger.debug("Switched active frame to: %s", frame)
         else:
-            driver.switch_to.frame(find(driver, page=page, **frame))
+            element = find(driver, page=page, **frame)
+            driver.switch_to.frame(element)
+            logger.debug("Switched active frame to element: %r", element)
     except WebDriverException as e:
-        print("Exception: ", e, " trying again")
+        logger.warning("Something went wrong, %s -- Trying again", e)
         if page:
             _frame = PageReader().get_element(*page, frame)
+            logger.debug("Attempt 2 >> Found frame in POM.")
             switch_frame(driver, _frame, page=None, find=find)
         elif (isinstance(frame, str)):
             driver.switch_to.frame(frame)
+            logger.debug("Attempt 2 >> Switched active frame to: %s", frame)
         else:
             driver.switch_to.frame(find(driver, **frame))
+            logger.debug("Attempt 2 >> Switched active frame to element: %r", element)
+        
+        logger.debug("Attempt 2 >> Switched active frame to: %s", frame)
 
 
 def switch_window(driver, title=None, page=None):
@@ -405,19 +449,25 @@ def switch_window(driver, title=None, page=None):
             found and switched to correctly.
     """
     # TODO: Keep track of window handles to avoid loop?
+    # TODO: Handle switching from closed tabs
     cur_handle = driver.current_window_handle
+    logger.debug("Current window handle: %s -- title: %s", cur_handle, driver.title)
     if (page):
         switch_window(driver,
                       title=PageReader().get_page_title(*page),
                       page=None)
         return
-    elif (title is None):
-        for handle in driver.window_handles:
+    
+    handles = driver.window_handles
+    if (title is None ):
+        logger.info("Switching to next tab or window...")
+        for handle in handles:
+            # TODO: Handle switching if only 1 tab/window
             if (handle != cur_handle):
                 driver.switch_to.window(handle)
                 return
     elif (isinstance(title, str)):
-        for handle in driver.window_handles:
+        for handle in handles:
             if (handle == cur_handle):
                 continue
             else:
@@ -468,12 +518,16 @@ def assert_page_is_open(driver, page=None, find=_find_element,
         ele = None
         try:
             ele = find(driver, element, page=page)
+            logger.debug("Element: %s found, page is open.", element)
         except WebDriverException:
             try:
                 ele = find(driver, element, page=page)
+                logger.debug("Attempt 2 >> Element: %s found, page is open.", element)
             except WebDriverException as e:
-                print('Exception raised: {}'.format(e))
+                logger.warning('Exception raised: %s', e)
                 _fail(soft, 'WebDriver exception raised', exception=e)
+
+        logger.info("Elemen found. Page is open")
 
         if (ele is None):
             _fail(soft,
@@ -484,10 +538,14 @@ def assert_page_is_open(driver, page=None, find=_find_element,
             _fail(soft,
                   'Expected title not found. Page is not open')
 
+        logger.info("Found expected title. Page is open")
+
     def _url(driver, url, soft):
         if (driver.current_url != url):
             _fail(soft,
                   'Expected url not open. Page is not open')
+
+        logger.info("Found expected url. Page is open.")
     if (page is not None):
         page_id = PageReader().get_page_id(*page)
 
@@ -508,9 +566,8 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                 _url(driver, url, soft)
             case _:
                 raise ValueError(
-                    "Method, {page_id.get('method', 'element')} not supported")
+                    f"Method, {page_id.get('method')} not supported")
     elif (page_id is not None):
-
         match page_id.get('method', 'element'):
             case 'element':
                 _element(driver,
@@ -526,7 +583,7 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                 _url(driver, url, soft)
             case _:
                 raise ValueError(
-                    "Method, {page_id.get('method', 'element')} not supported")
+                    f"Method, {page_id.get('method')} not supported")
     elif (page is None and page_id is None):
         raise ValueError('Either page or page_id must not be None')
 
@@ -560,10 +617,12 @@ def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
     """
     try:
         if (_is_displayed(driver, find=find, **kwargs)):
+            logger.info("Element is displayed.")
             return
         else:
             _fail(soft, "assert_displayed Element is not displayed.")
     except WebDriverException as e:
+        logger.debug("Driver reporting error. %r", kwargs)
         if (soft):
             raise TassSoftAssertionError(
                 '''Soft Assertion failed: assert_displayed
@@ -605,6 +664,7 @@ def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
     """
     try:
         if not (_is_displayed(driver, find=find, **kwargs)):
+            logger.info("Element is not displayed.")
             return
         elif (soft):
             raise TassSoftAssertionError(
@@ -618,6 +678,7 @@ def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
                 *kwargs)
     except WebDriverException as e:
         if (soft):
+            logger.debug("Driver reporting error. %r", kwargs)
             raise TassSoftAssertionError(
                 '''Soft Assertion failed: assert_not_displayed
                 ->  Element is displayed.''',
