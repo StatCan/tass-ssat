@@ -48,6 +48,8 @@ def convert_test_case(test_case, conf, wb):
         tc["title"] = wb[case]['D1'].value
         tc["steps"] = []
         for row in wb[case].iter_rows(min_row=3, max_col=6):
+            if (row[0] is None or row[0] == ''):
+                continue
             print(row)
             steps = {}
             parameters = {}
@@ -66,7 +68,9 @@ def convert_test_case(test_case, conf, wb):
                 if (col[0].value is not None):
                     header = wb[case].cell(2, col[0].column).value
 
-                    if (col[0].value is not None and header == 'locator'):
+                    if (header == '//end//'):
+                        break
+                    elif (header == 'locator'):
                         locator = col[0].value.split(',')
 
                         if (len(locator) == 2):
@@ -77,14 +81,13 @@ def convert_test_case(test_case, conf, wb):
                         else:
                             parameters['locator'] = locator[0]
 
-                    elif (col[0].value is not None and header == 'page'):
+                    elif (header == 'page'):
                         parameters['page'] = col[0].value.split(',', 1)
 
-                    elif (col[0].value is not None and 'action' in header):
+                    elif ('action' in header):
                         parameters['action'] = col[0].value.split(',', 1)
 
-                    elif (col[0].value is not None
-                            and header == 'locator_args'):
+                    elif (header == 'locator_args'):
                         parameters['locator_args'] = col[0].value.split(',')
 
                     else:
