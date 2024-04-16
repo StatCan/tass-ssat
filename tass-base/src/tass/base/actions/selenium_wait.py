@@ -4,6 +4,7 @@ from . import selenium as sel
 
 logger = getLogger(__name__)
 
+
 def wait_element_clickable(driver, locator,
                            locator_args=None,
                            action=None, **kwargs):
@@ -39,7 +40,8 @@ def wait_element_clickable(driver, locator,
         logger.info("Waiting for element before continuing...")
         _wait(driver, locator, locator_args, **kwargs)
     else:
-        logger.info("Waiting for element before selenium action: %s", action[1])
+        logger.info("Waiting for element before selenium action: %s",
+                    action[1])
         # TODO: Rework this to perform ANY action not just selenium
         # TODO: Alternate: Create generic wait until condition in core?
         getattr(sel, action[1])(driver,
@@ -85,7 +87,8 @@ def wait_element_visible(driver, locator,
     else:
         # TODO: Rework this to perform ANY action not just selenium
         # TODO: Alternate: Create generic wait until condition in core?
-        logger.info("Waiting for element before selenium action: %s", action[1])
+        logger.info("Waiting for element before selenium action: %s",
+                    action[1])
         getattr(sel, action[1])(driver,
                                 find=_wait,
                                 locator=locator,

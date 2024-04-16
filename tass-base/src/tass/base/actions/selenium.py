@@ -47,6 +47,7 @@ def _is_displayed(driver, find=_find_element, **kwargs):
         logger.debug("Attempt 2 >> Found element, displayed=%s", display)
         return display
 
+
 def click(driver, find=_find_element, **kwargs):
     """Click an element in the DOM
 
@@ -200,7 +201,8 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
         logger.warning("Something went wrong, %s -- Trying again", e)
         dropdown = Select(find(driver, **kwargs))
         select(dropdown, value)
-        logger.debug("Attempt 2 >> Dropdown selected: '%s' -- using: '%s'", value, using)
+        logger.debug("Attempt 2 >> Dropdown selected: '%s' -- using: '%s'",
+                     value, using)
 
 
 def clear(driver, find=_find_element, **kwargs):
@@ -335,8 +337,9 @@ def read_attribute(driver, attribute, find=_find_element, **kwargs):
     except WebDriverException as e:
         logger.warning("Something went wrong, %s -- Trying again", e)
         attr = find(driver, **kwargs).get_attribute(attribute)
-        logger.debug("Attempt 2 >> Element has attribute: '%s'='%s'", attribute, attr)
-    
+        logger.debug("Attempt 2 >> Element has attribute: '%s'='%s'",
+                     attribute, attr)
+
     return attr
 
 
@@ -376,8 +379,9 @@ def read_css(driver, attribute, find=_find_element, **kwargs):
     except WebDriverException as e:
         logger.warning("Something went wrong, %s -- Trying again", e)
         prop = find(driver, **kwargs).value_of_css_property(attribute)
-        logger.debug("Attempt 2 >> Element has CSS property: '%s'='%s'", attribute, prop)
-        
+        logger.debug("Attempt 2 >> Element has CSS property: '%s'='%s'",
+                     attribute, prop)
+
     return prop
 
 
@@ -426,8 +430,9 @@ def switch_frame(driver, frame, page=None, find=_find_element):
             logger.debug("Attempt 2 >> Switched active frame to: %s", frame)
         else:
             driver.switch_to.frame(find(driver, **frame))
-            logger.debug("Attempt 2 >> Switched active frame to element: %r", element)
-        
+            logger.debug("Attempt 2 >> Switched active frame to element: %r",
+                         element)
+
         logger.debug("Attempt 2 >> Switched active frame to: %s", frame)
 
 
@@ -451,15 +456,16 @@ def switch_window(driver, title=None, page=None):
     # TODO: Keep track of window handles to avoid loop?
     # TODO: Handle switching from closed tabs
     cur_handle = driver.current_window_handle
-    logger.debug("Current window handle: %s -- title: %s", cur_handle, driver.title)
+    logger.debug("Current window handle: %s -- title: %s",
+                 cur_handle, driver.title)
     if (page):
         switch_window(driver,
                       title=PageReader().get_page_title(*page),
                       page=None)
         return
-    
+
     handles = driver.window_handles
-    if (title is None ):
+    if (title is None):
         logger.info("Switching to next tab or window...")
         for handle in handles:
             # TODO: Handle switching if only 1 tab/window
@@ -522,12 +528,13 @@ def assert_page_is_open(driver, page=None, find=_find_element,
         except WebDriverException:
             try:
                 ele = find(driver, element, page=page)
-                logger.debug("Attempt 2 >> Element: %s found, page is open.", element)
+                logger.debug("Attempt 2 >> Element: %s found, page is open.",
+                             element)
             except WebDriverException as e:
                 logger.warning('Exception raised: %s', e)
                 _fail(soft, 'WebDriver exception raised', exception=e)
 
-        logger.info("Elemen found. Page is open")
+        logger.info("Element found. Page is open")
 
         if (ele is None):
             _fail(soft,

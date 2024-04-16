@@ -53,7 +53,8 @@ class TassDriverWrapper():
 
     def find_element(self, by, value):
         element = super().find_element(by, value)
-        self.logger.debug("Found element >>> tag: %s, location: %s", element.tag_name, element.rect)
+        self.logger.debug("Found element >>> tag: %s, location: %s",
+                          element.tag_name, element.rect)
         return element
 
 
