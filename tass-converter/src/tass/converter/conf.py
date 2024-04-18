@@ -10,7 +10,7 @@ def convert(path):
     conf_file["Test_suites"] = []
     conf_file["Test_cases"] = []
     conf_file["Steps"] = {}  # Will be converted to list later.
-    wb = openpyxl.load_workbook(path)  # Open conf file.
+    wb = openpyxl.load_workbook(path, data_only=True)  # Open conf file.
 
     test_run = []  # Holds all test_run worksheet names.
     test_suite = []  # Holds all test_suite worksheet names.
@@ -65,12 +65,14 @@ def convert_test_case(test_case, conf, wb):
                                           max_row=row_num,
                                           min_col=4):
 
-                if (col[0].value is not None):
-                    header = wb[case].cell(2, col[0].column).value
+                header = wb[case].cell(2, col[0].column).value
 
-                    if (header == '//end//'):
-                        break
-                    elif (header == 'locator'):
+                if (header == '//end//'):
+                    break
+
+                if (col[0].value is not None):
+                    
+                    if (header == 'locator'):
                         locator = col[0].value.split(',')
 
                         if (len(locator) == 2):
@@ -88,7 +90,7 @@ def convert_test_case(test_case, conf, wb):
                         parameters['action'] = col[0].value.split(',', 1)
 
                     elif (header == 'locator_args'):
-                        parameters['locator_args'] = col[0].value.split(',')
+                        parameters['locator_args'] = str(col[0].value).split(',')
 
                     else:
                         parameters[header] = col[0].value
