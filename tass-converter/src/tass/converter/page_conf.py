@@ -19,6 +19,7 @@ class ElementType(StrEnum):
     CHECKSPECIFY = auto()
     DROPDOWN = auto()
     INTEGER = auto()
+    LEADINGZERO = "integerleadingzeros"
     TEXT = auto()
     PHONE = auto()
     EMAIL = auto()
@@ -93,12 +94,14 @@ def convert_to_excel(specs_path):
                             radio_group = row[2].value
                         case (ElementType.TEXT |
                                 ElementType.INTEGER |
+                                ElementType.LEADINGZERO |
                                 ElementType.PHONE |
                                 ElementType.EMAIL |
                                 ElementType.CURRENCY |
-                                ElementType.POSTALNOVAL |
-                                ElementType.COMMENTBOX):
+                                ElementType.POSTALNOVAL):
                             ele.append([ElementType.TEXT, row[2].value])
+                        case ElementType.COMMENTBOX:
+                            ele.append([ElementType.COMMENTBOX, row[2].value])
                         case ElementType.DROPDOWN:
                             ele.append([ElementType.DROPDOWN, row[2].value])
                         case ElementType.CHECK | ElementType.CHECKSPECIFY:
@@ -147,70 +150,125 @@ def convert_to_json(pages_path):
     page_number = 0
 
     def parse_info(id, rostered):
-        if rostered:
+        if rostered == 1:
             return (
                 f'//input[contains(@name, ".Instance") and @value={{}}]'
+                f'/following-sibling::*/descendant::div[contains(@id, "{id}")]'
+            )
+        elif rostered == 2:
+            return (
+                f'//input[@id="__instance" and @value={{}}]'
                 f'/following-sibling::*/descendant::div[contains(@id, "{id}")]'
             )
         else:
             return f'//div[contains(@id, "{id}")]/ul/li[{{}}]'
 
     def parse_radio(id, val, rostered):
-        if rostered:
+        if rostered == 1:
             return (
                 f'//input[contains(@name, ".Instance") and @value={{}}]'
                 '/following-sibling::*'
                 f'/descendant::input[contains(@name, ".{id}")'
                 f' and @value={val}]'
             )
+        elif rostered == 2:
+            return (
+                f'//input[@id="__instance" and @value={{}}]'
+                f'/following-sibling::*/descendant::input[contains(@name, "{id}")'
+                f' and @value="{val}"]'
+            )
         else:
             return f'//input[contains(@name, ".{id}") and @value={val}]'
 
     def parse_radiotext(id, rostered):
-        if rostered:
+        if rostered == 1:
             return (
                 f'//input[contains(@name, ".Instance") and @value={{}}]'
+                f'/following-sibling::*/descendant::input[@value="{id}"]'
+            )
+        elif rostered == 2:
+            return (
+                f'//input[@id="__instance" and @value={{}}]'
                 f'/following-sibling::*/descendant::input[@value="{id}"]'
             )
         else:
             return f'//input[@value="{id}"]'
 
     def parse_check(id, rostered):
-        if rostered:
+        if rostered == 1:
             return (
                 f'//input[contains(@name, ".Instance") and @value={{}}]'
                 '/following-sibling::*'
                 f'/descendant::input[contains(@name, ".{id}")'
                 ' and @type="checkbox"]'
             )
+        elif rostered == 2:
+            return (
+                f'//input[@id="__instance" and @value={{}}]'
+                f'/following-sibling::*/descendant::input[contains(@name, "{id}")'
+                f' and @type="checkbox"]'
+            )
         else:
             return f'//input[@name="{id}" and @type="checkbox"]'
 
     def parse_dropdown(id, rostered):
-        if rostered:
+        if rostered == 1:
             return (
                 f'//input[contains(@name, ".Instance") and @value={{}}]'
                 '/following-sibling::*'
                 f'/descendant::select[contains(@name, ".{id}")]'
             )
+        elif rostered == 2:
+            return (
+                f'//input[@id="__instance" and @value={{}}]'
+                f'/following-sibling::*/descendant::select[contains(@name, "{id}")]'
+            )
         else:
             return f'//select[@name="{id}"]'
 
     def parse_text(id, rostered):
-        if rostered:
+        if rostered == 1:
             return (
                 f'//input[contains(@name, ".Instance") and @value={{}}]'
                 '/following-sibling::*'
-                f'/descendant::input[contains(@name, ".{id}")]'
+                f'/descendant::input[contains(@name, ".{id}")'
+                f' and not(@type="radio") and not(@type="checkbox")]'
+            )
+        elif rostered == 2:
+            return (
+                f'//input[@id="__instance" and @value={{}}]'
+                f'/following-sibling::*/descendant::input[contains(@name, "{id}")'
+                f' and not(@type="radio") and not(@type="checkbox")]'
             )
         else:
             return f'//input[@name="{id}"]'
+            
+    def parse_comment(id, rostered):
+        if rostered == 1:
+            return (
+                f'//textarea[contains(@name, ".Instance") and @value={{}}]'
+                '/following-sibling::*'
+                f'/descendant::input[contains(@name, ".{id}")'
+                f' and not(@type="radio") and not(@type="checkbox")]'
+            )
+        elif rostered == 2:
+            return (
+                f'//textarea[@id="__instance" and @value={{}}]'
+                f'/following-sibling::*/descendant::input[contains(@name, "{id}")'
+                f' and not(@type="radio") and not(@type="checkbox")]'
+            )
+        else:
+            return f'//textarea[@name="{id}"]'
 
     for count, row in enumerate(ws.iter_rows(min_row=2, max_col=6), 2):
         print("This is the row:", row)
         row_type = row[0].value
         element_id = row[1].value
-        rostered = row[2].value and row[2].value == 1
+        
+        if (row[2].value and (row[2].value == 1 or row[2].value == 2)):
+            rostered = row[2].value
+        else:
+            rostered = 0
         if row_type == Element.BREAK:
             print("Page Number:", page_number)
             if not page and not elements:
@@ -275,6 +333,11 @@ def convert_to_json(pages_path):
             elements[element_id] = {
                 "by": "xpath",
                 "value": parse_text(element_id, rostered)
+                }
+        elif row_type == ElementType.COMMENTBOX:
+            elements[element_id] = {
+                "by": "xpath",
+                "value": parse_comment(element_id, rostered)
                 }
         elif row_type == ElementType.DROPDOWN:
             elements[element_id] = {

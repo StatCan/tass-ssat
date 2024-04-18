@@ -10,7 +10,7 @@ def convert(path):
     conf_file["Test_suites"] = []
     conf_file["Test_cases"] = []
     conf_file["Steps"] = {}  # Will be converted to list later.
-    wb = openpyxl.load_workbook(path)  # Open conf file.
+    wb = openpyxl.load_workbook(path, data_only=True)  # Open conf file.
 
     test_run = []  # Holds all test_run worksheet names.
     test_suite = []  # Holds all test_suite worksheet names.
@@ -48,6 +48,8 @@ def convert_test_case(test_case, conf, wb):
         tc["title"] = wb[case]['D1'].value
         tc["steps"] = []
         for row in wb[case].iter_rows(min_row=3, max_col=6):
+            if (row[0] is None or row[0] == ''):
+                continue
             print(row)
             steps = {}
             parameters = {}
@@ -63,10 +65,14 @@ def convert_test_case(test_case, conf, wb):
                                           max_row=row_num,
                                           min_col=4):
 
-                if (col[0].value is not None):
-                    header = wb[case].cell(2, col[0].column).value
+                header = wb[case].cell(2, col[0].column).value
 
-                    if (col[0].value is not None and header == 'locator'):
+                if (header == '//end//'):
+                    break
+
+                if (col[0].value is not None):
+                    
+                    if (header == 'locator'):
                         locator = col[0].value.split(',')
 
                         if (len(locator) == 2):
@@ -77,15 +83,14 @@ def convert_test_case(test_case, conf, wb):
                         else:
                             parameters['locator'] = locator[0]
 
-                    elif (col[0].value is not None and header == 'page'):
+                    elif (header == 'page'):
                         parameters['page'] = col[0].value.split(',', 1)
 
-                    elif (col[0].value is not None and 'action' in header):
+                    elif ('action' in header):
                         parameters['action'] = col[0].value.split(',', 1)
 
-                    elif (col[0].value is not None
-                            and header == 'locator_args'):
-                        parameters['locator_args'] = col[0].value.split(',')
+                    elif (header == 'locator_args'):
+                        parameters['locator_args'] = str(col[0].value).split(',')
 
                     else:
                         parameters[header] = col[0].value
