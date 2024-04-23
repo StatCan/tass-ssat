@@ -25,7 +25,10 @@ def locate(page, locator, locator_args):
 
     if locator_args:
         logger.debug("Filling in blanks in locator using: %s", locator_args)
-        _loc['value'] = _loc['value'].format(*locator_args)
+        if isinstance(locator_args, list):        
+            _loc['value'] = _loc['value'].format(*locator_args)
+        else:
+            _loc['value'] = _loc['value'].format(locator_args)
 
     logger.debug("Using locator: %s", _loc)
     return _loc
