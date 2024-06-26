@@ -31,6 +31,9 @@ class TassItem():
     @property
     def config(self):
         return self._config
+        
+    def var(self, name):
+        return self._var[name]
 
     @classmethod
     def from_parent(cls, parent,

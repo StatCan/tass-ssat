@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from .core.tass_files import TassRun
 from .log.logging import getLogger
+from .report.testrail_reporter import TestRailTassReporter
 
 
 log = getLogger(__name__)
@@ -25,6 +26,30 @@ class TassEncoder(json.JSONEncoder):
                 "Unserializable object {} of type {}".format(obj, type(obj))
                 )
 
+tr_config = {
+	
+	"connection": 
+	{
+		"user": "username",
+		"password": "password",
+		"url-base": "url",
+        "ssl-verify": 3
+	},
+	"config":
+	{
+		"mappings":
+		{
+			
+		}
+			
+	}
+}
+
+def make_report(reporter, func, *args):
+
+    if reporter:
+        getattr(reporter, func)(*args)
+        
 
 def main(args):
     """
@@ -32,6 +57,10 @@ def main(args):
     """
     log.info("\n\n <<<<<< TASS Starting >>>>>> \n\n")
     log.info("Preparing run using: %s", args.file)
+    if args.testrail:
+        report = TestRailTassReporter(**tr_config)
+    else:
+        report = None
     with open(args.file) as file:
         # open the test file and load into memory as TassRun
         # TODO: TassRun or Tass Suite can be executed
@@ -41,6 +70,7 @@ def main(args):
         test = TassRun(args.file, browser=args.browser, **run)
         log.info("Ready to start test: %s-(%s)", test.title, test.uuid)
 
+        make_report(report, "start_report", test)
         for case in test.collect():
             # collect test cases from file
             log.info(">>>>> Starting Test Case: %s - (%s) <<<<<",
@@ -51,6 +81,7 @@ def main(args):
                      case.title, case.uuid)
 
         runs.append(test)
+        make_report(report, "report", test)
 
     # Write results to file
     Path('results').mkdir(exist_ok=True)
@@ -123,5 +154,6 @@ if __name__ == '__main__':
     parser.add_argument('--browser', "-b",
                         type=str.lower,
                         action='store', required=True)
+    parser.add_argument('--testrail', action='store_true')
 
     main(parser.parse_args())

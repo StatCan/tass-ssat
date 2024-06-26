@@ -23,10 +23,22 @@ class TassRun(TassFile):
         self._browser_name = browser
         self._start_time = 'not started'
         self._completed_cases = []
+        
+    def __str__(self):
+        str_ = f"""
+                UUID: {self.uuid}
+                Browser: {self._browser_name}
+                Build: {self.build}
+               """
+        return str_
 
     @property
     def start_time(self):
         return self._start_time
+        
+    @property
+    def completed_cases(self):
+        return self._completed_cases
 
     def toJson(self):
         return {
@@ -52,7 +64,6 @@ class TassRun(TassFile):
 
         self._start_time = datetime.now().strftime("%d-%m-%Y--%H_%M_%S")
         self.logger.debug("Start time (%s): %s", self.uuid, self._start_time)
-
         for case in self._raw_test_cases:
             tasscase = TassCase.from_parent(parent=self,
                                             browser=browser,

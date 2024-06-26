@@ -96,6 +96,10 @@ class TassCase(TassItem):
     @property
     def steps(self):
         return self._steps
+        
+    @property
+    def status(self):
+        return self._status
 
     def toJson(self):
         return {

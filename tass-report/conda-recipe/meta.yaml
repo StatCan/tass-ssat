@@ -1,6 +1,6 @@
 package:
-  name: tass-base
-  version: 0.7.0
+  name: tass-testrail
+  version: 0.5.0
 
 source:
   path: ../
@@ -16,5 +16,3 @@ requirements:
     - pip
   run:
     - python >3.8
-    - selenium >=4.7.2
-    - tass-report
