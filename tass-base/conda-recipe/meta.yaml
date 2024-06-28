@@ -1,6 +1,6 @@
 package:
   name: tass-base
-  version: 0.6.1
+  version: 0.7.0
 
 source:
   path: ../
@@ -15,5 +15,6 @@ requirements:
     - setuptools
     - pip
   run:
-    - python >3.8
+    - python >3.11
     - selenium >=4.7.2
+    - tass-report

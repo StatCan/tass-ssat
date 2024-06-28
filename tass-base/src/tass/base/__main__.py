@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from .core.tass_files import TassRun
 from .log.logging import getLogger
+from .report.testrail_reporter import TestRailTassReporter
 
 
 log = getLogger(__name__)
@@ -24,7 +25,7 @@ class TassEncoder(json.JSONEncoder):
             raise TypeError(
                 "Unserializable object {} of type {}".format(obj, type(obj))
                 )
-
+        
 
 def main(args):
     """
@@ -32,11 +33,13 @@ def main(args):
     """
     log.info("\n\n <<<<<< TASS Starting >>>>>> \n\n")
     log.info("Preparing run using: %s", args.file)
+    
     with open(args.file) as file:
         # open the test file and load into memory as TassRun
         # TODO: TassRun or Tass Suite can be executed
         j_runs = read_file(file)
     runs = []
+
     for run in j_runs:
         test = TassRun(args.file, browser=args.browser, **run)
         log.info("Ready to start test: %s-(%s)", test.title, test.uuid)

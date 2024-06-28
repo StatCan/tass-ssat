@@ -25,10 +25,7 @@ def locate(page, locator, locator_args):
 
     if locator_args:
         logger.debug("Filling in blanks in locator using: %s", locator_args)
-        if isinstance(locator_args, list):        
-            _loc['value'] = _loc['value'].format(*locator_args)
-        else:
-            _loc['value'] = _loc['value'].format(locator_args)
+        _loc['value'] = _loc['value'].format(*locator_args)
 
     logger.debug("Using locator: %s", _loc)
     return _loc
@@ -144,8 +141,8 @@ def write_stored_value(driver, find=_find_element, text_key='', **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    from tass.actions.core import read_value
-    text = read_value(text_key)
+    from . import core
+    text = core.read_value(text_key)
     write(driver, find=find, text=text, **kwargs)
 
 
@@ -386,6 +383,40 @@ def read_css(driver, attribute, find=_find_element, **kwargs):
                      attribute, prop)
 
     return prop
+    
+
+def read_text(driver, find=_find_element, **kwargs):
+    """Read the value of a css attribute for an element in the DOM
+
+    Get the text value of the element with the locator
+    that is part of the kwargs argument. If a WebDriverException
+    occurs the action is attempted a second time before
+    allowing the exception to be raised to the next level.
+
+    Args:
+        driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+        find:
+            The function to be called when attempting to locate
+            an element. Must use either a explicit wait function
+            or the default _find_element fuinction.
+        **kwargs:
+            Dictionary containing additional parameters. Contents
+            of the dictionary will vary based on the find function used.
+            By default, _find_element is used and thus kwargs
+            requires: locator.
+    """
+
+    try:
+        text = find(driver, **kwargs).text
+        logger.info("Element has text: '%s'", text)
+    except WebDriverException as e:
+        logger.warning("Something went wrong, %s -- Trying again", e)
+        text = find(driver, **kwargs).text
+        logger.info("Attempt 2 >> Element has text: '%s'", text)
+
+    return text
 
 
 def switch_frame(driver, frame, page=None, find=_find_element):
@@ -551,6 +582,7 @@ def assert_page_is_open(driver, page=None, find=_find_element,
         logger.info("Found expected title. Page is open")
 
     def _url(driver, url, soft):
+        logger.info('Current url: %s', driver.current_url)
         if (driver.current_url != url):
             _fail(soft,
                   'Expected url not open. Page is not open')
@@ -567,12 +599,10 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                          page,
                          soft)
             case 'title':
-                title = PageReader() \
-                    .get_page_title(*page, default=page_id['identifier'])
+                title = page_id.get('identifier', PageReader().get_page_title(*page))
                 _title(driver, title, soft)
             case 'url':
-                url = PageReader() \
-                    .get_url(*page, default=page_id['identifier'])
+                url = page_id.get('identifier', PageReader().get_url(*page))
                 _url(driver, url, soft)
             case _:
                 raise ValueError(

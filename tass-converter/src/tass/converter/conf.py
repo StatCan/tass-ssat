@@ -10,11 +10,13 @@ def convert(path):
     conf_file["Test_suites"] = []
     conf_file["Test_cases"] = []
     conf_file["Steps"] = {}  # Will be converted to list later.
+    conf_file["Reporters"] = []
     wb = openpyxl.load_workbook(path, data_only=True)  # Open conf file.
 
     test_run = []  # Holds all test_run worksheet names.
     test_suite = []  # Holds all test_suite worksheet names.
     test_case = []  # Holds all test_case worksheet names.
+    test_reporter = [] # Holds all reporter worksheet names.
 
     # Get all worksheet names per type.
     for sheet in wb.sheetnames:
@@ -26,6 +28,8 @@ def convert(path):
             test_suite.append(sheet)
         elif test_type == 'tc_uuid:':
             test_case.append(sheet)
+        elif test_type == 'r_uuid:':
+            test_reporter.append(sheet)
         else:
             print('Not a tass Excel template.')
 
@@ -36,8 +40,34 @@ def convert(path):
         conf_file = convert_test_suite(test_suite, conf_file, wb)
     if test_case:
         conf_file = convert_test_case(test_case, conf_file, wb)
+    if test_reporter:
+        conf_file = convert_reporters(test_reporter, conf_file, wb)
 
     return conf_file
+
+
+def convert_reporters(reporters, conf, wb):
+    conf["Reporters"] = []
+    for reporter in reporters:
+        r = {}
+        s = wb[reporter] # Excel sheet for reporter
+        reporter_type = s['B3'].value
+        if reporter_type.lower() == "testrail":
+            r["uuid"] = s['B1'].value
+            config = {
+                "class": "TestRailTassReporter",
+                "mode": s['B5'].value
+                }
+            connection = {}
+            for row in s.iter_rows(min_row=5, min_col=4):
+                # Connection values are comma separated key/value pairs.
+                k, v = row[0].value.split(",")
+                connection[k] = v
+                
+            config["connection"] = connection
+            r["config"] = config
+            conf["Reporters"].append(r)
+    return conf
 
 
 def convert_test_case(test_case, conf, wb):
@@ -91,6 +121,9 @@ def convert_test_case(test_case, conf, wb):
 
                     elif (header == 'locator_args'):
                         parameters['locator_args'] = str(col[0].value).split(',')
+                        
+                    elif (header == 'stored_filter'):
+                        parameters['stored_filter'] = col[0].value.split(',', 1)
 
                     else:
                         parameters[header] = col[0].value
@@ -145,6 +178,7 @@ def convert_test_run(test_run, conf, wb):
         tr = {}
         tr["uuid"] = wb[run]['B1'].value
         tr["build"] = wb[run]['B2'].value
+        tr["title"] = wb[run]['D1'].value
         # tr["start_time"] = wb[run]['D1'].value
         # tr["end_time"] = wb[run]['D2'].value
         tr["test_cases"] = []
