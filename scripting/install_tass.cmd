@@ -6,10 +6,10 @@ git clone https://github.com/StatCan/tass-ssat.git
 cd tass-ssat
 @echo "SUCCESS CD?"
 @echo "CREATE CONDA ENV"
-conda env create -f environment.yaml
+call conda env create -f environment.yaml
 @echo "END CREATE CONDA ENV"
 @echo "CONDA ACTIVATE"
-conda activate tass_ssat-dev
+call conda activate tass_ssat-dev
 @echo "END CONDA ACTIVATE"
 @echo "CD TASS-BASE"
 cd tass-base
