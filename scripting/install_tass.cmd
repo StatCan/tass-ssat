@@ -1,4 +1,4 @@
-
+@echo off
 @echo "CLONE START"
 git clone https://github.com/StatCan/tass-ssat.git
 @echo "CLONE END"

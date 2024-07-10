@@ -18,7 +18,8 @@ set -- "${POSITIONAL[@]}"
 if [[ $1 == 'help' || $1 == '-h' || $1 == '--help' ]]
 then
     echo "Usage:"
-    echo "install_tass.sh -e pip_or_conda_package"
+    echo "install_tass.sh"
+    echo "Will clone a github repository in current folder and install tass modules."
     exit 0
 fi
 
