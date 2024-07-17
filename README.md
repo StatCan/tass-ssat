@@ -26,6 +26,11 @@ is replaced with the desired component of TASS:
 - tass-base
 - tass-converter
 
+You can also download the "install_tass" script appropriate for your
+platform from the "scripting" folder and run it to automatically clone the
+repository, create the conda environment, and have editable installs of
+the tass modules.
+
 #### Build Pypi Package
 
 To build the pypi package, navigate to the root of the directory and type
