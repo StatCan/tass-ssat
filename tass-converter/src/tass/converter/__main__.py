@@ -1,18 +1,15 @@
 import argparse
 import json
 from . import conf as conf
-from . import page_conf as page_conf
 from pathlib import Path
 
 
 conversions = [
-        "scenario",
-        "specs",
-        "pages"
+        "excel"
     ]
 
 
-def scenario(source, target):
+def scenario_excel(source, target):
     print(
         "Converting Excel:", source,
         "scenario to JSON:", target, "\n\n"
@@ -23,36 +20,10 @@ def scenario(source, target):
     return str(Path(t).resolve())
 
 
-def specs(source, target):
-    print(
-        "Converting Excel specs:", source,
-        "to page summary for:", target, "\n\n"
-        )
-    s = page_conf.convert_to_excel(source)
-    t = target + ".xlsx"
-    s.save(t)
-    return str(Path(t).resolve())
-
-
-def page(source, target):
-    print(
-        "Converting page summary:", source,
-        "to JSON POM for:", target, "\n\n"
-        )
-    s = page_conf.convert_to_json(source)
-    t = target + ".json"
-    json.dump(s, open(t, 'w+', encoding='utf-8'), indent=4)
-    return str(Path(t).resolve())
-
-
 def main(convert, source, target):
 
     if convert == conversions[0]:
-        return scenario(source, target)
-    elif convert == conversions[1]:
-        return specs(source, target)
-    elif convert == conversions[2]:
-        return page(source, target)
+        return scenario_excel(source, target)
 
 
 if __name__ == "__main__":
