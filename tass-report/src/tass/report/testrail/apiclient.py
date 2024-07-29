@@ -1,6 +1,7 @@
 import json
 from ..apiclient import APIClient
 
+
 class TestRailAPIClient(APIClient):
     def __init__(self,
                  base_url,
@@ -14,11 +15,9 @@ class TestRailAPIClient(APIClient):
                          auth,
                          ssl_verification_level)
 
-
     def _handle_response(self, response):
         # TODO: handle response code
         return super()._handle_response(response)
-            
 
     def get(self, endpoint):
         _request = self.start_request(endpoint, method="GET")

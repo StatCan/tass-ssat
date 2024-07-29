@@ -1,11 +1,13 @@
 from .item import TestRailItem, check_connection
 
+
 class Groups(TestRailItem):
     def __init__(self, api):
         self._api_client = api
 
     # Groups
-    # References: https://support.testrail.com/hc/en-us/articles/7077338821012-Groups
+    # References:
+    # https://support.testrail.com/hc/en-us/articles/7077338821012-Groups
 
     @check_connection
     def get_group(self, group_id):

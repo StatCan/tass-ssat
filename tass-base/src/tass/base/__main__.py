@@ -25,24 +25,21 @@ class TassEncoder(json.JSONEncoder):
             raise TypeError(
                 "Unserializable object {} of type {}".format(obj, type(obj))
                 )
-        
 
-def test_management(args):
-    pass
 
 def _make_report(registrar, func_name, *args, **kwargs):
     if registrar:
         for reporter in registrar.iter_reporters():
             getattr(reporter, func_name)(*args, **kwargs)
 
- 
+
 def main(args):
     """
     Starting point for execution of tests.
     """
     log.info("\n\n <<<<<< TASS Starting >>>>>> \n\n")
     log.info("Preparing run using: %s", args.file)
-    
+
     with open(args.file) as file:
         # open the test file and load into memory as TassRun
         # TODO: TassRun or Tass Suite can be executed
@@ -127,13 +124,13 @@ def _read_file(file):
         log.info("Reading run: %s", run['uuid'])
         log.debug("Run details: %r", run)
         read_cases(run)
-    
+
     registrar = None
     if reporters:
         registrar = ReporterRegistrar()
         for reporter in reporters:
             registrar.register_reporter(**reporter)
-        
+
     return test_runs, registrar
 
 
@@ -147,10 +144,10 @@ if __name__ == '__main__':
     # automated browser testing tool parser
 
     parser.add_argument('--file', "-f",
-                             action='store', required=True)
+                        action='store', required=True)
     parser.add_argument('--browser', "-b",
-                             type=str.lower, required=True,
-                             action='store', choices=supported_browsers)
+                        type=str.lower, required=True,
+                        action='store', choices=supported_browsers)
 
     args = parser.parse_args()
     log.debug("Launch arguments:", vars(args))

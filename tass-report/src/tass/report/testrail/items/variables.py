@@ -1,11 +1,13 @@
 from .item import TestRailItem, check_connection
 
+
 class Variables(TestRailItem):
     def __init__(self, api):
         self._api_client = api
 
     # Variables
-    # Reference: https://support.testrail.com/hc/en-us/articles/7077979742868-Variables
+    # Reference:
+    # https://support.testrail.com/hc/en-us/articles/7077979742868-Variables
 
     @check_connection
     def get_variables(self, project_id):

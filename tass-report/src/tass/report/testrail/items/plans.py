@@ -1,11 +1,13 @@
 from .item import TestRailItem, check_connection
 
+
 class Plans(TestRailItem):
     def __init__(self, api):
         self._api_client = api
 
     # Plans
-    # Reference: https://support.testrail.com/hc/en-us/articles/7077711537684-Plans
+    # Reference:
+    # https://support.testrail.com/hc/en-us/articles/7077711537684-Plans
 
     @check_connection
     def get_plan(self, plan_id):
@@ -14,7 +16,9 @@ class Plans(TestRailItem):
 
     @check_connection
     def get_plans(self, project_id, **filters):
-        endpoint = self._filtered_endpoint(f"get_plans/{project_id}", filters)
+        endpoint = self._filtered_endpoint(
+                        f"get_plans/{project_id}", filters
+                        )
         return self._api_client.get(endpoint)
 
     @check_connection

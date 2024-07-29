@@ -1,11 +1,13 @@
 from .item import TestRailItem, check_connection
 
+
 class Suites(TestRailItem):
     def __init__(self, api):
         self._api_client = api
 
     # Suites
-    # Reference: https://support.testrail.com/hc/en-us/articles/7077936624276-Suites
+    # Reference:
+    # https://support.testrail.com/hc/en-us/articles/7077936624276-Suites
 
     @check_connection
     def get_suite(self, suite_id):

@@ -24,7 +24,7 @@ class TassRun(TassFile):
         self._start_time = 'not started'
         self._completed_cases = []
         self._has_error = False
-        
+
     def __str__(self):
         str_ = f"""
                 UUID: {self.uuid}
@@ -36,15 +36,15 @@ class TassRun(TassFile):
     @property
     def start_time(self):
         return self._start_time
-        
+
     @property
     def completed_cases(self):
         return self._completed_cases
-        
+
     @property
     def has_error(self):
         return self._has_error
-        
+
     def record_error(self):
         self._has_error = True
 

@@ -16,7 +16,7 @@ def convert(path):
     test_run = []  # Holds all test_run worksheet names.
     test_suite = []  # Holds all test_suite worksheet names.
     test_case = []  # Holds all test_case worksheet names.
-    test_reporter = [] # Holds all reporter worksheet names.
+    test_reporter = []  # Holds all reporter worksheet names.
 
     # Get all worksheet names per type.
     for sheet in wb.sheetnames:
@@ -50,7 +50,7 @@ def convert_reporters(reporters, conf, wb):
     conf["Reporters"] = []
     for reporter in reporters:
         r = {}
-        s = wb[reporter] # Excel sheet for reporter
+        s = wb[reporter]  # Excel sheet for reporter
         reporter_type = s['B3'].value
         if reporter_type.lower() == "testrail":
             r["uuid"] = s['B1'].value
@@ -64,14 +64,16 @@ def convert_reporters(reporters, conf, wb):
             connection = {}
             for row in s.iter_rows(min_row=5, min_col=4):
                 # Connection values are comma separated key/value pairs.
-                if not row: continue
+                if not row:
+                    continue
                 k, v = row[0].value.split(",")
                 connection[k] = v
-               
+
             config = {}
             for row in s.iter_rows(min_row=5, min_col=6):
                 # config values are comma separated key/value pairs.
-                if not row: continue
+                if not row:
+                    continue
                 k, v = row[0].value.split(",")
                 config[k] = v
 
@@ -112,7 +114,7 @@ def convert_test_case(test_case, conf, wb):
                     break
 
                 if (col[0].value is not None):
-                    
+
                     if (header == 'locator'):
                         locator = col[0].value.split(',')
 
@@ -131,10 +133,12 @@ def convert_test_case(test_case, conf, wb):
                         parameters['action'] = col[0].value.split(',', 1)
 
                     elif (header == 'locator_args'):
-                        parameters['locator_args'] = str(col[0].value).split(',')
-                        
+                        parameters['locator_args'] = str(col[0].value)\
+                                                     .split(',')
+
                     elif (header == 'stored_filter'):
-                        parameters['stored_filter'] = col[0].value.split(',', 1)
+                        parameters['stored_filter'] = col[0]\
+                                                      .value.split(',', 1)
 
                     else:
                         parameters[header] = col[0].value
@@ -202,14 +206,16 @@ def convert_test_run(test_run, conf, wb):
                 tr["test_cases"].append(row[0].value)
         # other attributes:
         for col in wb[run].iter_cols(max_row=1, min_col=8):
-            if not col or col[0].value is None: continue
+            if not col or col[0].value is None:
+                continue
             header = col[0].value
             col_num = col[0].column
             attr = {}
             for row in wb[run].iter_rows(min_row=2,
                                          min_col=col_num,
                                          max_col=col_num):
-                if not row or row[0].value is None: continue
+                if not row or row[0].value is None:
+                    continue
                 k, v = row[0].value.split(",")
                 attr[k] = v
             tr[header] = attr

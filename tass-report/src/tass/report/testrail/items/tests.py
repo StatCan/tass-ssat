@@ -1,11 +1,13 @@
 from .item import TestRailItem, check_connection
 
+
 class Tests(TestRailItem):
     def __init__(self, api):
         self._api_client = api
 
     # Tests
-    # Reference: https://support.testrail.com/hc/en-us/articles/7077990441108-Tests
+    # Reference:
+    # https://support.testrail.com/hc/en-us/articles/7077990441108-Tests
 
     @check_connection
     def get_test(self, test_id, **filters):

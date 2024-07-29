@@ -1,10 +1,11 @@
 import requests
 
+
 class APIClient():
     def __init__(self,
-                base_url,
-                auth,
-                ssl_verification_level=1):
+                 base_url,
+                 auth,
+                 ssl_verification_level=1):
         if not base_url.endswith('/'):
             base_url += '/'
         self.__base_url = base_url
@@ -12,10 +13,10 @@ class APIClient():
         match ssl_verification_level:
             case 1 | '1':
                 # default. Verify is true
-                s.verify = True 
+                s.verify = True
             case 2 | '2':
                 # Verify using local certificate
-                s.cert = '' # TODO: Get certificate path somewhere
+                s.cert = ''  # TODO: Get certificate path somewhere
             case 3 | '3':
                 # Do not verify certificate
                 s.verify = False
@@ -52,8 +53,7 @@ class APIClient():
                 # Unexpected response
                 return response
 
- 
+
 class APIException(Exception):
     # TODO: Expand on this exception
     pass
-    

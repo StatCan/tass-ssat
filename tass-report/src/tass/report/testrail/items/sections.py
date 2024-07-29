@@ -1,11 +1,13 @@
 from .item import TestRailItem, check_connection
 
+
 class Sections(TestRailItem):
     def __init__(self, api):
         self._api_client = api
 
     # Sections
-    # Reference: https://support.testrail.com/hc/en-us/articles/7077918603412-Sections
+    # Reference:
+    # https://support.testrail.com/hc/en-us/articles/7077918603412-Sections
 
     @check_connection
     def get_section(self, section_id):
@@ -38,4 +40,5 @@ class Sections(TestRailItem):
     @check_connection
     def delete_section(self, section_id, soft=False):
         endpoint = f"delete_section/{section_id}"
-        return self._api_client.post(endpoint, {"soft": 1 if soft else 0})
+        return self._api_client.post(endpoint,
+                                     {"soft": 1 if soft else 0})

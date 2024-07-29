@@ -1,11 +1,13 @@
 from .item import TestRailItem, check_connection
 
+
 class Projects(TestRailItem):
     def __init__(self, api):
         self._api_client = api
 
     # Projects
-    # Reference: https://support.testrail.com/hc/en-us/articles/7077792415124-Projects
+    # Reference:
+    # https://support.testrail.com/hc/en-us/articles/7077792415124-Projects
 
     @check_connection
     def get_project(self, project_id):

@@ -383,7 +383,7 @@ def read_css(driver, attribute, find=_find_element, **kwargs):
                      attribute, prop)
 
     return prop
-    
+
 
 def read_text(driver, find=_find_element, **kwargs):
     """Read the value of a css attribute for an element in the DOM
@@ -599,7 +599,8 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                          page,
                          soft)
             case 'title':
-                title = page_id.get('identifier', PageReader().get_page_title(*page))
+                title = page_id.get('identifier',
+                                    PageReader().get_page_title(*page))
                 _title(driver, title, soft)
             case 'url':
                 url = page_id.get('identifier', PageReader().get_url(*page))

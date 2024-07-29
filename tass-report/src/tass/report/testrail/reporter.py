@@ -19,20 +19,19 @@ class TestrailReporter(ReporterBase):
                 "close-succesful-runs": False
             }
         }
-        
+
         # Load defaults first.
         conf.read_dict(defaults)
-        
+
         # Load configs
         tr = {"testrail": config}
         conf.read_dict(tr)
         return conf
-    
+
     @property
     def config(self):
         return self._config
-        
-    
+
     def _connect(self, connection):
         tr = TestRail(connection['user'])
         ssl = connection.get('ssl-verify', 1)
@@ -46,7 +45,7 @@ class TestrailReporter(ReporterBase):
 
     def start_report(self, project_id, run, *args, **kwargs):
         return self._start_run(project_id, run)
-        
+
     def report(self, reportable, report_all=True, *args, **kwargs):
         if report_all:
             return self._add_results(reportable)
@@ -55,17 +54,17 @@ class TestrailReporter(ReporterBase):
 
     def end_report(self, run_id, *args, **kwargs):
         return self._close_run(run_id)
-        
+
     def _start_run(self, project_id, run):
         response = self._testrail.runs().add_run(project_id, run)
         return response
         # TODO: examine response for status etc.
-        
+
     def _add_results(self, run_result):
         response = self._testrail.results().add_results_for_cases(**run_result)
         return response
         # TODO: examine response for status etc.
-        
+
     def _add_result(self, case_result):
         response = self._testrail.results().add_result_for_case(**case_result)
         return response
@@ -75,11 +74,11 @@ class TestrailReporter(ReporterBase):
         response = self._testrail.runs().close_run(run_id)
         return response
         # TODO: examine response for status etc.
-        
 
-    ''' 
+    '''
     TODO:
-    A (here)-- > Responsible for converting to testrail format using config template.
+    A (here)-- > Responsible for converting
+                 to testrail format using config template.
 
     B (tass-base)-- > Implement TASS specific behaviour
 
@@ -91,5 +90,4 @@ class TestrailReporter(ReporterBase):
         ii) Get the testrail id for each case, filter on uuid.
     3. Add Testrail run with API
     4. Update run with results of cases.
-    ''' 
-        
+    '''
