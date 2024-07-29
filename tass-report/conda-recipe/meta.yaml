@@ -1,6 +1,6 @@
 package:
   name: tass-report
-  version: 0.7.0
+  version: 0.1.0
 
 source:
   path: ../
@@ -15,4 +15,4 @@ requirements:
     - setuptools
     - pip
   run:
-    - python >3.11
+    - python >3.10
