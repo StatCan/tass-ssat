@@ -1,17 +1,13 @@
 import getpass
-from tass.report.testrail.reporter import TestRailReporter
-from tass.report.testrail.testrail import TestRail
+import logging
+from .reporter import TestrailReporter
 
-from ..log.logging import getLogger
+log = logging.getLogger("tass.report")
 
+class TassTestrailReporter(TestrailReporter):
 
-log = getLogger(__name__)
-
-
-class TestRailTassReporter(TestRailReporter):
-
-    def __init__(self, connection, config):
-        super().__init__(connection, config)
+    def __init__(self, connection, config, *args, **kwargs):
+        super().__init__(connection, config, *args, **kwargs)
         self._case_list = set()
         
     def _connect(self, connection):
@@ -38,7 +34,7 @@ class TestRailTassReporter(TestRailReporter):
         
         connection["user"] = user
         connection["password"] = pword
-        super()._connect(connection)
+        return super()._connect(connection)
         
     def start_report(self, run, *args, **kwargs):
         tr_run = {
@@ -85,7 +81,15 @@ class TestRailTassReporter(TestRailReporter):
         }
         
         super().report(r)
-            
+
+    def end_report(self, run, *args, **kwargs):
+        id = run.var('testrail')['id']
+        if self.config.getboolean("testrail", "always-close-runs"):
+            return super().end_report(id, *args, **kwargs)
+        elif (self.config.getboolean("testrail", "close-succesful-runs")
+                and not run.has_error):
+            return super().end_report(id, *args, **kwargs)
+
     def _get_status_id(self, status):
         match status:
                 case 'not started':

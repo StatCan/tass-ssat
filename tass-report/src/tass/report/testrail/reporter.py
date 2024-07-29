@@ -1,15 +1,38 @@
+import configparser
 from .testrail import TestRail
 from ..reporter import ReporterBase
 
 
 # TODO: Add support for test plans
-class TestRailReporter(ReporterBase):
-    def __init__(self, connection, config):
-        super().__init__()
+class TestrailReporter(ReporterBase):
+    def __init__(self, connection, config, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._testrail = self._connect(connection)
         # TODO: load configuration
-        self._config = config
+        self._config = self._load_config(config)
 
+    def _load_config(self, config):
+        conf = configparser.ConfigParser()
+        defaults = {
+            "DEFAULT": {
+                "always-close-runs": False,
+                "close-succesful-runs": False
+            }
+        }
+        
+        # Load defaults first.
+        conf.read_dict(defaults)
+        
+        # Load configs
+        tr = {"testrail": config}
+        conf.read_dict(tr)
+        return conf
+    
+    @property
+    def config(self):
+        return self._config
+        
+    
     def _connect(self, connection):
         tr = TestRail(connection['user'])
         ssl = connection.get('ssl-verify', 1)
@@ -17,15 +40,6 @@ class TestRailReporter(ReporterBase):
                    connection['url-base'],
                    ssl_verification_level=ssl)
         return tr
-        
-    def _map(self, map, value):
-        """
-        Utility method to map testrail keys to 
-        keys used by the tool accessing testrail.
-        """
-        mapping = self._config['mappings']
-        m = mapping.get(map, {}).get(value, None)
-        return m
 
     # TODO: Include logic to switch to different Testrail modes
     # ex: single suite, multiple suite.
@@ -48,15 +62,18 @@ class TestRailReporter(ReporterBase):
         # TODO: examine response for status etc.
         
     def _add_results(self, run_result):
-        resonse = self._testrail.results().add_results_for_cases(**run_result)
+        response = self._testrail.results().add_results_for_cases(**run_result)
+        return response
         # TODO: examine response for status etc.
         
     def _add_result(self, case_result):
         response = self._testrail.results().add_result_for_case(**case_result)
+        return response
         # TODO: examine response for status etc.
 
     def _close_run(self, run_id):
         response = self._testrail.runs().close_run(run_id)
+        return response
         # TODO: examine response for status etc.
         
 

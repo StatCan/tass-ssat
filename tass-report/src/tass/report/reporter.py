@@ -20,8 +20,8 @@ class ReporterABC(ABC):
 
 class ReporterBase(ReporterABC):
     @abstractmethod
-    def __init__(self, *args, **kwargs):
-        pass
+    def __init__(self, uuid, *args, **kwargs):
+        self._uuid = uuid
 
     @abstractmethod
     def start_report(self, *args, **kwargs):

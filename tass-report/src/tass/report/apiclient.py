@@ -10,13 +10,13 @@ class APIClient():
         self.__base_url = base_url
         s = requests.Session()
         match ssl_verification_level:
-            case 1:
+            case 1 | '1':
                 # default. Verify is true
                 s.verify = True 
-            case 2:
+            case 2 | '2':
                 # Verify using local certificate
                 s.cert = '' # TODO: Get certificate path somewhere
-            case 3:
+            case 3 | '3':
                 # Do not verify certificate
                 s.verify = False
             case _:

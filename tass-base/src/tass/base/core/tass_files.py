@@ -23,6 +23,7 @@ class TassRun(TassFile):
         self._browser_name = browser
         self._start_time = 'not started'
         self._completed_cases = []
+        self._has_error = False
         
     def __str__(self):
         str_ = f"""
@@ -39,6 +40,13 @@ class TassRun(TassFile):
     @property
     def completed_cases(self):
         return self._completed_cases
+        
+    @property
+    def has_error(self):
+        return self._has_error
+        
+    def record_error(self):
+        self._has_error = True
 
     def toJson(self):
         return {

@@ -50,6 +50,7 @@ class TassCase(TassItem):
 
         if (len(self._errors) > 0):
             self._status = 'failed'
+            self.parent.record_error()
         else:
             self._status = 'passed'
 

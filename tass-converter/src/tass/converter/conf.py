@@ -54,17 +54,28 @@ def convert_reporters(reporters, conf, wb):
         reporter_type = s['B3'].value
         if reporter_type.lower() == "testrail":
             r["uuid"] = s['B1'].value
-            config = {
-                "class": "TestRailTassReporter",
-                "mode": s['B5'].value
+            context = {
+                "type": "testrail",
+                "mode": s['B5'].value,
+                "package": s['B6'].value,
+                "class_name": s['B7'].value
                 }
+            r.update(context)
             connection = {}
             for row in s.iter_rows(min_row=5, min_col=4):
                 # Connection values are comma separated key/value pairs.
+                if not row: continue
                 k, v = row[0].value.split(",")
                 connection[k] = v
-                
-            config["connection"] = connection
+               
+            config = {}
+            for row in s.iter_rows(min_row=5, min_col=6):
+                # config values are comma separated key/value pairs.
+                if not row: continue
+                k, v = row[0].value.split(",")
+                config[k] = v
+
+            r["connection"] = connection
             r["config"] = config
             conf["Reporters"].append(r)
     return conf
@@ -189,6 +200,19 @@ def convert_test_run(test_run, conf, wb):
         for row in wb[run].iter_rows(min_row=3, min_col=4, max_col=4):
             if row[0].value is not None:
                 tr["test_cases"].append(row[0].value)
+        # other attributes:
+        for col in wb[run].iter_cols(max_row=1, min_col=8):
+            if not col or col[0].value is None: continue
+            header = col[0].value
+            col_num = col[0].column
+            attr = {}
+            for row in wb[run].iter_rows(min_row=2,
+                                         min_col=col_num,
+                                         max_col=col_num):
+                if not row or row[0].value is None: continue
+                k, v = row[0].value.split(",")
+                attr[k] = v
+            tr[header] = attr
         conf["Test_runs"].append(tr)
 
     return conf

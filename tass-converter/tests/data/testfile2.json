@@ -3,11 +3,15 @@
         {
             "uuid": "tr100101",
             "build": "V2.4",
+            "title": "sample-run",
             "test_cases": [
                 "uuid-tc-01",
                 "Uuid-tc-02"
             ],
-            "test_suites": []
+            "test_suites": [],
+            "testrail": {
+                "project_id": "321"
+            }
         }
     ],
     "Test_suites": [],
@@ -165,6 +169,22 @@
                 ],
                 "soft": "true"
             }
+        }
+    ],
+    "Reporters": [
+        {
+            "uuid": "testrail-1",
+            "type": "testrail",
+            "mode": "single",
+            "package": "tass.report.testrail",
+            "class_name": "TassTestrailReporter",
+            "connection": {
+                "user": "~",
+                "host": "abc",
+                "url-base": "abc.123",
+                "ssl-verify": "3"
+            },
+            "config": {}
         }
     ]
 }
