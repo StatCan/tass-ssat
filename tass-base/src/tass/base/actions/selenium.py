@@ -25,6 +25,7 @@ def locate(page, locator, locator_args):
 
     if locator_args:
         logger.debug("Filling in blanks in locator using: %s", locator_args)
+        # scenario converter shold convert locator args to a list by default
         _loc['value'] = _loc['value'].format(*locator_args)
 
     logger.debug("Using locator: %s", _loc)
@@ -386,7 +387,7 @@ def read_css(driver, attribute, find=_find_element, **kwargs):
 
 
 def read_text(driver, find=_find_element, **kwargs):
-    """Read the value of a css attribute for an element in the DOM
+    """Read the text value for an element in the DOM
 
     Get the text value of the element with the locator
     that is part of the kwargs argument. If a WebDriverException
