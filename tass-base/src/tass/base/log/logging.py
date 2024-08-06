@@ -18,7 +18,11 @@ if not path.exists():
                 "datefmt": "%d-%m-%y -- %H:%M:%S"
             },
             "detailed": {
-                "format": "%(asctime)s - %(name)s:%(funcName)s:%(lineno)s -- %(levelname)s >>> %(message)s"
+                "format": (
+                    "%(asctime)s - %(name)s:"
+                    "%(funcName)s:%(lineno)s -- "
+                    "%(levelname)s >>> %(message)s"
+                    )
             }
         },
         "handlers": {

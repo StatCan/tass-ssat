@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from .core.tass_files import TassRun
 from .log.logging import getLogger
+from tass.report.registrar import ReporterRegistrar
 
 
 log = getLogger(__name__)
@@ -26,21 +27,30 @@ class TassEncoder(json.JSONEncoder):
                 )
 
 
+def _make_report(registrar, func_name, *args, **kwargs):
+    if registrar:
+        for reporter in registrar.iter_reporters():
+            getattr(reporter, func_name)(*args, **kwargs)
+
+
 def main(args):
     """
     Starting point for execution of tests.
     """
     log.info("\n\n <<<<<< TASS Starting >>>>>> \n\n")
     log.info("Preparing run using: %s", args.file)
+
     with open(args.file) as file:
         # open the test file and load into memory as TassRun
         # TODO: TassRun or Tass Suite can be executed
-        j_runs = read_file(file)
+        j_runs, registrar = _read_file(file)
     runs = []
+
     for run in j_runs:
         test = TassRun(args.file, browser=args.browser, **run)
         log.info("Ready to start test: %s-(%s)", test.title, test.uuid)
 
+        _make_report(registrar, "start_report", test)
         for case in test.collect():
             # collect test cases from file
             log.info(">>>>> Starting Test Case: %s - (%s) <<<<<",
@@ -51,7 +61,8 @@ def main(args):
                      case.title, case.uuid)
 
         runs.append(test)
-
+        _make_report(registrar, "report", test)
+        _make_report(registrar, 'end_report', test)
     # Write results to file
     Path('results').mkdir(exist_ok=True)
 
@@ -62,7 +73,7 @@ def main(args):
             json.dump(test, f, indent=4, cls=TassEncoder)
 
 
-def read_file(file):
+def _read_file(file):
 
     _test = json.load(file)
     log.info("Reading job file...")
@@ -70,6 +81,7 @@ def read_file(file):
 
     steps = _test.get('Steps', [])
     test_cases = _test.get('Test_cases', [])
+    reporters = _test.get('Reporters', [])
 
     # test_suites = _test.get('Test_suites', [])
     test_runs = _test.get('Test_runs', [])
@@ -113,15 +125,30 @@ def read_file(file):
         log.debug("Run details: %r", run)
         read_cases(run)
 
-    return test_runs
+    registrar = None
+    if reporters:
+        registrar = ReporterRegistrar()
+        for reporter in reporters:
+            registrar.register_reporter(**reporter)
+
+    return test_runs, registrar
 
 
 if __name__ == '__main__':
+
+    # lists of choices for parser options
+    supported_browsers = ['chrome', 'firefox', 'edge']
+
     parser = argparse.ArgumentParser()
+
+    # automated browser testing tool parser
+
     parser.add_argument('--file', "-f",
                         action='store', required=True)
     parser.add_argument('--browser', "-b",
-                        type=str.lower,
-                        action='store', required=True)
+                        type=str.lower, required=True,
+                        action='store', choices=supported_browsers)
 
-    main(parser.parse_args())
+    args = parser.parse_args()
+    log.debug("Launch arguments:", vars(args))
+    main(args)

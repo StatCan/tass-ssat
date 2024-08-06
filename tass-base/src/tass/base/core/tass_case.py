@@ -50,6 +50,7 @@ class TassCase(TassItem):
 
         if (len(self._errors) > 0):
             self._status = 'failed'
+            self.parent.record_error()
         else:
             self._status = 'passed'
 
@@ -96,6 +97,10 @@ class TassCase(TassItem):
     @property
     def steps(self):
         return self._steps
+
+    @property
+    def status(self):
+        return self._status
 
     def toJson(self):
         return {

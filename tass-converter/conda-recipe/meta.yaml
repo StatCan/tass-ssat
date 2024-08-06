@@ -1,6 +1,6 @@
 package:
   name: tass-converter
-  version: 0.6.1
+  version: 0.7.0
 
 source:
   path: ../
@@ -15,5 +15,5 @@ requirements:
     - setuptools
     - pip
   run:
-    - python >3.8
+    - python >3.10
     - openpyxl
