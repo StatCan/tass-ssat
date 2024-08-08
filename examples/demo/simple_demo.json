@@ -3,6 +3,7 @@
         {
             "uuid": "tr100101",
             "build": "V2.4",
+            "title": "Simple Demo",
             "test_cases": [
                 "uuid-tc-01",
                 "Uuid-tc-02"
@@ -53,7 +54,7 @@
                 "load_file"
             ],
             "parameters": {
-                "relative_path": "demo/demo-html/page1.html"
+                "relative_path": "examples/demo-html/page1.html"
             }
         },
         {
@@ -185,5 +186,6 @@
                 ]
             }
         }
-    ]
+    ],
+    "Reporters": []
 }
