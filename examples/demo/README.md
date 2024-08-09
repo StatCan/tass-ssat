@@ -14,4 +14,4 @@ Testrail integration, TASS secrets, etc.
 
 #### Running this DEMO
 
-To execute this demo use the following command from your working directory replacing the '<>' with the appropriate values: `python -m tass.base -f <path/to/file>/simple_demo.json -b <browser>`
+To execute this demo use the following command from your working directory replacing the '<>' with the appropriate values: `python -m tass.base --file/-f <path/to/file>/simple_demo.json --browser/-b <browser>`

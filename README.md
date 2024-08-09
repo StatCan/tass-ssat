@@ -69,14 +69,12 @@ The testing framework can be invoked from your CLI with the command
 
 #### Demo
 
-The repository comes with a working demo. Clone the repository, then
-create and active your conda environment. Assuming the working
-directory is the root of the git repository, you can run the demo with
-`python -m tass.base --file/-f demo/tass_sample.json --browser/-b <chrome|firefox|edge>`. 
+The repository comes with several examples and working demos. To use any of the demos, clone the repository, then
+create and activate your conda environment. All the files required for a demo should be provided
+in the examples folder.
 
-This short demo will go through some of the actions TASS
-supports on a test webpage. The test webpage is locally present in the
-repository.
+[EXAMPLES](examples/) 
+
 
 ## License/Copyright
 
