@@ -3,6 +3,7 @@
         {
             "uuid": "tr100101",
             "build": "V2.4",
+            "title": "Simple Demo",
             "test_cases": [
                 "uuid-tc-01",
                 "Uuid-tc-02"
@@ -39,7 +40,8 @@
                 "q2",
                 "q3",
                 "q4",
-                "q5"
+                "q5",
+                "q6a"
             ]
         }
     ],
@@ -52,7 +54,7 @@
                 "load_file"
             ],
             "parameters": {
-                "relative_path": "tests/pages/page1.html"
+                "relative_path": "examples/demo-html/page1.html"
             }
         },
         {
@@ -165,6 +167,25 @@
                 ],
                 "soft": "true"
             }
+        },
+        {
+            "uuid": "q6a",
+            "title": "Click a button",
+            "action": [
+                "selenium",
+                "click"
+            ],
+            "parameters": {
+                "locator": "btnFormat",
+                "page": [
+                    "sample",
+                    "page1"
+                ],
+                "locator_args": [
+                    "Color"
+                ]
+            }
         }
-    ]
+    ],
+    "Reporters": []
 }
