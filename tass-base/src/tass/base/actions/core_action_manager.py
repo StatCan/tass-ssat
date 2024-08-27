@@ -2,7 +2,7 @@ from .action_manager import ActionManager
 from . import core as core
 
 
-def get_manager():
+def get_manager(*args, **kwargs):
     return {'core': CoreActionManager()}
 
 

@@ -5,7 +5,7 @@ import tass.base.actions.selenium_wait as selwait
 import tass.base.config.browserconfig as bc
 import selenium.webdriver.support.expected_conditions as EC
 
-from tass.base.drivers.browserdriver import (
+from tass.base.drivers.custombrowserdrivers import (
     ChromeDriver as CDriver,
     EdgeDriver as EDriver,
     FirefoxDriver as FDriver

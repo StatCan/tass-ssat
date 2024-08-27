@@ -34,7 +34,7 @@ def _default_browser_configs():
             "options": {
                 "arguments": ["--start-maximized"],
                 "preferences": []
-            },
+            }, 
             "name": "default"
         },
         "chrome": {

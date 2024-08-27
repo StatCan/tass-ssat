@@ -17,7 +17,7 @@ def locate(page, locator, locator_args):
         _loc = PageReader().get_element(*page, locator)
     elif isinstance(locator, dict):
         logger.debug("Locator provided directly...")
-        _loc = locator
+        _loc = locator 
     else:
         msg = "Locator type not supported. Type: {}".format(type(locator))
         logger.error(msg)
@@ -34,7 +34,7 @@ def locate(page, locator, locator_args):
 
 def _find_element(driver, locator, locator_args=None, page=None):
     logger.debug("Searching for element...")
-    return driver.find_element(**locate(page, locator, locator_args))
+    return driver().find_element(**locate(page, locator, locator_args))
 
 
 def _is_displayed(driver, find=_find_element, **kwargs):
@@ -250,7 +250,7 @@ def load_url(driver, url):
         url:
             The url to be loaded. Must be complete and correctly formatted.
     """
-    driver.get(url)
+    driver().get(url)
     logger.debug("Loaded url in browser: %s", url)
 
 
@@ -269,7 +269,7 @@ def load_file(driver, relative_path):
     """
     url = pathlib.Path(relative_path).resolve().as_uri()
     logger.debug("Looking for file to open at: %s", url)
-    driver.get(url)
+    driver().get(url)
     logger.debug("Loaded local file in browser.")
 
 
@@ -448,11 +448,11 @@ def switch_frame(driver, frame, page=None, find=_find_element):
             logger.debug("Found frame in POM.")
             switch_frame(driver, _frame, page=None, find=find)
         elif (isinstance(frame, str)):
-            driver.switch_to.frame(frame)
+            driver().switch_to.frame(frame)
             logger.debug("Switched active frame to: %s", frame)
         else:
             element = find(driver, page=page, **frame)
-            driver.switch_to.frame(element)
+            driver().switch_to.frame(element)
             logger.debug("Switched active frame to element: %r", element)
     except WebDriverException as e:
         logger.warning("Something went wrong, %s -- Trying again", e)
@@ -461,10 +461,10 @@ def switch_frame(driver, frame, page=None, find=_find_element):
             logger.debug("Attempt 2 >> Found frame in POM.")
             switch_frame(driver, _frame, page=None, find=find)
         elif (isinstance(frame, str)):
-            driver.switch_to.frame(frame)
+            driver().switch_to.frame(frame)
             logger.debug("Attempt 2 >> Switched active frame to: %s", frame)
         else:
-            driver.switch_to.frame(find(driver, **frame))
+            driver().switch_to.frame(find(driver, **frame))
             logger.debug("Attempt 2 >> Switched active frame to element: %r",
                          element)
 
@@ -490,33 +490,33 @@ def switch_window(driver, title=None, page=None):
     """
     # TODO: Keep track of window handles to avoid loop?
     # TODO: Handle switching from closed tabs
-    cur_handle = driver.current_window_handle
+    cur_handle = driver().current_window_handle
     logger.debug("Current window handle: %s -- title: %s",
-                 cur_handle, driver.title)
+                 cur_handle, driver().title)
     if (page):
         switch_window(driver,
                       title=PageReader().get_page_title(*page),
                       page=None)
         return
 
-    handles = driver.window_handles
+    handles = driver().window_handles
     if (title is None):
         logger.info("Switching to next tab or window...")
         for handle in handles:
             # TODO: Handle switching if only 1 tab/window
             if (handle != cur_handle):
-                driver.switch_to.window(handle)
+                driver().switch_to.window(handle)
                 return
     elif (isinstance(title, str)):
         for handle in handles:
             if (handle == cur_handle):
                 continue
             else:
-                driver.switch_to.window(handle)
-                if (driver.title == title):
+                driver().switch_to.window(handle)
+                if (driver().title == title):
                     return
 
-    driver.switch_to.window(cur_handle)
+    driver().switch_to.window(cur_handle)
     raise ValueError('No other window with title: {}'.format(title))
 
 
@@ -576,15 +576,15 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                   'Element {identifier} not found. Page is not open')
 
     def _title(driver, title, soft):
-        if (driver.title != title):
+        if (driver().title != title):
             _fail(soft,
                   'Expected title not found. Page is not open')
 
         logger.info("Found expected title. Page is open")
 
     def _url(driver, url, soft):
-        logger.info('Current url: %s', driver.current_url)
-        if (driver.current_url != url):
+        logger.info('Current url: %s', driver().current_url)
+        if (driver().current_url != url):
             _fail(soft,
                   'Expected url not open. Page is not open')
 

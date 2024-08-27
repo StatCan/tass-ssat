@@ -13,7 +13,7 @@ from tass.base.exceptions.assertion_errors import (
 import selenium.webdriver.support.expected_conditions as EC
 from selenium.webdriver.support.select import Select
 
-from tass.base.drivers.browserdriver import (
+from tass.base.drivers.custombrowserdrivers import (
     ChromeDriver as CDriver,
     EdgeDriver as EDriver,
     FirefoxDriver as FDriver
