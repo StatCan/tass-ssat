@@ -6,7 +6,9 @@ from .actions.action_manager import get_manager
 from .core.tass_files import TassRun
 from .log.logging import getLogger
 
+
 log = getLogger(__name__)
+
 
 class TassEncoder(json.JSONEncoder):
     # Convert Python objects to JSON equivalent.
@@ -25,6 +27,14 @@ class TassEncoder(json.JSONEncoder):
                 "Unserializable object {} of type {}".format(obj, type(obj))
                 )
 
+
+def _make_report(registrar, func_name, *args, **kwargs):
+    if registrar:
+        for reporter in registrar.iter_reporters():
+            getattr(reporter, func_name)(*args, **kwargs)
+
+    # TODO: add logging messages.
+
 def main(args):
     """
     Starting point for execution of tests.
@@ -37,10 +47,15 @@ def main(args):
         job = json.load(f)
 
     runs = parse_runs(path, job)
+    registrar = parse_reporters(job)
 
     for test in runs:
+        _make_report(registrar, "start_report", test)
         for case in test.collect():
             case.execute_tass()
+
+        _make_report(registrar, "report", test)
+        _make_report(registrar, 'end_report', test)
 
     Path('results').mkdir(exist_ok=True)
     for test in runs:
@@ -49,8 +64,6 @@ def main(args):
         with open(result_path, 'w+', encoding='utf-8') as f:
             json.dump(test, f, indent=4, cls=TassEncoder)
 
-    # TODO: Parse Suites
-    # TODO: add logging messages.
 
 def parse_runs(path, job):
     all_runs = job.get('Test_runs')
@@ -58,59 +71,63 @@ def parse_runs(path, job):
 
     for run in all_runs:
         run['test_cases'], managers = parse_cases(job, run)
-        for browser in parse_browsers(job):
+        for browser in parse_browsers(job, run['browsers']):
             _managers = {}
             for _manager in managers:
                 if _manager not in _managers:
                     _managers.update(get_manager(_manager, config=browser))
-            
+
             _run = TassRun(path, action_managers=_managers, **run)
 
             ready_runs.append(_run)
 
     return ready_runs
 
+
 def parse_suites(job):
+    # TODO: Parse Suites
     pass
 
 
 def parse_cases(job, run):
-    
+
     cases = []
     test_cases = job.get('Test_cases', [])
     all_steps = job.get('Steps', [])
     for case_id in run.get('test_cases', []):
         steps = []
-        case = next(filter(lambda _c: _c['uuid'] == case_id, test_cases))
+        case = next(filter(lambda _c: _c['uuid'] == case_id, test_cases)).copy()
 
         for step in case.get('steps', []):
-            _ = next(filter(lambda _c: _c['uuid'] == step, all_steps))
+            _ = next(filter(lambda _c: _c['uuid'] == step, all_steps)).copy()
 
             steps.append(_)
-        
+
         case['steps'] = steps
-        
+
         managers = set([_m['action'][0].lower() for _m in steps])
 
         cases.append(case)
-    
+
     return cases, managers
 
 
-def parse_reporters(job): 
-    registrar = ReporterRegistrar()
+def parse_reporters(job):
     reporters = job['Reporters']
+    if not reporters:
+        return None
+    registrar = ReporterRegistrar()
 
     for reporter in reporters:
         registrar.register_reporter(**reporter)
-    
+
     return registrar
 
 
-def parse_browsers(job):
+def parse_browsers(job, browser_list):
     browsers = job['Browsers']
-    for browser in browsers:
-        yield browser
+    return filter(lambda b: b['uuid'] in browser_list, browsers)
+
 
 if __name__ == '__main__':
 
