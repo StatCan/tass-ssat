@@ -40,8 +40,14 @@ def main(args):
     log.info("\n\n <<<<<< TASS Starting >>>>>> \n\n")
     log.info("Preparing run using: %s", args.file)
 
-    with open(args.file) as file:
-        # open the test file and load into memory as TassRun
+    try:
+        file = open(args.file)
+        # open test file
+    except IOError as e:
+        log.error("An IOError occured: %s" % e)
+        return
+    with file:
+        # load file into memory as TassRun
         # TODO: TassRun or Tass Suite can be executed
         j_runs, registrar = _read_file(file)
     runs = []
