@@ -92,7 +92,6 @@ def parse_runs(path, job):
             for _manager in managers:
                 if _manager not in _managers:
                     _managers.update(get_manager(_manager, config=browser))
-            breakpoint()
             _run = TassRun(path, action_managers=_managers, **run)
             log.info("Run: %s ready to execute.", _run.uuid)
 
