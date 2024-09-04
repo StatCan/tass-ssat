@@ -11,7 +11,7 @@ class TassDriverWait(WebDriverWait):
         super().__init__(driver, timeout, poll_frequency, ignored_exceptions)
 
         self.logger = getLogger(__name__, driver.name, 'wait')
-        self.logger.debug("Creating new wait driver with timeout of: %d", timeout )
+        self.logger.debug("Creating new wait driver with timeout of: %d", float(timeout))
 
 class ChromeDriver(webdriver.Chrome):
     """ Custom ChromeDriver for selenium interactions."""

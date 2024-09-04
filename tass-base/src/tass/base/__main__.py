@@ -30,16 +30,21 @@ def main(args):
     Starting point for execution of tests.
     """
     log.info("\n\n <<<<<< TASS Starting >>>>>> \n\n")
-    log.info("Preparing run using: %s", args.file)
 
     path = Path(args.file).resolve()
+
+    log.info("Preparing job using file @: %s", path)
     with open(path) as f:
         job = json.load(f)
-
+ 
     runs = parse_runs(path, job)
 
     for test in runs:
+        log.info("<<<<< Starting Run: %s >>>>>", test.uuid)
         for case in test.collect():
+            log.info("")
+            log.info("< < < Starting Case: %s > > >", case.uuid)
+            log.info("")
             case.execute_tass()
 
     Path('results').mkdir(exist_ok=True)
@@ -53,18 +58,23 @@ def main(args):
     # TODO: add logging messages.
 
 def parse_runs(path, job):
+    log.info("Parsing runs from job file")
     all_runs = job.get('Test_runs')
     ready_runs = []
 
     for run in all_runs:
+        log.info("Reading run: %s - %s", run['uuid'], run['title'])
         run['test_cases'], managers = parse_cases(job, run)
+        log.info("Run includes actions for: %s", managers)
         for browser in parse_browsers(job):
             _managers = {}
+            log.info("Creating run using browser: %s", browser)
             for _manager in managers:
                 if _manager not in _managers:
                     _managers.update(get_manager(_manager, config=browser))
             
             _run = TassRun(path, action_managers=_managers, **run)
+            log.info("Run: %s ready to execute.", _run.uuid)
 
             ready_runs.append(_run)
 

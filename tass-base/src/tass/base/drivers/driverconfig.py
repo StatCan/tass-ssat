@@ -75,7 +75,7 @@ class BaseDriverWrapper():
         return options
     
     def wait_until(self, until_func, time=None,
-                   poll_frequency=...,
+                   poll_frequency=0.5,
                    ignored_exceptions=None,
                    **kwargs):
         def new_wait(time):
