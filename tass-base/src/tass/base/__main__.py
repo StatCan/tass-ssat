@@ -30,7 +30,9 @@ class TassEncoder(json.JSONEncoder):
 
 def _make_report(registrar, func_name, *args, **kwargs):
     if registrar:
+        log.debug("Running report function: %s", func_name)
         for reporter in registrar.iter_reporters():
+            log.debug("Reporter: %s executing function", reporter.uuid)
             getattr(reporter, func_name)(*args, **kwargs)
 
     # TODO: add logging messages.
@@ -57,8 +59,13 @@ def main(args):
             log.info("")
             log.info("< < < Starting Case: %s > > >", case.uuid)
             log.info("")
+
             case.execute_tass()
 
+            log.info("")
+            log.info("> > > Finished Case: %s < < <", case.uuid)
+            log.info("")
+            
         _make_report(registrar, "report", test)
         _make_report(registrar, 'end_report', test)
 
@@ -85,7 +92,7 @@ def parse_runs(path, job):
             for _manager in managers:
                 if _manager not in _managers:
                     _managers.update(get_manager(_manager, config=browser))
-
+            breakpoint()
             _run = TassRun(path, action_managers=_managers, **run)
             log.info("Run: %s ready to execute.", _run.uuid)
 
@@ -110,7 +117,7 @@ def parse_cases(job, run):
 
         for step in case.get('steps', []):
             _ = next(filter(lambda _c: _c['uuid'] == step, all_steps)).copy()
-
+            log.debug(">>>>> Reading case: %s", _)
             steps.append(_)
 
         case['steps'] = steps
@@ -129,6 +136,8 @@ def parse_reporters(job):
     registrar = ReporterRegistrar()
 
     for reporter in reporters:
+        log.debug("Registering reporter: %s -- type: %s",
+                  reporter['uuid'], reporter['type'])
         registrar.register_reporter(**reporter)
 
     return registrar
@@ -136,6 +145,7 @@ def parse_reporters(job):
 
 def parse_browsers(job, browser_list):
     browsers = job['Browsers']
+    log.debug("Using browsers: %s", browser_list)
     return filter(lambda b: b['uuid'] in browser_list, browsers)
 
 

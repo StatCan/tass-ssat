@@ -72,7 +72,7 @@ class TassCase(TassItem):
             f"TassCase(steps={self._steps},"
             f"managers={self._managers}, parent={self.parent}, "
             f"title={self.title}, uuid={self.uuid}, build={self.build}, "
-            f"config={self.config})"
+            ")"
             )
 
     def _quit_managers(self):
