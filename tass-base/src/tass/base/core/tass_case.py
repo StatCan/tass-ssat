@@ -56,34 +56,23 @@ class TassCase(TassItem):
 
         self._quit_managers()
 
-    def __init__(self, *, steps=[], browser, managers, **kwargs):
+    def __init__(self, *, steps=[], managers, **kwargs):
         # TODO: Remove browser from here. browser is not needed
         # it should be attached to the Selenium manager.
         super().__init__(**kwargs)
-        self._browser = browser
         self._steps = steps
         self._start_time = 'not started'
         self._status = 'untested'
         self._errors = []
-        self._managers = {}
-        # TODO: build managers outside of case
-        for manager in managers:
-            if (manager not in self._managers):
-                match manager:
-                    case 'selenium' | 'selwait':
-                        self._managers.update(get_manager(
-                                                manager,
-                                                browser=browser,
-                                                config=self.config))
-                    case _:
-                        self._managers.update(get_manager(manager))
+        self._managers = managers
+        
 
     def __repr__(self):
         return (
-            f"TassCase(steps={self._steps}, browser={self._browser}, "
-            f"managers={self._managers.keys()}, parent={self.parent}, "
+            f"TassCase(steps={self._steps},"
+            f"managers={self._managers}, parent={self.parent}, "
             f"title={self.title}, uuid={self.uuid}, build={self.build}, "
-            f"config={self.config})"
+            ")"
             )
 
     def _quit_managers(self):

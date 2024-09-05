@@ -1,9 +1,10 @@
 import argparse
 import json
 from pathlib import Path
+from tass.report.registrar import ReporterRegistrar
+from .actions.action_manager import get_manager
 from .core.tass_files import TassRun
 from .log.logging import getLogger
-from tass.report.registrar import ReporterRegistrar
 
 
 log = getLogger(__name__)
@@ -29,43 +30,46 @@ class TassEncoder(json.JSONEncoder):
 
 def _make_report(registrar, func_name, *args, **kwargs):
     if registrar:
+        log.debug("Running report function: %s", func_name)
         for reporter in registrar.iter_reporters():
+            log.debug("Reporter: %s executing function", reporter.uuid)
             getattr(reporter, func_name)(*args, **kwargs)
 
+    # TODO: add logging messages.
 
 def main(args):
     """
     Starting point for execution of tests.
     """
     log.info("\n\n <<<<<< TASS Starting >>>>>> \n\n")
-    log.info("Preparing run using: %s", args.file)
 
-    with open(args.file) as file:
-        # open the test file and load into memory as TassRun
-        # TODO: TassRun or Tass Suite can be executed
-        j_runs, registrar = _read_file(file)
-    runs = []
+    path = Path(args.file).resolve()
 
-    for run in j_runs:
-        test = TassRun(args.file, browser=args.browser, **run)
-        log.info("Ready to start test: %s-(%s)", test.title, test.uuid)
+    log.info("Preparing job using file @: %s", path)
+    with open(path) as f:
+        job = json.load(f)
+ 
+    runs = parse_runs(path, job)
+    registrar = parse_reporters(job)
 
+    for test in runs:
+        log.info("<<<<< Starting Run: %s >>>>>", test.uuid)
         _make_report(registrar, "start_report", test)
         for case in test.collect():
-            # collect test cases from file
-            log.info(">>>>> Starting Test Case: %s - (%s) <<<<<",
-                     case.title, case.uuid)
-            log.debug("Test Case details: %r", case)
-            case.execute_tass()
-            log.info("<<<<< Finished Test Case: %s - (%s) >>>>>",
-                     case.title, case.uuid)
+            log.info("")
+            log.info("< < < Starting Case: %s > > >", case.uuid)
+            log.info("")
 
-        runs.append(test)
+            case.execute_tass()
+
+            log.info("")
+            log.info("> > > Finished Case: %s < < <", case.uuid)
+            log.info("")
+            
         _make_report(registrar, "report", test)
         _make_report(registrar, 'end_report', test)
-    # Write results to file
-    Path('results').mkdir(exist_ok=True)
 
+    Path('results').mkdir(exist_ok=True)
     for test in runs:
         file_name = test.uuid + '---' + test.start_time + '.json'
         result_path = Path().resolve() / "results" / file_name
@@ -73,81 +77,84 @@ def main(args):
             json.dump(test, f, indent=4, cls=TassEncoder)
 
 
-def _read_file(file):
+def parse_runs(path, job):
+    log.info("Parsing runs from job file")
+    all_runs = job.get('Test_runs')
+    ready_runs = []
 
-    _test = json.load(file)
-    log.info("Reading job file...")
-    log.debug("Loaded file: %s", _test)
+    for run in all_runs:
+        log.info("Reading run: %s - %s", run['uuid'], run['title'])
+        run['test_cases'], managers = parse_cases(job, run)
+        log.info("Run includes actions for: %s", managers)
+        for browser in parse_browsers(job, run['browsers']):
+            _managers = {}
+            log.info("Creating run using browser: %s", browser)
+            for _manager in managers:
+                if _manager not in _managers:
+                    _managers.update(get_manager(_manager, config=browser))
+            _run = TassRun(path, action_managers=_managers, **run)
+            log.info("Run: %s ready to execute.", _run.uuid)
 
-    steps = _test.get('Steps', [])
-    test_cases = _test.get('Test_cases', [])
-    reporters = _test.get('Reporters', [])
+            ready_runs.append(_run)
 
-    # test_suites = _test.get('Test_suites', [])
-    test_runs = _test.get('Test_runs', [])
+    return ready_runs
 
-    def read_cases(run):
-        _cases = []
-        log.info("Reading test cases...")
-        for case in run.get('test_cases', []):
-            log.info("Looking for Test Case uuid: %s", case)
 
-            _steps = []
-            _case = next(filter(lambda _c: _c['uuid'] == case, test_cases))
+def parse_suites(job):
+    # TODO: Parse Suites
+    pass
 
-            log.info("Found test case: %s", _case['title'])
-            log.debug("Test case details: %r", _case)
-            log.info("Reading steps for case...")
-            for step in _case.get('steps', []):
-                log.info("Looking for Step uuid: %s", step)
-                _step = next(filter(lambda _c: _c['uuid'] == step, steps))
 
-                log.info("Found step: %s", _step['title'])
-                log.debug("Step details: %r", _step)
-                _steps.append(_step)
+def parse_cases(job, run):
 
-            _case['steps'] = _steps
+    cases = []
+    test_cases = job.get('Test_cases', [])
+    all_steps = job.get('Steps', [])
+    for case_id in run.get('test_cases', []):
+        steps = []
+        case = next(filter(lambda _c: _c['uuid'] == case_id, test_cases)).copy()
 
-            managers = set([_m['action'][0].lower() for _m in _steps])
-            log.info("Using modules: %r", managers)
+        for step in case.get('steps', []):
+            _ = next(filter(lambda _c: _c['uuid'] == step, all_steps)).copy()
+            log.debug(">>>>> Reading case: %s", _)
+            steps.append(_)
 
-            _case['managers'] = managers
-            log.info("Test case, '%s' read complete", _case['title'])
-            log.debug("Prepared Test Case: %r", _case)
+        case['steps'] = steps
 
-            _cases.append(_case)
-        run['test_cases'] = _cases
+        managers = set([_m['action'][0].lower() for _m in steps])
 
-    log.info("Collecting test runs...")
-    for run in test_runs:
-        # _suites = []
-        log.info("Reading run: %s", run['uuid'])
-        log.debug("Run details: %r", run)
-        read_cases(run)
+        cases.append(case)
 
-    registrar = None
-    if reporters:
-        registrar = ReporterRegistrar()
-        for reporter in reporters:
-            registrar.register_reporter(**reporter)
+    return cases, managers
 
-    return test_runs, registrar
+
+def parse_reporters(job):
+    reporters = job['Reporters']
+    if not reporters:
+        return None
+    registrar = ReporterRegistrar()
+
+    for reporter in reporters:
+        log.debug("Registering reporter: %s -- type: %s",
+                  reporter['uuid'], reporter['type'])
+        registrar.register_reporter(**reporter)
+
+    return registrar
+
+
+def parse_browsers(job, browser_list):
+    browsers = job['Browsers']
+    log.debug("Using browsers: %s", browser_list)
+    return filter(lambda b: b['uuid'] in browser_list, browsers)
 
 
 if __name__ == '__main__':
 
-    # lists of choices for parser options
-    supported_browsers = ['chrome', 'firefox', 'edge']
-
-    parser = argparse.ArgumentParser()
-
     # automated browser testing tool parser
+    parser = argparse.ArgumentParser()
 
     parser.add_argument('--file', "-f",
                         action='store', required=True)
-    parser.add_argument('--browser', "-b",
-                        type=str.lower, required=True,
-                        action='store', choices=supported_browsers)
 
     args = parser.parse_args()
     log.debug("Launch arguments:", vars(args))

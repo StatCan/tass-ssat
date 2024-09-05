@@ -3,12 +3,36 @@
         {
             "uuid": "tr100101",
             "build": "V2.4",
-            "title": "Simple Demo",
+            "title": "Simple Demo v.1",
             "test_cases": [
                 "uuid-tc-01",
                 "Uuid-tc-02"
             ],
-            "test_suites": []
+            "test_suites": [],
+            "browsers": [
+                "chrome001",
+				"chrome002",
+                "ffox001",
+                "ffox002"
+            ],
+            "reporters": []
+        },
+		{
+            "uuid": "tr100102",
+            "build": "V2.4",
+            "title": "Simple Demo v.2",
+            "test_cases": [
+                "uuid-tc-01",
+                "Uuid-tc-02"
+            ],
+            "test_suites": [],
+            "browsers": [
+                "chrome001",
+				"chrome001A",
+				"chrome001B",
+				"ffox001"
+            ],
+            "reporters": []
         }
     ],
     "Test_suites": [],
@@ -187,5 +211,102 @@
             }
         }
     ],
-    "Reporters": []
+    "Reporters": [],
+    "Browsers": [
+        {
+            "browser_name": "chrome",
+            "uuid": "chrome001",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "10"
+                },
+                "browser": {
+                    "arguments": [
+                        "--start-maximized"
+                    ],
+                    "preferences": {}
+                }
+            }
+        },
+		{
+            "browser_name": "chrome",
+            "uuid": "chrome001A",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "10"
+                },
+                "browser": {
+                    "arguments": [
+                        "--window-size=1920,1080"
+                    ],
+                    "preferences": {}
+                }
+            }
+        },
+		{
+            "browser_name": "chrome",
+            "uuid": "chrome001B",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "10"
+                },
+                "browser": {
+                    "arguments": [
+                        "--window-size=900,600"
+                    ],
+                    "preferences": {}
+                }
+            }
+        },
+        {
+            "browser_name": "chrome",
+            "uuid": "chrome002",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "10"
+                },
+                "browser": {
+                    "arguments": [
+                        "--headless",
+                        "--start-maximized"
+                    ],
+                    "preferences": {}
+                }
+            }
+        },
+        {
+            "browser_name": "firefox",
+            "uuid": "ffox001",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "15",
+                    "explicit_wait": "30"
+                },
+                "browser": {
+                    "arguments": [
+                        "--start-maximized"
+                    ],
+                    "preferences": {}
+                }
+            }
+        },
+        {
+            "browser_name": "firefox",
+            "uuid": "ffox002",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "15",
+                    "explicit_wait": "30"
+                },
+                "browser": {
+                    "arguments": ["--headless"],
+                    "preferences": {}
+                }
+            }
+        }
+    ]
 }

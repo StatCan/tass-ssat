@@ -23,6 +23,10 @@ class ReporterBase(ReporterABC):
     def __init__(self, uuid, *args, **kwargs):
         self._uuid = uuid
 
+    @property
+    def uuid(self):
+        return self._uuid
+
     @abstractmethod
     def start_report(self, *args, **kwargs):
         pass

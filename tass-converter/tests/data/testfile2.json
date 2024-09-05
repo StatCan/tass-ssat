@@ -9,6 +9,12 @@
                 "Uuid-tc-02"
             ],
             "test_suites": [],
+            "browsers": [
+                "chrome001"
+            ],
+            "reporters": [
+                "testrail-1"
+            ],
             "testrail": {
                 "project_id": "321"
             }
@@ -185,6 +191,24 @@
                 "ssl-verify": "3"
             },
             "config": {}
+        }
+    ],
+    "Browsers": [
+        {
+            "browser_name": "chrome",
+            "uuid": "chrome001",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "10"
+                },
+                "browser": {
+                    "arguments": [
+                        "--start-maximized"
+                    ],
+                    "preferences": {}
+                }
+            }
         }
     ]
 }

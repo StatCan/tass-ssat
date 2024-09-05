@@ -1,15 +1,13 @@
-from ..config import browserconfig as bc
 
 
 class TassItem():
 
     def __init__(self, parent=None, uuid=None, build=None,
-                 title=None, config=None, **kwargs):
+                 title=None, **kwargs):
         self._parent = parent
         self._title = title
         self._uuid = uuid
         self._build = build
-        self._config = config
         self._var = kwargs
 
     @property
@@ -28,40 +26,28 @@ class TassItem():
     def build(self):
         return self._build
 
-    @property
-    def config(self):
-        return self._config
-
     def var(self, name):
         return self._var[name]
 
     @classmethod
     def from_parent(cls, parent,
                     title, uuid,
-                    build=None, config=None,
+                    build=None,
                     **kwargs):
-        if (config is None) and \
-           (parent is not None) and \
-           (parent.config is not None):
-            _config = parent.config
-        else:
-            _config = bc.load(config)
 
         _build = 'dev' if build is None else parent.build
 
         return cls(parent=parent, title=title,
                    uuid=uuid, build=_build,
-                   config=_config, **kwargs)
+                   **kwargs)
 
     @classmethod
     def create(cls, title, uuid,
-               build='dev', config=None,
+               build='dev',
                **kwargs):
-        _config = bc.load(config)
 
         return cls(parent=DefaultTassItem(), title=title,
-                   uuid=uuid, build=build,
-                   config=_config, **kwargs)
+                   uuid=uuid, build=build, **kwargs)
 
 
 class DefaultTassItem(TassItem):
@@ -70,8 +56,7 @@ class DefaultTassItem(TassItem):
         super().__init__(parent=None,
                          title='Default Tass Item',
                          uuid="!0001",
-                         build="dev",
-                         config=bc.load(None)
+                         build="dev"
                          )
 
 

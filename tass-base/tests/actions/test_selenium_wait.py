@@ -2,10 +2,9 @@ import unittest
 import pathlib
 
 import tass.base.actions.selenium_wait as selwait
-import tass.base.config.browserconfig as bc
 import selenium.webdriver.support.expected_conditions as EC
-
-from tass.base.drivers.browserdriver import (
+from tass.base.drivers.driverconfig import new_driver
+from tass.base.drivers.custombrowserdrivers import (
     ChromeDriver as CDriver,
     EdgeDriver as EDriver,
     FirefoxDriver as FDriver
@@ -14,47 +13,79 @@ from tass.base.drivers.browserdriver import (
 
 class TestSeleniumWait(unittest.TestCase):
 
-    config = bc.load(
+    config = [
         {
-            "DEFAULT": {
-                "implicit_wait": 5,
-                "explicit_wait": 10,
-                "options": {
-                    "arguments": ["--start-maximized", "--headless"],
-                    "preferences": []
-                    }
+            "browser_name": "chrome",
+            "uuid": "chromeTEST",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "20"
                 },
-            "firefox": {
-                "name": "firefox",
-                "options": {
-                    "arguments": ["--start-maximized", "--headless"],
-                    "preferences":
-                        [
-                            ["app.update.auto", False],
-                            ["app.update.enabled", False]
-                        ]
-                    }
+                "browser": {
+                    "arguments": [
+                        "--start-maximized",
+                        "--headless"
+                    ],
+                    "preferences": {}
                 }
-        })
+            }
+        },
+        {
+            "browser_name": "firefox",
+            "uuid": "firefoxTEST",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "20"
+                },
+                "browser": {
+                    "arguments": [
+                        "--start-maximized",
+                        "--headless"
+                    ],
+                    "preferences": {}
+                }
+            }
+        },
+        {
+            "browser_name": "edge",
+            "uuid": "edgeTEST",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "20"
+                },
+                "browser": {
+                    "arguments": [
+                        "--start-maximized",
+                        "--headless"
+                    ],
+                    "preferences": {}
+                }
+            }
+        }
+    ]
 
     test_page_url = (
         str(pathlib.Path(__file__).parents[1].resolve())
-        + '/pages/page1.html')
+        + '/pages/page1.html'
+        )
 
     def setUp(self):
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         print("Beginning new test TestCase %s" % self._testMethodName)
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
-        self.drivers = [CDriver, EDriver, FDriver]
+        self.drivers = [(self.config[0], CDriver), (self.config[1], FDriver), (self.config[2], EDriver)]
 
     def test_SeleniumWaitClickable(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
-                driver \
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                driver() \
                     .find_element(*['id', 'btn-y']) \
                     .click()
                 selwait \
@@ -75,10 +106,10 @@ class TestSeleniumWait(unittest.TestCase):
     def test_SeleniumWaitVisible(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
-                driver \
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                driver() \
                     .find_element(*['id', 'btn-a']) \
                     .click()
                 selwait \
