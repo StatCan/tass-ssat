@@ -1,6 +1,7 @@
 # TASS related files / folders
 configs/
 results/
+log/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

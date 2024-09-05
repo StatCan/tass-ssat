@@ -55,10 +55,7 @@ def main(args):
         return
     with f:
         job = json.load(f)
-    
-#    with open(path) as f:
-#        job = json.load(f)
- 
+
     runs = parse_runs(path, job)
     registrar = parse_reporters(job)
 
@@ -83,8 +80,15 @@ def main(args):
     for test in runs:
         file_name = test.uuid + '---' + test.start_time + '.json'
         result_path = Path().resolve() / "results" / file_name
-        with open(result_path, 'w+', encoding='utf-8') as f:
+        try:
+            f = open(result_path, 'w+', encoding='utf-8')
+        except IOError as e:
+            log.error("An IOError occured: %s" % e)
+            return
+        with f:
             json.dump(test, f, indent=4, cls=TassEncoder)
+#        with open(result_path, 'w+', encoding='utf-8') as f:
+#            json.dump(test, f, indent=4, cls=TassEncoder)
 
 
 def parse_runs(path, job):
