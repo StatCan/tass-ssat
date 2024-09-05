@@ -46,8 +46,18 @@ def main(args):
     path = Path(args.file).resolve()
 
     log.info("Preparing job using file @: %s", path)
-    with open(path) as f:
+    
+    try:
+        f = open(path)
+        # open test file
+    except IOError as e:
+        log.error("An IOError occured: %s" % e)
+        return
+    with f:
         job = json.load(f)
+    
+#    with open(path) as f:
+#        job = json.load(f)
  
     runs = parse_runs(path, job)
     registrar = parse_reporters(job)
