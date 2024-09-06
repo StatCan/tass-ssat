@@ -66,12 +66,12 @@ def convert_browsers(browsers, conf, wb):
         # Driver and browser arguments/config
         for row in s.iter_rows(min_row=3, min_col=2, max_col=6):
             if row[0].value:
-                k, v = row[0].value.split(',')
+                k, v = row[0].value.split(',', maxsplit=1)
                 d_config[k] = v
             if row[2].value:
                 b_args.add(row[2].value)
             if row[4].value:
-                k, v = row[4].value.split(',')
+                k, v = row[4].value.split(',', maxsplit=1)
                 b_pref[k] = v
             
         config = {
@@ -108,7 +108,7 @@ def convert_reporters(reporters, conf, wb):
                 # Connection values are comma separated key/value pairs.
                 if not row:
                     continue
-                k, v = row[0].value.split(",")
+                k, v = row[0].value.split(",", maxsplit=1)
                 connection[k] = v
 
             config = {}
@@ -116,7 +116,7 @@ def convert_reporters(reporters, conf, wb):
                 # config values are comma separated key/value pairs.
                 if not row:
                     continue
-                k, v = row[0].value.split(",")
+                k, v = row[0].value.split(",", maxsplit=1)
                 config[k] = v
 
             r["connection"] = connection
@@ -141,7 +141,7 @@ def convert_test_case(test_case, conf, wb):
             steps["uuid"] = row[0].value
             steps["title"] = row[1].value
             print(row[2], row[2].value)
-            steps["action"] = row[2].value.split(',', 1)
+            steps["action"] = row[2].value.split(',', maxsplit=1)
             # steps["parameter"] = row[3].value
 
             # The locator value is split on the comma
@@ -157,7 +157,7 @@ def convert_test_case(test_case, conf, wb):
                 if (col[0].value is not None):
 
                     if (header == 'locator'):
-                        locator = col[0].value.split(',')
+                        locator = str(col[0].value).split(',', maxsplit=1)
 
                         if (len(locator) == 2):
                             parameters['locator'] = {
@@ -168,10 +168,10 @@ def convert_test_case(test_case, conf, wb):
                             parameters['locator'] = locator[0]
 
                     elif (header == 'page'):
-                        parameters['page'] = col[0].value.split(',', 1)
+                        parameters['page'] = col[0].value.split(',', maxsplit=1)
 
                     elif ('action' in header):
-                        parameters['action'] = col[0].value.split(',', 1)
+                        parameters['action'] = col[0].value.split(',', maxsplit=1)
 
                     elif (header == 'locator_args'):
                         parameters['locator_args'] = str(col[0].value)\
@@ -179,7 +179,7 @@ def convert_test_case(test_case, conf, wb):
 
                     elif (header == 'stored_filter'):
                         parameters['stored_filter'] = col[0]\
-                                                      .value.split(',', 1)
+                                                      .value.split(',', maxsplit=1)
 
                     else:
                         parameters[header] = col[0].value
@@ -265,7 +265,7 @@ def convert_test_run(test_run, conf, wb):
                                          max_col=col_num):
                 if not row or row[0].value is None:
                     continue
-                k, v = row[0].value.split(",")
+                k, v = row[0].value.split(",", maxsplit=1)
                 attr[k] = v
             tr[header] = attr
         conf["Test_runs"].append(tr)
