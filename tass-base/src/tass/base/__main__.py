@@ -37,6 +37,7 @@ def _make_report(registrar, func_name, *args, **kwargs):
 
     # TODO: add logging messages.
 
+
 def main(args):
     """
     Starting point for execution of tests.
@@ -46,7 +47,7 @@ def main(args):
     path = Path(args.file).resolve()
 
     log.info("Preparing job using file @: %s", path)
-    
+
     try:
         f = open(path)
         # open test file
@@ -72,7 +73,7 @@ def main(args):
             log.info("")
             log.info("> > > Finished Case: %s < < <", case.uuid)
             log.info("")
-            
+
         _make_report(registrar, "report", test)
         _make_report(registrar, 'end_report', test)
 
@@ -87,8 +88,6 @@ def main(args):
             return
         with f:
             json.dump(test, f, indent=4, cls=TassEncoder)
-#        with open(result_path, 'w+', encoding='utf-8') as f:
-#            json.dump(test, f, indent=4, cls=TassEncoder)
 
 
 def parse_runs(path, job):
