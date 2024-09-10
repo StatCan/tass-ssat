@@ -16,7 +16,12 @@ class Secrets(metaclass=Singleton):
 
     def add_source(self, config_path):
         path = Path(config_path).resolve()
-        with open(path) as conf:
+        try:
+            conf = open(path)
+        except IOError as e:
+            log.error("An IOError occured: %s" % e)
+            return
+        with conf:
             config = json.load(conf)
 
         key = config['source']['name']
