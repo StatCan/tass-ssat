@@ -21,7 +21,12 @@ class PageReader(metaclass=Singleton):
     def _load_pages(self, file_key):
         file_name = file_key + '.json'
         page = self._page_root.resolve() / file_name
-        with open(page, encoding='utf-8') as file:
+        try:
+            file = open(page, encoding='utf-8')
+        except IOError as e:
+            log.error("An IOError occured: %s" % e)
+            return
+        with file:
             self.page_dict[file_key] = json.load(file)
         return self.page_dict[file_key]
 

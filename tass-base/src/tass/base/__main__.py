@@ -37,6 +37,7 @@ def _make_report(registrar, func_name, *args, **kwargs):
 
     # TODO: add logging messages.
 
+
 def main(args):
     """
     Starting point for execution of tests.
@@ -46,9 +47,16 @@ def main(args):
     path = Path(args.file).resolve()
 
     log.info("Preparing job using file @: %s", path)
-    with open(path) as f:
+
+    try:
+        f = open(path)
+        # open test file
+    except IOError as e:
+        log.error("An IOError occured: %s" % e)
+        return
+    with f:
         job = json.load(f)
- 
+
     runs = parse_runs(path, job)
     registrar = parse_reporters(job)
 
@@ -65,7 +73,7 @@ def main(args):
             log.info("")
             log.info("> > > Finished Case: %s < < <", case.uuid)
             log.info("")
-            
+
         _make_report(registrar, "report", test)
         _make_report(registrar, 'end_report', test)
 
@@ -73,7 +81,12 @@ def main(args):
     for test in runs:
         file_name = test.uuid + '---' + test.start_time + '.json'
         result_path = Path().resolve() / "results" / file_name
-        with open(result_path, 'w+', encoding='utf-8') as f:
+        try:
+            f = open(result_path, 'w+', encoding='utf-8')
+        except IOError as e:
+            log.error("An IOError occured: %s" % e)
+            return
+        with f:
             json.dump(test, f, indent=4, cls=TassEncoder)
 
 
