@@ -548,7 +548,7 @@ def assert_page_is_open(driver, page=None, find=_find_element,
         find:
             The function to be called when attempting to locate
             an element. Must use either a explicit wait function
-            or the default _find_element fuinction.
+            or the default _find_element function.
         method:
             The str representation of the desired method.
             Value must match one of the predefined methods
@@ -630,8 +630,48 @@ def assert_page_is_open(driver, page=None, find=_find_element,
         raise ValueError('Either page or page_id must not be None')
 
 
+def assert_contains_text(driver, text, find=_find_element, soft=False, **kwargs):
+    """Assert the given text is displayed in the element. Can be soft, or hard check.
+    
+    Using the WebElement text attribute, confirm that the specified element
+    contains the text fragment provided.
+
+    Args:
+        driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+        text:
+            The complete text or a text fragment that should be in the given element
+        find:
+            The function to be called when attempting to locate
+            an element. Must use either a explicit wait function
+            or the default _find_element function.
+        
+    """
+    actual_text = None
+    try:
+        actual_text = read_text(driver, find, **kwargs)
+        logger.info("Element contains text: %s", actual_text)
+        if text not in actual_text:
+            _fail(soft, "assert_text_displayed, text is not displayed.")
+        else:
+            logger.info("Element contains text: %s", text)
+    except WebDriverException as e:
+        logger.debug("Driver reporting error. %r", kwargs)
+        if (soft):
+            raise TassSoftAssertionError(
+                '''Soft Assertion failed: assert_displayed
+                -> Element is not displayed.''',
+                e, *kwargs)
+        else:
+            raise TassHardAssertionError(
+                '''Hard Assertion failed: assert_displayed
+                ->  Element is not displayed.''',
+                e, *kwargs)
+
+
 def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
-    """Assert the given element is displayed. Can be a soft of hard check
+    """Assert the given element is displayed. Can be a soft or hard check
 
     Execute the selenium is_displayed function against the locator
     provided. Then return true if it is displayed.
