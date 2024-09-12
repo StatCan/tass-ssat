@@ -5,6 +5,7 @@ import json
 
 log = getLogger(__name__)
 
+
 def parse(path, validate_on=True):
     log.info("Preparing job using file @: %s", path)
     try:
@@ -18,4 +19,3 @@ def parse(path, validate_on=True):
 
     # Validation and parsing step
     return validate(job, validate_on).parse(path, job)
-

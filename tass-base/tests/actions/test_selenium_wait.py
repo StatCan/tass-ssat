@@ -77,7 +77,9 @@ class TestSeleniumWait(unittest.TestCase):
         print("Beginning new test TestCase %s" % self._testMethodName)
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
-        self.drivers = [(self.config[0], CDriver), (self.config[1], FDriver), (self.config[2], EDriver)]
+        self.drivers = [(self.config[0], CDriver),
+                        (self.config[1], FDriver),
+                        (self.config[2], EDriver)]
 
     def test_SeleniumWaitClickable(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()

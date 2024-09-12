@@ -12,9 +12,12 @@ class TestSchema(unittest.TestCase):
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         print("Beginning new test TestCase %s" % self._testMethodName)
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-    
-    def  test_validate(self):
-        path = Path(__file__).parents[1].joinpath("./data/simple_demo.json").resolve()
+
+    def test_validate(self):
+        path = (Path(__file__)
+                .parents[1]
+                .joinpath("./data/simple_demo.json")
+                .resolve())
         with open(path) as f:
             job = json.load(f)
         parser = validate.validate(job)
@@ -27,10 +30,12 @@ class TestSchema(unittest.TestCase):
             validate.validate(job)
 
     def test_parse(self):
-        path = Path(__file__).parents[1].joinpath("./data/simple_demo.json").resolve()
+        path = (Path(__file__)
+                .parents[1]
+                .joinpath("./data/simple_demo.json")
+                .resolve())
         test, _ = parse.parse(path)
         self.assertIsInstance(test, list)
         self.assertEqual(len(test), 2)
         for t in test:
             self.assertIsInstance(t, TassRun)
-        

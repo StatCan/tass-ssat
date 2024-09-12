@@ -53,7 +53,7 @@ class ActionManager():
     def action(self, command, *args, **kwargs):
         _action = getattr(self._module, command)
         return _action(*args, **kwargs)
-    
+
     def toJson(self):
         return {
             "type": self.__class__.__name__,

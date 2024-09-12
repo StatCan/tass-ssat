@@ -100,7 +100,7 @@ SCHEMA_1_0_0 = {
                     "type": "array",
                     "minItems": 2,
                     "maxItems": 2,
-                    "items":{
+                    "items": {
                         "type": "string"
                     },
                     "description": "An array with a length of 2, the first string states the module, the second the action."
@@ -158,7 +158,7 @@ SCHEMA_1_0_0 = {
                             "properties": {
                                 "arguments": {
                                     "type": "array",
-                                    "items": { "type": "string" },
+                                    "items": {"type": "string"},
                                     "description": "Flags to be passed to the browser instance"
                                 },
                                 "preferences": {
@@ -167,11 +167,10 @@ SCHEMA_1_0_0 = {
                                 }
                             }
                         }
-                    }                    
+                    }
                 }
             },
             "required": ["uuid", "browser_name", "configs"]
         }
-
     }
 }

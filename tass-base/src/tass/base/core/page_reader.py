@@ -1,6 +1,10 @@
 import json
+from ..log.logging import getLogger
 from pathlib import Path
 from .singleton import Singleton
+
+
+log = getLogger(__name__)
 
 
 class PageReader(metaclass=Singleton):

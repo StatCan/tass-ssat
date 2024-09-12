@@ -17,7 +17,7 @@ def locate(page, locator, locator_args):
         _loc = PageReader().get_element(*page, locator)
     elif isinstance(locator, dict):
         logger.debug("Locator provided directly...")
-        _loc = locator 
+        _loc = locator
     else:
         msg = "Locator type not supported. Type: {}".format(type(locator))
         logger.error(msg)
@@ -630,9 +630,11 @@ def assert_page_is_open(driver, page=None, find=_find_element,
         raise ValueError('Either page or page_id must not be None')
 
 
-def assert_contains_text(driver, text, find=_find_element, soft=False, **kwargs):
-    """Assert the given text is displayed in the element. Can be soft, or hard check.
-    
+def assert_contains_text(driver, text, find=_find_element,
+                         soft=False, **kwargs):
+    """Assert the given text is displayed in the element.
+       Can be soft, or hard check.
+
     Using the WebElement text attribute, confirm that the specified element
     contains the text fragment provided.
 
@@ -641,12 +643,13 @@ def assert_contains_text(driver, text, find=_find_element, soft=False, **kwargs)
             The RemoteWebDriver object that is connected
             to the open browser.
         text:
-            The complete text or a text fragment that should be in the given element
+            The complete text or a text fragment that
+            should be in the given element
         find:
             The function to be called when attempting to locate
             an element. Must use either a explicit wait function
             or the default _find_element function.
-        
+
     """
     actual_text = None
     try:

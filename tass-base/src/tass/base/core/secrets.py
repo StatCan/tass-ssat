@@ -1,7 +1,11 @@
 from .singleton import Singleton
 import json
 from pathlib import Path
+from ..log.logging import getLogger
 from ..secrets.excel import Excel
+
+
+log = getLogger(__name__)
 
 
 def _secret_type(secret_type):

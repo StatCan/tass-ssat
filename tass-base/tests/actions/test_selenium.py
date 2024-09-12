@@ -85,14 +85,15 @@ class TestSelenium(unittest.TestCase):
         print("Beginning new test TestCase %s" % self._testMethodName)
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
-        self.drivers = [(self.config[0], CDriver), (self.config[1], FDriver), (self.config[2], EDriver)]
+        self.drivers = [(self.config[0], CDriver),
+                        (self.config[1], FDriver),
+                        (self.config[2], EDriver)]
 
     def test_SeleniumNewDriver(self):
         for browser in self.drivers:
             with self.subTest(browser=browser[1].__name__):
                 driver = new_driver(**browser[0])
                 self.assertIsInstance(driver(), browser[1])
-
 
     def test_SeleniumLoadURL(self):
         url = "https://www.google.ca"

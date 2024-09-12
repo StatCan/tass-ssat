@@ -64,7 +64,8 @@ class TassRun(TassFile):
         self._start_time = datetime.now().strftime("%d-%m-%Y--%H_%M_%S")
         self.logger.debug("Start time (%s): %s", self.uuid, self._start_time)
         for case in self._raw_test_cases:
-            tasscase = TassCase.from_parent(parent=self, managers = self._managers, **case)
+            tasscase = TassCase.from_parent(parent=self,
+                                            managers=self._managers, **case)
 
             self.logger.debug("Collected: %r", tasscase)
             yield tasscase

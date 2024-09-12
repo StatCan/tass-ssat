@@ -74,7 +74,7 @@ def convert_browsers(browsers, conf, wb):
             if row[4].value:
                 k, v = row[4].value.split(',', maxsplit=1)
                 b_pref[k] = v
-            
+
         config = {
             'driver': d_config,
             'browser': {
@@ -89,6 +89,7 @@ def convert_browsers(browsers, conf, wb):
 
         conf['Browsers'].append(b)
     return conf
+
 
 def convert_reporters(reporters, conf, wb):
     for reporter in reporters:
@@ -169,18 +170,23 @@ def convert_test_case(test_case, conf, wb):
                             parameters['locator'] = locator[0]
 
                     elif (header == 'page'):
-                        parameters['page'] = col[0].value.split(',', maxsplit=1)
+                        parameters['page'] = (col[0]
+                                              .value
+                                              .split(',', maxsplit=1))
 
                     elif ('action' in header):
-                        parameters['action'] = col[0].value.split(',', maxsplit=1)
+                        parameters['action'] = (col[0]
+                                                .value
+                                                .split(',', maxsplit=1))
 
                     elif (header == 'locator_args'):
                         parameters['locator_args'] = str(col[0].value)\
                                                      .split(',')
 
                     elif (header == 'stored_filter'):
-                        parameters['stored_filter'] = col[0]\
-                                                      .value.split(',', maxsplit=1)
+                        parameters['stored_filter'] = (col[0]
+                                                       .value
+                                                       .split(',', maxsplit=1))
 
                     else:
                         parameters[header] = col[0].value

@@ -83,7 +83,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--file', "-f",
                         action='store', required=True)
-    
+
     parser.add_argument('--no-validate', action='store_false',
                         default=True)
 

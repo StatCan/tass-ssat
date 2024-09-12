@@ -1,6 +1,5 @@
 from datetime import datetime
 from .tass_items import TassItem
-from ..actions.action_manager import get_manager
 from ..exceptions.assertion_errors import TassHardAssertionError
 from ..exceptions.assertion_errors import TassSoftAssertionError
 from ..log.logging import getLogger
@@ -65,7 +64,6 @@ class TassCase(TassItem):
         self._status = 'untested'
         self._errors = []
         self._managers = managers
-        
 
     def __repr__(self):
         return (
