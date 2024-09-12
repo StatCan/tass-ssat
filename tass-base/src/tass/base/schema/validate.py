@@ -7,7 +7,7 @@ log = getLogger(__name__)
 DEFAULT = validator.Tass1Validator
 DEFAULT_SCHEMA = "0.0.0"
 
-def validate(job):
+def validate(job, validate_on):
     log.info("Validating job file.")
     schema_version = job.get('schema-version', DEFAULT_SCHEMA)
     log.info("Using schema version: %s", schema_version)
@@ -20,7 +20,8 @@ def validate(job):
     else:
         schema = DEFAULT()
     
-    schema.validate(job)
+    if validate_on:
+        schema.validate(job)
     log.info("Validation successful.")
     return schema.parser()
 

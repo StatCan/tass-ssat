@@ -44,7 +44,7 @@ def main(args):
 
     path = Path(args.file).resolve()
 
-    runs, registrar = parse(path)
+    runs, registrar = parse(path, args.no_validate)
 
     for test in runs:
         log.info("<<<<< Starting Run: %s >>>>>", test.uuid)
@@ -83,6 +83,9 @@ if __name__ == '__main__':
 
     parser.add_argument('--file', "-f",
                         action='store', required=True)
+    
+    parser.add_argument('--no-validate', action='store_false',
+                        default=True)
 
     args = parser.parse_args()
     log.debug("Launch arguments:", vars(args))
