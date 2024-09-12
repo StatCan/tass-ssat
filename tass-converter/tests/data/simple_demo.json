@@ -1,4 +1,5 @@
 {
+    "schema-version": "1.0.0",
     "Test_runs": [
         {
             "uuid": "tr100101",
