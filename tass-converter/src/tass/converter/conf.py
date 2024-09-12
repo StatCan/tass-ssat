@@ -49,6 +49,7 @@ def convert(path):
     if test_browsers:
         conf_file = convert_browsers(test_browsers, conf_file, wb)
 
+    conf_file['schema-version'] = "1.0.0"
     return conf_file
 
 

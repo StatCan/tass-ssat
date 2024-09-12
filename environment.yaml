@@ -2,6 +2,8 @@ name: tass_ssat-dev
 dependencies:
   - python=3.10
   - jsonschema
+  - packaging
+  - requests
   - selenium>=4.7.2
   - flake8
   - conda-build
