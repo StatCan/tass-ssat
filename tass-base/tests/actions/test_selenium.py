@@ -85,14 +85,15 @@ class TestSelenium(unittest.TestCase):
         print("Beginning new test TestCase %s" % self._testMethodName)
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
-        self.drivers = [(self.config[0], CDriver), (self.config[1], FDriver), (self.config[2], EDriver)]
+        self.drivers = [(self.config[0], CDriver),
+                        (self.config[1], FDriver),
+                        (self.config[2], EDriver)]
 
     def test_SeleniumNewDriver(self):
         for browser in self.drivers:
             with self.subTest(browser=browser[1].__name__):
                 driver = new_driver(**browser[0])
                 self.assertIsInstance(driver(), browser[1])
-
 
     def test_SeleniumLoadURL(self):
         url = "https://www.google.ca"
@@ -317,6 +318,66 @@ class TestSelenium(unittest.TestCase):
                                             })
                 sel = Select(driver().find_element('id', 'dropdown'))
                 self.assertEqual(sel.first_selected_option.text, 'AA')
+                driver.quit()
+
+    def test_SeleniumAssertTextDisplayedSuccess(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        text = "NEXT"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                try:
+                    selenium.assert_contains_text(
+                        driver,
+                        text,
+                        locator={"by": "id", "value": "nextBtn"})
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
+    def test_SeleniumAssertPartialTextDisplayedSuccess(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        text = "EX"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                try:
+                    selenium.assert_contains_text(
+                        driver,
+                        text,
+                        locator={"by": "id", "value": "nextBtn"})
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
+    def test_SeleniumAssertTextDisplayedSoftFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        text = "FAIL"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassSoftAssertionError):
+                    selenium.assert_contains_text(
+                        driver,
+                        text, soft=True,
+                        locator={"by": "id", "value": "nextBtn"})
+                driver.quit()
+
+    def test_SeleniumAssertTextDisplayedFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        text = "FAIL"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassHardAssertionError):
+                    selenium.assert_contains_text(
+                        driver,
+                        text,
+                        locator={"by": "id", "value": "nextBtn"})
                 driver.quit()
 
     def test_SeleniumAssertDisplayedSuccess(self):

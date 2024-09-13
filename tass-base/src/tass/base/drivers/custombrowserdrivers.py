@@ -6,12 +6,15 @@ from ..log.logging import getLogger
 class TassDriverWait(WebDriverWait):
     def __init__(self, driver,
                  timeout,
-                 poll_frequency=...,
-                 ignored_exceptions= None):
+                 poll_frequency,
+                 ignored_exceptions):
         super().__init__(driver, timeout, poll_frequency, ignored_exceptions)
 
         self.logger = getLogger(__name__, driver.name, 'wait')
-        self.logger.debug("Creating new wait driver with timeout of: %d", float(timeout))
+        self.logger.debug("Creating new wait driver with timeout of: %d",
+                          float(timeout)
+                          )
+
 
 class ChromeDriver(webdriver.Chrome):
     """ Custom ChromeDriver for selenium interactions."""
@@ -59,7 +62,7 @@ class FirefoxDriver(webdriver.Firefox):
 
 class EdgeDriver(webdriver.Edge):
     """ Custom EdgeDriver for selenium interactions."""
-    def __init__(self, *args, **kwargs ):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.logger = getLogger(__name__, self.name)
 

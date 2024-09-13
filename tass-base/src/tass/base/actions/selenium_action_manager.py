@@ -21,7 +21,7 @@ def get_manager(config, *args, **kwargs):
 
 class SeleniumActionManager(ActionManager):
     def __init__(self, manager, module=sel):
-        super().__init__(module) 
+        super().__init__(module)
         self._manager = manager
 
     def action(self, command, *args, **kwargs):
@@ -40,5 +40,5 @@ class SeleniumActionManager(ActionManager):
 
     def quit(self):
         if self._manager['driver']:
-            self._manager['driver'].quit() 
+            self._manager['driver'].quit()
             self._manager['driver'] = None

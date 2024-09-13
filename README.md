@@ -14,7 +14,7 @@ compatible with Linux/macOS.
 ### Development
 
 To contribute to the project, please read our best practices:
-docs/best_practices.md. Also, create your conda environment via 
+docs/best_practices.md. Also, create your conda environment via
 
 `conda env create -f environment.yaml`.
 
@@ -41,17 +41,17 @@ package. The package will be in the `dist` folder in your repository.
 
 To build the conda package, navigate to the root of the directory and type
 `conda build <module>/conda-recipe`. The package can be found in a folder specified
-in the command output. You can always install it via `conda install --use-local <module>` 
+in the command output. You can always install it via `conda install --use-local <module>`
 if you wish to install it in the same environment you built it.
 
 ### Installation
 
-The framework can be installed by downloading the appropriate 
+The framework can be installed by downloading the appropriate
 release and then running the install command.
 
 #### pip
 
-Download the .whl file for the desired release version. Using the CLI 
+Download the .whl file for the desired release version. Using the CLI
 with pip and python >=3.10 enter the command `pip install <path/to/wheel/file>`
 
 #### conda
@@ -65,7 +65,7 @@ dependencies.
 
 The testing framework can be invoked from your CLI with the command
 
-`python -m tass.base --file/-f ./path/to/config/file --browser/-b <chrome|firefox|edge>`.
+`python -m tass.base --file/-f ./path/to/config/file`.
 
 #### Demo
 
@@ -73,7 +73,7 @@ The repository comes with several examples and working demos. To use any of the 
 create and activate your conda environment. All the files required for a demo should be provided
 in the examples folder.
 
-[EXAMPLES](examples/) 
+[EXAMPLES](examples/)
 
 
 ## License/Copyright

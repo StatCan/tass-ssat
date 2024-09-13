@@ -88,8 +88,8 @@
             ],
             "parameters": {
                 "locator": {
-                    "by": "id",
-                    "value": "nameField"
+                    "by": "xpath",
+                    "value": "//*[contains(@id, 'test')]"
                 },
                 "action": [
                     "selenium",
@@ -210,5 +210,6 @@
                 }
             }
         }
-    ]
+    ],
+    "schema-version": "1.0.0"
 }

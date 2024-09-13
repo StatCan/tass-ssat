@@ -66,6 +66,11 @@ class TestPageReader(unittest.TestCase):
         "inherits": [["custom", "page-two"], ["custom", "page-one"]]
     }
 
+    def setUp(self):
+        print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+        print("Beginning new test TestCase %s" % self._testMethodName)
+        print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
     def tearDown(self):
         PageReader.reset()
 
