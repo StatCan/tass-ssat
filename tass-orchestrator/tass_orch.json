@@ -1,0 +1,46 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema",
+	"title": "TASS Orchestrator File",
+	"description": "A TASS orchestrator file, to be executed by the TASS orchestrator.",
+	"type": "object",
+	"properties": {
+		"schema-version": {
+			"type": "string",
+			"pattern": "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
+		},
+		"Test_flow": {
+			"description": "List of different test flows.",
+			"type": "array",
+			"items": {"$ref": "#/$defs/test-flow"}
+		}
+	},
+	"$defs":{
+		"test-flow": {
+			"type": "object",
+			"description": "List of conversion, execution, and reporting config files.",
+			"properties": {
+				"conversion": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"description": "An array of files configuring the conversion tool."
+				},
+				"executor": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"description": "An array of files configuring the tass executor."
+				},
+				"reporter": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"description": "An array of files configuring the tass reporter."
+				}
+			}
+		}
+	}
+}
