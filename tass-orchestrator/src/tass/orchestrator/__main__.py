@@ -2,7 +2,7 @@ import argparse
 from . import core
 
 def main(file):
-	core.execute(file)
+	core.run_flows(file)
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
