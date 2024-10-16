@@ -76,7 +76,7 @@
                 },
                 "steps": {"$ref": "#/$defs/uuid-list"},
                 "browser_uuid": {"$ref": "#/$defs/uuid"},
-                "job_uuid": {"$ref": "#/$defs/uuid"}
+                "parent_uuid": {"$ref": "#/$defs/uuid"}
             },
             "required": ["uuid", "title", "steps"]
         },
