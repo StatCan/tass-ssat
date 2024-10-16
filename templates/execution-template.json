@@ -1,0 +1,146 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "TASS Execution File",
+    "description": "A TASS job file, to be executed using the TASS framework.",
+    "type": "object",
+    "properties": {
+        "schema-version": {
+            "type": "string",
+            "pattern": "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
+        },
+        "Test_cases": {
+            "description": "List of Test cases that may be executed.",
+            "type": "array",
+            "items": {"$ref": "#/$defs/test-case"}
+        },
+        "Browsers": {
+            "description": "Browser configurations to be used in this test run.",
+            "type": "array",
+            "items": {"$ref": "#/$defs/browser"}
+        },
+        "Meta": {
+            "description": "Additional information about this test run that does not affect the test.",
+            "type": "object",
+            "properties": {
+                "results-path": {
+                    "type": "string",
+                    "description": "File path to write results. Overwrites default."
+                },
+                "pages-path": {
+                    "type": "string",
+                    "description": "File path to read POM files from."
+                },
+                "parent": {
+                    "description": "Description of the parent job if generated from converter.",
+                    "type": "object",
+                    "properties": {
+                        "uuid": {"$ref": "#/$defs/uuid"},
+                        "title": {
+                            "description": "Title of the parent document.",
+                            "type": "string"
+                        },
+                        "path": {
+                            "description": "File path of the parent document at the time of conversion.",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "$defs": {
+        "uuid": {
+            "type": "string",
+            "description": "Universally Unique Identifier",
+            "$comment": "Created as a definition for possible future functionality. Validating uuids."
+        },
+        "uuid-list": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/uuid"
+            },
+            "description": "List of uuids"
+        },
+        "test-case": {
+            "type": "object",
+            "description": "Describes a singular test case. Test cases should be independant of one another.",
+            "properties": {
+                "uuid": {"$ref": "#/$defs/uuid"},
+                "title": {
+                    "type": "string",
+                    "description": "Human readable descriptor for the test case."
+                },
+                "build": {
+                    "type": "string",
+                    "description": "Version of the application being tested."
+                },
+                "steps": {"$ref": "#/$defs/uuid-list"},
+                "browser_uuid": {"$ref": "#/$defs/uuid"},
+                "job_uuid": {"$ref": "#/$defs/uuid"}
+            },
+            "required": ["uuid", "title", "steps"]
+        },
+        "step": {
+            "type": "object",
+            "description": "Describes a singular step, a single action to be takenby the automation.",
+            "properties": {
+                "uuid": {"$ref": "#/$defs/uuid"},
+                "title": {
+                    "type": "string",
+                    "description": "Human readable descriptor for the step."
+                },
+                "action": {
+                    "$comment": "TODO: Create external step schema to further validate steps for each action/parameters.",
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "items":{
+                        "type": "string"
+                    },
+                    "description": "An array with a length of 2, the first string states the module, the second the action."
+                },
+                "parameters": {
+                    "type": "object",
+                    "description": "Parameters content is dependant on the action used."
+                }
+            },
+            "required": ["uuid", "title", "action", "parameters"]
+        },
+        "browser": {
+            "type": "object",
+            "description": "Configuration for a browser.",
+            "properties": {
+                "uuid": {"$ref": "#/$defs/uuid"},
+                "browser_name": {
+                    "enum": ["chrome", "firefox", "edge"],
+                    "description": "The name of the browser to be used."
+                },
+                "configs": {
+                    "type": "object",
+                    "properties": {
+                        "driver": {
+                            "type": "object",
+                            "description": "Configuration values for the automated driver."
+                        },
+                        "browser": {
+                            "type": "object",
+                            "description": "Configurations for browser preferences.",
+                            "properties": {
+                                "arguments": {
+                                    "type": "array",
+                                    "items": { "type": "string" },
+                                    "description": "Flags to be passed to the browser instance"
+                                },
+                                "preferences": {
+                                    "type": "object",
+                                    "description": "Key value pairs to set preferences of a browser."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "required": ["uuid", "browser_name", "configs"]
+        }
+    }
+}
