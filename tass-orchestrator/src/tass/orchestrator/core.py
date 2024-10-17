@@ -1,6 +1,6 @@
 import json
 import tass.converter
-import tass.base
+from tass.base import __main__
 
 def run_conversion(conversion):
 	print("######### test conversion ############")
@@ -9,10 +9,11 @@ def run_conversion(conversion):
 def run_executor(executor):
 	print("########## test executor ############")
 	print(executor)
+	tass.base.__main__.main(executor, True)
 
 def run_reporter(reporter):
 	print("############ test reporter ##############")
-	print("Separate reporter module not currently implemented.")
+	print("TASS reporter module not currently implemented.")
 	print(reporter)
 
 def run_flows(file):
