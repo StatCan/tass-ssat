@@ -13,6 +13,11 @@
             "type": "array",
             "items": {"$ref": "#/$defs/test-case"}
         },
+        "Steps": {
+            "description": "List of steps, singular actions, that can be executed in a test case.",
+            "type": "array",
+            "items": {"$ref": "#/$defs/step"}
+        },
         "Browsers": {
             "description": "Browser configurations to be used in this test run.",
             "type": "array",
