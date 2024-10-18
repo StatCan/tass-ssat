@@ -15,6 +15,21 @@
 		}
 	},
 	"$defs":{
+		"conv-prop": {
+			"type": "object",
+			"description": "Properties for the conversion module.",
+			"properties": {
+				"convert": {
+					"type": "string"
+				},
+				"source": {
+					"type": "string"
+				},
+				"target": {
+					"type": "string"
+				}
+			}
+		},
 		"test-flow": {
 			"type": "object",
 			"description": "List of conversion, execution, and reporting config files.",
@@ -22,7 +37,7 @@
 				"conversion": {
 					"type": "array",
 					"items": {
-						"type": "string"
+						"type": "$ref": "#/$defs/conv-prop"
 					},
 					"description": "An array of files configuring the conversion tool."
 				},

@@ -3,54 +3,66 @@
 	"Test_flow": [
 		{
 			"conversion": [
-				"1",
-				"2",
-				"3"
-				],
+				{
+					"conv-prop": {
+						"convert": "1",
+						"source": "2",
+						"target": "3"
+					}
+				}
+			],
 			"executor": [
 				"4",
 				"5"
-				],
+			],
 			"reporter": [
 				"6",
 				"7",
 				"8",
 				"9"
-				]
+			]
 		},
 		{
 			"conversion": [
-				"4",
-				"5",
-				"6"
-				],
+				{
+					"conv-prop": {
+						"convert":"4",
+						"source": "5",
+						"target": "6"
+					}
+				}
+			],
 			"executor": [
 				"1",
 				"2"
-				],
+			],
 			"reporter": [
 				"4",
 				"5",
 				"1",
 				"5"
-				]
+			]
 		},
 		{
 			"conversion": [
-				"3",
-				"8",
-				"1"
-				],
+				{
+					"conv-prop": {
+						"convert": "3",
+						"source": "8",
+						"target": "1"
+					}
+				}
+			],
 			"executor": [
 				"9",
 				"7"
-				],
+			],
 			"reporter": [
 				"5",
 				"6",
 				"7",
 				"8"
-				]
-			}
+			]
+		}
 	]
 }

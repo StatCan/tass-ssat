@@ -1,0 +1,14 @@
+{
+	"schema-version": "test",
+	"Test_flow": [
+		{
+			"conversion": [
+				],
+			"executor": [
+				"examples/demo/simple_demo.json"
+				],
+			"reporter": [
+				]
+		}
+	]
+}

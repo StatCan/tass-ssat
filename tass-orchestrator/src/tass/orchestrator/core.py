@@ -1,20 +1,25 @@
 import json
-import tass.converter
-from tass.base import __main__
+from tass.converter import __main__ as tass_conv
+from tass.base import __main__ as tass_base
 
 def run_conversion(conversion):
 	print("######### test conversion ############")
 	print(conversion)
+	#tass.converter.__main__.main("test1", "test2", "test3")
+	print(conversion["conv-prop"]["convert"]) 
+	print( conversion["conv-prop"]["source"])
+	print( conversion["conv-prop"]["target"])
+	tass_conv.main(conversion["conv-prop"]["convert"], conversion["conv-prop"]["source"], conversion["conv-prop"]["target"])
 
 def run_executor(executor):
 	print("########## test executor ############")
 	print(executor)
-	tass.base.__main__.main(executor, True)
+	#tass.base.__main__.main(executor, True)
+	tass_base.main(executor, True)
 
 def run_reporter(reporter):
 	print("############ test reporter ##############")
 	print("TASS reporter module not currently implemented.")
-	print(reporter)
 
 def run_flows(file):
 	print("Executor!")
