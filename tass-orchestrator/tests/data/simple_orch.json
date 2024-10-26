@@ -12,8 +12,13 @@
 				}
 			],
 			"executor": [
-				"4",
-				"5"
+				{
+					"base-prop":
+					{
+						"file_path": "test path",
+						"no_validate": true
+					}
+				}
 			],
 			"reporter": [
 				"6",
@@ -33,8 +38,12 @@
 				}
 			],
 			"executor": [
-				"1",
-				"2"
+				{
+					"base-prop":{
+						"file_path": "yet another test path",
+						"no_validate": true
+					}
+				}
 			],
 			"reporter": [
 				"4",
@@ -54,8 +63,12 @@
 				}
 			],
 			"executor": [
-				"9",
-				"7"
+				{
+					"base-prop": {
+						"file_path": "last test path",
+						"no_validate": true
+					}
+				}
 			],
 			"reporter": [
 				"5",

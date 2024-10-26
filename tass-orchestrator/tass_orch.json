@@ -30,6 +30,18 @@
 				}
 			}
 		},
+		"base-prop": {
+			"type": "object",
+			"description": "Parameters for tass.base.",
+			"properties": {
+				"file_path": {
+					"type": "string",
+				},
+				"no_validate": {
+					"type": "boolean"
+				}
+			}
+		},
 		"test-flow": {
 			"type": "object",
 			"description": "List of conversion, execution, and reporting config files.",
@@ -37,7 +49,7 @@
 				"conversion": {
 					"type": "array",
 					"items": {
-						"type": "$ref": "#/$defs/conv-prop"
+						"type": {"$ref": "#/$defs/conv-prop"}
 					},
 					"description": "An array of files configuring the conversion tool."
 				},
