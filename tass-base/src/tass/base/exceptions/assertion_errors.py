@@ -1,4 +1,7 @@
-class TassAssertionError(Exception):
+from .tass_errors import TassError
+
+
+class TassAssertionError(TassError):
     def __init__(self, message, reason, *args):
         super().__init__()
         self._message = message
