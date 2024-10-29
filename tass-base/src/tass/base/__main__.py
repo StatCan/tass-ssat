@@ -33,8 +33,6 @@ def _make_report(registrar, func_name, *args, **kwargs):
             log.debug("Reporter: %s executing function", reporter.uuid)
             getattr(reporter, func_name)(*args, **kwargs)
 
-    # TODO: add logging messages.
-
 
 def main(file_path, no_validate):
     """

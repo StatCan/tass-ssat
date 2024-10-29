@@ -8,6 +8,36 @@
             "type": "string",
             "pattern": "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
         },
+        "Job": {
+            "description": "Description of the job. Sets default values for undefined test case values.",
+            "type": "object",
+            "properties": {
+                "title": {
+                    "description": "Name of the job. Defaults to the file name.",
+                    "type": "string"
+                },
+                "uuid": {"$ref": "#/$defs/uuid"},
+                "build": {
+                    "description": "Build of the application being tested. Inherited by test cases if not specified.",
+                    "type": "string"
+                },
+                "parent": {
+                    "description": "Description of the parent job if generated from converter.",
+                    "type": "object",
+                    "properties": {
+                        "uuid": {"$ref": "#/$defs/uuid"},
+                        "title": {
+                            "description": "Title of the parent document.",
+                            "type": "string"
+                        },
+                        "path": {
+                            "description": "File path of the parent document at the time of conversion.",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "Test_cases": {
             "description": "List of Test cases that may be executed.",
             "type": "array",
@@ -34,21 +64,6 @@
                 "pages-path": {
                     "type": "string",
                     "description": "File path to read POM files from."
-                },
-                "parent": {
-                    "description": "Description of the parent job if generated from converter.",
-                    "type": "object",
-                    "properties": {
-                        "uuid": {"$ref": "#/$defs/uuid"},
-                        "title": {
-                            "description": "Title of the parent document.",
-                            "type": "string"
-                        },
-                        "path": {
-                            "description": "File path of the parent document at the time of conversion.",
-                            "type": "string"
-                        }
-                    }
                 }
             }
         }
