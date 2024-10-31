@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "tass-base"
 
-version = "0.8.0"
+version = "0.8.1"
 
 authors = [
     {name = "Dominic Parent", email="dominic.parent@statcan.gc.ca"},
@@ -15,7 +15,9 @@ requires-python = ">3.10"
 dependencies = [
     "selenium>=4.7.2",
 	"tass-report",
-	"openpyxl"
+	"openpyxl",
+    "packaging",
+    "jsonschema"
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
