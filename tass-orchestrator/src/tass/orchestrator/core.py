@@ -1,26 +1,27 @@
 import json
+from pathlib import Path
 from tass.converter import __main__ as tass_conv
 from tass.base import __main__ as tass_base
 
 def run_conversion(conversion):
 	print("######### test conversion ############")
 	print(conversion)
-	tass_conv.main(conversion["conv-prop"]["convert"], conversion["conv-prop"]["source"], conversion["conv-prop"]["target"])
+	tass_conv.main(conversion["conv-prop"]["convert"], Path(conversion["conv-prop"]["source"]).resolve(), Path(conversion["conv-prop"]["target"]).resolve())
 
 def run_executor(executor):
 	print("########## test executor ############")
 	print(executor)
-	tass_base.main(executor["base-prop"]["file_path"], executor["base-prop"]["no_validates"])
+	tass_base.main(Path(executor["base-prop"]["file_path"]).resolve(), executor["base-prop"]["no_validate"])
 
 def run_reporter(reporter):
 	print("############ test reporter ##############")
 	print("TASS reporter module not currently implemented.")
 
 def run_flows(file):
-	print("Executor!")
+	print("Orchestrator!")
 	print(file)
 	try:
-		f = open(file)
+		f = open(Path(file).resolve())
 	except IOError as e:
 		print(e)
 		return

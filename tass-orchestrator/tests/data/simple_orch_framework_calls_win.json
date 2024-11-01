@@ -5,8 +5,13 @@
 			"conversion": [
 				],
 			"executor": [
-				"examples\\demo\\simple_demo.json"
-				],
+				{
+					"base-prop": {
+						"file_path": "examples\\demo\\simple_demo.json",
+						"no_validate": true
+					}
+				}
+			],
 			"reporter": [
 				]
 		}
