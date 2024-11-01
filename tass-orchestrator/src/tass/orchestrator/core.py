@@ -6,12 +6,15 @@ from tass.base import __main__ as tass_base
 def run_conversion(conversion):
 	print("######### test conversion ############")
 	print(conversion)
-	tass_conv.main(conversion["conv-prop"]["convert"], Path(conversion["conv-prop"]["source"]).resolve(), Path(conversion["conv-prop"]["target"]).resolve())
+	tass_conv.main(conversion["conv-prop"]["convert"],
+		           conversion["conv-prop"]["source"],
+		           conversion["conv-prop"]["target"])
 
 def run_executor(executor):
 	print("########## test executor ############")
 	print(executor)
-	tass_base.main(Path(executor["base-prop"]["file_path"]).resolve(), executor["base-prop"]["no_validate"])
+	tass_base.main(executor["base-prop"]["file_path"],
+		           executor["base-prop"]["no_validate"])
 
 def run_reporter(reporter):
 	print("############ test reporter ##############")
