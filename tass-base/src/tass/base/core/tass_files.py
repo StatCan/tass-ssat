@@ -4,27 +4,27 @@ from .tass_case import TassCase
 from ..log.logging import getLogger
 
 
-class TassSuite(TassFile):
-
-    def collect(self):
-        # TODO: Collect all test cases as TassItems and yield
-        pass
-
-
-class TassRun(TassFile):
+class TassJob(TassFile):
 
     logger = getLogger(__name__)
 
-    def __init__(self, path, test_cases,
-                 test_suites, action_managers,
+    def __init__(self, path,
+                 _meta=None,
                  **kwargs):
         super().__init__(path, **kwargs)
-        self._managers = action_managers
-        self._raw_test_cases = test_cases
-        self._raw_test_suites = test_suites
         self._start_time = 'not started'
         self._completed_cases = []
+        self._test_cases = []
         self._has_error = False
+        if _meta:
+            _meta.setdefault("results-path", "./results")
+            _meta.setdefault("pages-path", "./pages")
+        else:
+            _meta = {
+                "results-path": "./results",
+                "pages-path": "./pages"
+            }
+        self._meta = _meta
 
     def __str__(self):
         str_ = f"""
@@ -32,6 +32,14 @@ class TassRun(TassFile):
                 Build: {self.build}
                """
         return str_
+
+    def add_test_case(self, case):
+        if isinstance(case, dict):
+            _ = TassCase.from_parent(parent=self, **case)
+        elif isinstance(case, TassCase):
+            _ = case
+        if _:
+            self._test_cases.append(_)
 
     @property
     def start_time(self):
@@ -53,22 +61,17 @@ class TassRun(TassFile):
             "name": self.title,
             "uuid": self.uuid,
             "test_start": self._start_time,
-            "test_cases": self._completed_cases,
-            "action_managers": [v.toJson() for v in self._managers.values()]
+            "test_cases": [c.toJson() for c in self._completed_cases]
         }
 
     def collect(self):
-        # TODO: Collect all test cases as TassItems,
-        # then collect all TestSuites and yield TassItems
 
         self._start_time = datetime.now().strftime("%d-%m-%Y--%H_%M_%S")
         self.logger.debug("Start time (%s): %s", self.uuid, self._start_time)
-        for case in self._raw_test_cases:
-            tasscase = TassCase.from_parent(parent=self,
-                                            managers=self._managers, **case)
+        for case in self._test_cases:
 
-            self.logger.debug("Collected: %r", tasscase)
-            yield tasscase
+            self.logger.debug("Collected: %r", case)
+            yield case
 
-            self._completed_cases.append(tasscase)
-            self.logger.debug("Added to completed cases: %s", tasscase.uuid)
+            self._completed_cases.append(case)
+            self.logger.debug("Added to completed cases: %s", case.uuid)

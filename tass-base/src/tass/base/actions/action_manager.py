@@ -14,13 +14,13 @@ modules = {
 }
 
 
-def get_manager(module_name, **kwargs):
+def get_manager(module_name, *args, **kwargs):
     # Try to import the required module
     log.info("Trying to import %s", module_name)
     module = _import_module(module_name)
 
-    log.debug("Using manager args: %s", kwargs)
-    manager = module.get_manager(**kwargs)
+    log.debug("Getting manager: %s", module)
+    manager = module.get_manager(*args, **kwargs)
     log.info("Created action manager of type: %s", manager.__class__.__name__)
     return manager
 

@@ -96,7 +96,8 @@ class TassCase(TassItem):
             "start_time": self._start_time,
             "status": self._status,
             "errors": self._errors,
-            "steps": self._steps
+            "steps": self._steps,
+            "managers": self._managers
         }
 
     def _execute_step(self, step):

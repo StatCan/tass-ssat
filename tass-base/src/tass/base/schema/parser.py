@@ -1,7 +1,11 @@
+from copy import deepcopy
+
+from tass.base.exceptions.tass_errors import TassUUIDException, TassUUIDNotFound, TassAmbiguousUUID
 from tass.base.log.logging import getLogger
 from tass.report.registrar import ReporterRegistrar
 from ..actions.action_manager import get_manager
-from ..core.tass_files import TassRun
+from ..core.tass_files import TassJob
+from ..core.tass_case import TassCase
 
 
 class Parser():
@@ -18,80 +22,73 @@ class Tass1Parser(Parser):
 
     def parse(self, path, job):
 
-        runs = self._parse_runs(path, job)
-        registrar = self._parse_reporters(job)
+        runs = self._parse_job(path, job)
 
         # TODO: parse should only return runs.
         # Requires refactor of reporter implementation.
         # See https://github.com/StatCan/tass-ssat/issues/152
-        return runs, registrar
+        return runs
 
-    def _parse_runs(self, path, job):
-        self.log.info("Parsing runs from job file")
-        all_runs = job.get('Test_runs')
-        ready_runs = []
+    def _parse_job(self, path, job):
 
-        for run in all_runs:
-            self.log.info("Reading run: %s - %s", run['uuid'], run['title'])
-            run['test_cases'], managers = self._parse_cases(job, run)
-            self.log.info("Run includes actions for: %s", managers)
-            for browser in self._parse_browsers(job, run['browsers']):
-                _managers = {}
-                self.log.info("Creating run using browser: %s", browser)
-                for _manager in managers:
-                    if _manager not in _managers:
-                        _managers.update(get_manager(_manager, config=browser))
-                _run = TassRun(path, action_managers=_managers, **run)
-                self.log.info("Run: %s ready to execute.", _run.uuid)
+        meta = job.get("Meta", None)
+        job_raw = job['Job']
+        tassjob = TassJob(path, _meta=meta, **job_raw)
 
-                ready_runs.append(_run)
+        for case in self._parse_cases(job["Test_cases"], job):
+            tassjob.add_test_case(case)
 
-        return ready_runs
+        return tassjob
 
-    def _parse_suites(job):
-        # TODO: Parse Suites.
-        # https://github.com/StatCan/tass-ssat/issues/151
-        pass
+    def _parse_cases(self, cases, jobfile, ):
+        for case in cases:
+            try:
+                if 'browser' in case:
+                    self.log.debug("Trying to load browser configurations.")
+                    _browser = self._parse_browser(case['browser'], jobfile)
 
-    def _parse_cases(self, job, run):
-        cases = []
-        test_cases = job.get('Test_cases', [])
-        all_steps = job.get('Steps', [])
-        for case_id in run.get('test_cases', []):
-            steps = []
-            case = next(
-                filter(lambda _c: _c['uuid'] == case_id, test_cases)
-                ).copy()
+                steps = self._parse_steps(case['steps'], jobfile)
+                m = set([x['action'][0] for x in steps])
 
-            for step in case.get('steps', []):
-                _ = next(
-                    filter(lambda _c: _c['uuid'] == step, all_steps)
-                    ).copy()
-                self.log.debug(">>>>> Reading case: %s", _)
-                steps.append(_)
+                case['steps'] = steps
+                case['managers'] = {}
+                for manager in m:
+                    case['managers'].update(get_manager(manager, browser_config=_browser))
 
-            case['steps'] = steps
 
-            managers = set([_m['action'][0].lower() for _m in steps])
+            except TassUUIDException as e:
+                self.log.warning(e)
+                continue
 
-            cases.append(case)
+            yield case
 
-        return cases, managers
+    def _parse_steps(self, steps, job):
+        all_steps = job['Steps']
+        step_config = []
+        for uuid in steps:
+            found = list(filter(lambda step: uuid == step['uuid'], all_steps))
+            if len(found)>1:
+                self.log.warning("Ambiguous step configuration selected. Checking compatibility")
+                if not all(step == found[0] for step in found[1:]):
+                    self.log.warning("Unable to resolve ambiguous uuids.")
+                    raise TassAmbiguousUUID(uuid)
+            elif len(found) == 0:
+                self.log.warning("No matching step configuration found.")
+                raise TassUUIDNotFound(uuid)
 
-    def _parse_reporters(self, job):
-        reporters = job['Reporters']
-        if not reporters:
-            return None
-        registrar = ReporterRegistrar()
+            step_config.append(deepcopy(found[0]))
+        return step_config
 
-        for reporter in reporters:
-            self.log.debug("Registering reporter: %s -- type: %s",
-                           reporter['uuid'], reporter['type'])
-            registrar.register_reporter(**reporter)
+    def _parse_browser(self, browser, job):
+        self.log.debug("Using browsers: %s", browser)
+        found =  list(filter(lambda b: b['uuid'] in browser, job["Browsers"]))
+        if len(found)>1:
+            self.log.warning("Ambiguous browser configuration selected. Attempting to resolve.")
+            if not all(step == found[0] for step in found[1:]):
+                self.log.warning("Unable to resolve ambiguous uuids.")
+                raise TassAmbiguousUUID(browser)
+        elif len(found) == 0:
+            self.log.warning("No matching browser configuration found.")
+            raise TassUUIDNotFound(browser)
 
-        return registrar
-
-    def _parse_browsers(self, job, browser_list):
-        browsers = job['Browsers']
-        self.log.debug("Using browsers: %s", browser_list)
-        return filter(lambda b: b['uuid'] in browser_list, browsers)
+        return deepcopy(found[0])

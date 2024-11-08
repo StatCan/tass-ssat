@@ -21,5 +21,9 @@ class Tass1Validator(Validator):
     def __init__(self):
         super().__init__(schemas.SCHEMA_1_0_0)
 
+    def validate(self, job):
+        super().validate(job)
+        # TODO: validate using uniqueness rules.
+
     def parser(self):
         return parser.Tass1Parser()

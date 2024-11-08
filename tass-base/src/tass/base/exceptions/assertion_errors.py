@@ -1,21 +1,14 @@
-class TassAssertionError(Exception):
-    def __init__(self, message, reason, *args):
-        super().__init__()
-        self._message = message
-        self._reason = reason
-        self._args = args
+from .tass_errors import TassException
 
-    @property
-    def message(self):
-        return self._message
+
+class TassAssertionError(TassException):
+    def __init__(self, message, reason, *args):
+        super().__init__(message, *args)
+        self._reason = reason # The error or exception that caused the failure if applicable.
 
     @property
     def reason(self):
         return self._reason
-
-    @property
-    def args(self):
-        return self._args
 
 
 class TassSoftAssertionError(TassAssertionError):

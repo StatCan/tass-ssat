@@ -3,11 +3,14 @@ from ..drivers.driverconfig import new_driver
 from . import selenium as sel
 from . import selenium_wait as selwait
 
+all_managers = {}
 
-def get_manager(config, *args, **kwargs):
+def get_manager(browser_config, *args, **kwargs):
+    if browser_config['uuid'] in all_managers:
+        return all_managers[browser_config['uuid']]
     managers = {}
     manager = {
-            'config': config,
+            'config': browser_config,
             'driver': None
             }
     selenium = SeleniumActionManager(manager)
@@ -15,6 +18,8 @@ def get_manager(config, *args, **kwargs):
 
     managers['selenium'] = selenium
     managers['selwait'] = waiter
+
+    all_managers[browser_config['uuid']] = managers
 
     return managers
 
