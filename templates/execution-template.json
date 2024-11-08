@@ -23,7 +23,7 @@
                 },
                 "parent": {
                     "description": "Description of the parent job if generated from converter.",
-                    "type": "object",
+                    "type": ["object", "string"],
                     "properties": {
                         "uuid": {"$ref": "#/$defs/uuid"},
                         "title": {
@@ -95,8 +95,7 @@
                     "description": "Version of the application being tested."
                 },
                 "steps": {"$ref": "#/$defs/uuid-list"},
-                "browser_uuid": {"$ref": "#/$defs/uuid"},
-                "parent_uuid": {"$ref": "#/$defs/uuid"}
+                "browser": {"$ref": "#/$defs/uuid"}
             },
             "required": ["uuid", "title", "steps"]
         },

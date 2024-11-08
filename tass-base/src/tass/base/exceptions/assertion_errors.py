@@ -1,4 +1,4 @@
-from .tass_errors import TassError
+from .tass_errors import TassException
 
 
 class TassAssertionError(TassException):

@@ -34,9 +34,9 @@ class TassJob(TassFile):
         return str_
 
     def add_test_case(self, case):
-        if isinstance(dict, case):
-            _ = TassCase(**case)
-        elif isinstance(TassCase, case):
+        if isinstance(case, dict):
+            _ = TassCase.from_parent(parent=self, **case)
+        elif isinstance(case, TassCase):
             _ = case
         if _:
             self._test_cases.append(_)
@@ -61,21 +61,17 @@ class TassJob(TassFile):
             "name": self.title,
             "uuid": self.uuid,
             "test_start": self._start_time,
-            "test_cases": self._completed_cases,
-            "action_managers": [v.toJson() for v in self._managers.values()]
+            "test_cases": [c.toJson() for c in self._completed_cases]
         }
 
     def collect(self):
-        # TODO: Collect all test cases as TassItems,
 
         self._start_time = datetime.now().strftime("%d-%m-%Y--%H_%M_%S")
         self.logger.debug("Start time (%s): %s", self.uuid, self._start_time)
-        for case in self._raw_test_cases:
-            tasscase = TassCase.from_parent(parent=self,
-                                            managers=self._managers, **case)
+        for case in self._test_cases:
 
-            self.logger.debug("Collected: %r", tasscase)
-            yield tasscase
+            self.logger.debug("Collected: %r", case)
+            yield case
 
-            self._completed_cases.append(tasscase)
-            self.logger.debug("Added to completed cases: %s", tasscase.uuid)
+            self._completed_cases.append(case)
+            self.logger.debug("Added to completed cases: %s", case.uuid)

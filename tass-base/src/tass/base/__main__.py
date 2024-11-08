@@ -42,36 +42,31 @@ def main(file_path, no_validate):
 
     path = Path(file_path).resolve()
 
-    runs, registrar = parse(path, no_validate)
+    test = parse(path, args.no_validate)
 
-    for test in runs:
-        log.info("<<<<< Starting Run: %s >>>>>", test.uuid)
-        _make_report(registrar, "start_report", test)
-        for case in test.collect():
-            log.info("")
-            log.info("< < < Starting Case: %s > > >", case.uuid)
-            log.info("")
+    log.info("<<<<< Starting Run: %s >>>>>", test.uuid)
+    for case in test.collect():
+        log.info("")
+        log.info("< < < Starting Case: %s > > >", case.uuid)
+        log.info("")
 
-            case.execute_tass()
+        case.execute_tass()
 
-            log.info("")
-            log.info("> > > Finished Case: %s < < <", case.uuid)
-            log.info("")
-
-        _make_report(registrar, "report", test)
-        _make_report(registrar, 'end_report', test)
+        log.info("")
+        log.info("> > > Finished Case: %s < < <", case.uuid)
+        log.info("")
 
     Path('results').mkdir(exist_ok=True)
-    for test in runs:
-        file_name = test.uuid + '---' + test.start_time + '.json'
-        result_path = Path().resolve() / "results" / file_name
-        try:
-            f = open(result_path, 'w+', encoding='utf-8')
-        except IOError as e:
-            log.error("An IOError occured: %s" % e)
-            return
-        with f:
-            json.dump(test, f, indent=4, cls=TassEncoder)
+
+    file_name = test.uuid + '---' + test.start_time + '.json'
+    result_path = Path().resolve() / "results" / file_name
+    try:
+        f = open(result_path, 'w+', encoding='utf-8')
+    except IOError as e:
+        log.error("An IOError occured: %s" % e)
+        return
+    with f:
+        json.dump(test, f, indent=4, cls=TassEncoder)
 
 
 if __name__ == '__main__':
