@@ -1,6 +1,6 @@
 package:
   name: tass-orchestrator
-  version: 0.8.0
+  version: 0.1.0
 
 source:
   path: ../
@@ -16,4 +16,5 @@ requirements:
     - pip
   run:
     - python >3.10
-    - openpyxl
+    - tass.base
+    - tass.converter
