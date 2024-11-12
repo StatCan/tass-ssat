@@ -1,0 +1,19 @@
+{
+	"schema-version": "test",
+	"Test_flow": [
+		{
+			"conversion": [
+				],
+			"executor": [
+				{
+					"base-prop": {
+						"file_path": "examples\\demo\\simple_demo.json",
+						"no_validate": true
+					}
+				}
+			],
+			"reporter": [
+				]
+		}
+	]
+}

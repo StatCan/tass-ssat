@@ -1,0 +1,20 @@
+package:
+  name: tass-orchestrator
+  version: 0.1.0
+
+source:
+  path: ../
+
+build:
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - pip
+  run:
+    - python >3.10
+    - tass.base
+    - tass.converter
