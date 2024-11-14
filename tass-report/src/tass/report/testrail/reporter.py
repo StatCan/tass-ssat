@@ -1,6 +1,6 @@
 import configparser
 from .testrail import TestRail
-from ..reporter import ReporterBase
+from ..core.reporter import ReporterBase
 
 
 # TODO: Add support for test plans
