@@ -38,10 +38,15 @@
                 }
             }
         },
-        "Test_cases": {
+        "Tests": {
+            "description": "List of Test cases with configurations that may be executed.",
+            "type": "array",
+            "items": {"$ref": "#/$defs/test"}
+        },
+        "Cases": {
             "description": "List of Test cases that may be executed.",
             "type": "array",
-            "items": {"$ref": "#/$defs/test-case"}
+            "items": {"$ref": "#/$defs/case"}
         },
         "Steps": {
             "description": "List of steps, singular actions, that can be executed in a test case.",
@@ -81,7 +86,31 @@
             },
             "description": "List of uuids"
         },
-        "test-case": {
+        "test": {
+            "type": "object",
+            "description": "Test to be executed. Includes which case and any other configuration settings.",
+            "properties": {
+                "uuid": {
+                    "$ref": "#/$defs/uuid",
+                    "description": "The uuid of this test. Typically a compounded uuid of the job, case, and configuration uuids."
+                },
+                "case": {
+                    "$ref": "#/$defs/uuid",
+                    "description": "The uuid of the case that will be executed."
+                },
+                "configuration": {
+                    "type": "object",
+                    "description": "Contains the various configurations for running a case.",
+                    "properties": {
+                        "browser": {
+                            "ref": "#/$defs/uuid",
+                            "description": "The uuid of the browser used in this configuration."
+                        }
+                    }
+                }
+            }
+        },
+        "case": {
             "type": "object",
             "description": "Describes a singular test case. Test cases should be independant of one another.",
             "properties": {
@@ -95,7 +124,6 @@
                     "description": "Version of the application being tested."
                 },
                 "steps": {"$ref": "#/$defs/uuid-list"},
-                "browser": {"$ref": "#/$defs/uuid"}
             },
             "required": ["uuid", "title", "steps"]
         },
