@@ -7,13 +7,33 @@
         "title": "Simple Demo v.1",
         "parent": "None"
     },
-
-    "Test_cases":
+    "Tests": [
+        {
+            "uuid": "tr100101--uuid-tc-01--chrome001",
+            "case": "uuid-tc-01",
+            "configurations": [
+                {
+                    "type": "browser",
+                    "uuid": "chrome001"
+                }
+            ]
+        },
+        {
+            "uuid": "tr100101--uuid-tc-02--ffox002",
+            "case": "uuid-tc-02",
+            "configurations": [
+                {
+                    "type": "browser",
+                    "uuid": "ffox002"
+                }
+            ]
+        }
+    ],
+    "Cases":
     [
         {
             "uuid": "uuid-tc-01",
             "title": "Tass Sample Case A",
-            "browser": "chrome001",
             "steps": [
                 "q1",
                 "q2",
@@ -28,7 +48,6 @@
         {
             "uuid": "Uuid-tc-02",
             "title": "Tass Sample Case B",
-            "browser": "ffox001",
             "steps": [
                 "q1",
                 "q2",

@@ -1,11 +1,8 @@
 from copy import deepcopy
-
 from tass.base.exceptions.tass_errors import TassUUIDException, TassUUIDNotFound, TassAmbiguousUUID
 from tass.base.log.logging import getLogger
-from tass.report.registrar import ReporterRegistrar
 from ..actions.action_manager import get_manager
 from ..core.tass_files import TassJob
-from ..core.tass_case import TassCase
 
 
 class Parser():
@@ -35,19 +32,68 @@ class Tass1Parser(Parser):
         job_raw = job['Job']
         tassjob = TassJob(path, _meta=meta, **job_raw)
 
-        for case in self._parse_cases(job["Test_cases"], job):
-            tassjob.add_test_case(case)
+        for test in self._parse_tests(job["Test"], job):
+            tassjob.add_test_case(test)
 
         return tassjob
+    
+    def _parse_tests(self, tests, job):
+        for test in tests:
+            _out = {}
+            _out['uuid'] = test['uuid']
+            _out.update(self._parse_case(test['case'], job))
+            _out.update(self._parse_configurations(test['configurations']))
+        pass
 
-    def _parse_cases(self, cases, jobfile, ):
+    def _parse_case(self, uuid, job):
+        found = list(filter(lambda c: uuid == c['uuid'], job['Cases']))
+        if len(found)>1:
+            self.log.warning("Ambiguous case selected. Checking compatibility")
+            if not all(c == found[0] for c in found[1:]):
+                self.log.warning("Unable to resolve ambiguous uuids.")
+                raise TassAmbiguousUUID(uuid)
+            else:
+                self.log.warning("Ambigous case conflict resolved.")
+        elif len(found) == 0:
+            self.log.warning("No matching case found.")
+            raise TassUUIDNotFound(uuid)
+        
+        _case = deepcopy(found[0])
+        _case['steps'] = self._parse_steps(found[0]['steps'], job)        
+
+        _case.update(self._parse_configurations())
+
+        m = set([step['action'][0] for step in _case['steps']])
+
+        
+            
+    def _parse_configurations(self, config, job):
+        configuration = {}
+        def browser(uuid):
+            _browser = self._parse_browser(uuid, job)
+            configuration['browser'] = _browser
+        
+        registered_configuration_parsers = {
+            "browser": browser
+        }
+
+        for conf in config:
+            k, v = conf['type'], conf['uuid']
+            if k in registered_configuration_parsers:
+                parser = registered_configuration_parsers[k]
+                parser(v)
+
+        return configuration
+
+
+    def _parse_cases(self, cases, job):
         for case in cases:
             try:
                 if 'browser' in case:
                     self.log.debug("Trying to load browser configurations.")
-                    _browser = self._parse_browser(case['browser'], jobfile)
+                    _browser = self._parse_browser(case['browser'], job)
 
-                steps = self._parse_steps(case['steps'], jobfile)
+                steps = self._parse_steps(case['steps'], job)
                 m = set([x['action'][0] for x in steps])
 
                 case['steps'] = steps
