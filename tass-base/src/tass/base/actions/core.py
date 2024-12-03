@@ -1,5 +1,10 @@
 from ..core.valuestore import ValueStore
 from ..core.secrets import Secrets
+from ..log.logging import getLogger
+import time 
+
+
+logger = getLogger(__name__)
 
 
 def store_value(key, value):
@@ -140,3 +145,31 @@ def store_secret_value(key, value_key, stored_filter=None, **secret):
         raise TypeError("""Can only store data from a single entry.
         Filter must have count of 1.""")
     store.add_to_dict(key, data.get(value_key))
+
+
+def wait(wait_time, unit="s"):
+    """Delay execution for the given time.
+
+    Use time.sleep module to delay execution by the given time,
+    converted from the given unit to seconds. Acceptable values include:
+    milliseconds (ms), seconds (s), minutes (m), and hours (h). Defaults to seconds.
+
+    Args:
+        wait_time:
+            The amount of time to delay execution by.
+        unit:
+            The unit of time to delay execution by.
+    
+    """
+    logger.info(f"Delaying for: {wait_time} {unit}")
+    match unit.lower():
+        case "ms" | "milliseconds":
+            delay = float(wait_time)/1000
+        case "m" | "minutes":
+            delay = float(wait_time)*60
+        case "h" | "hours":
+            delay = float(wait_time)*3600
+        case _:
+            delay = float(wait_time)
+    logger.debug(f"Converted {wait_time} {unit} to {delay} seconds")
+    time.sleep(delay)
