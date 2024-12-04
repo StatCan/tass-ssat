@@ -161,15 +161,19 @@ def wait(wait_time, unit="s"):
             The unit of time to delay execution by.
     
     """
-    logger.info(f"Delaying for: {wait_time} {unit}")
+    
     match unit.lower():
-        case "ms" | "milliseconds":
+        case "ms" | "milliseconds" | "millisecond":
+            logger.info(f"Delaying for: {wait_time} millisecond(s)")
             delay = float(wait_time)/1000
-        case "m" | "minutes":
+        case "m" | "minutes" | "minute":
+            logger.info(f"Delaying for: {wait_time} minute(s)")
             delay = float(wait_time)*60
-        case "h" | "hours":
+        case "h" | "hours" | "hour":
+            logger.info(f"Delaying for: {wait_time} hour(s)")
             delay = float(wait_time)*3600
         case _:
+            logger.info(f"Delaying for: {wait_time} second(s)")
             delay = float(wait_time)
     logger.debug(f"Converted {wait_time} {unit} to {delay} seconds")
     time.sleep(delay)
