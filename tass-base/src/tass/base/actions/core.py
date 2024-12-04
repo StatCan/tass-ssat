@@ -1,7 +1,7 @@
 from ..core.valuestore import ValueStore
 from ..core.secrets import Secrets
 from ..log.logging import getLogger
-import time 
+import time
 
 
 logger = getLogger(__name__)
@@ -152,16 +152,15 @@ def wait(wait_time, unit="s"):
 
     Use time.sleep module to delay execution by the given time,
     converted from the given unit to seconds. Acceptable values include:
-    milliseconds (ms), seconds (s), minutes (m), and hours (h). Defaults to seconds.
+    milliseconds (ms), seconds (s), minutes (m), and hours (h).
+    Defaults to seconds.
 
     Args:
         wait_time:
             The amount of time to delay execution by.
         unit:
             The unit of time to delay execution by.
-    
     """
-    
     match unit.lower():
         case "ms" | "milliseconds" | "millisecond":
             logger.info(f"Delaying for: {wait_time} millisecond(s)")

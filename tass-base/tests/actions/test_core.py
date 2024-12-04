@@ -2,6 +2,7 @@ import unittest
 import tass.base.actions.core as core
 import time
 
+
 class TestCore(unittest.TestCase):
     def test_waitSeconds(self):
         wait = 3
