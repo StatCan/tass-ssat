@@ -55,6 +55,7 @@ class Tass1Parser(Parser):
 
     def _parse_cases(self, job, run):
         cases = []
+        managers = set()
         test_cases = job.get('Test_cases', [])
         all_steps = job.get('Steps', [])
         for case_id in run.get('test_cases', []):
@@ -71,8 +72,7 @@ class Tass1Parser(Parser):
                 steps.append(_)
 
             case['steps'] = steps
-
-            managers = set([_m['action'][0].lower() for _m in steps])
+            managers.update([_m['action'][0].lower() for _m in steps])
 
             cases.append(case)
 
