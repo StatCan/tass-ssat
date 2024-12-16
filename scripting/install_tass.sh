@@ -30,7 +30,8 @@ cd tass-ssat
 conda env create -f environment.yaml
 eval "$(conda shell.bash hook)"
 conda activate tass_ssat-dev
-cd tass-base
-pip install -e .
-cd ../tass-converter
-pip install -e .
+
+pip install -e tass-report
+pip install -e tass-base
+pip install -e tass-converter
+pip install -e tass-orchestrator
