@@ -776,28 +776,36 @@ def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
                 ->  Element is displayed.''',
                 e, *kwargs)
 
+
 def assert_attribute_contains_value(driver, attribute, value,
-                            find=_find_element, soft=False,
-                            exact=False, **kwargs):
+                                    find=_find_element, soft=False,
+                                    exact=False, **kwargs):
     actual_value = None
     try:
         actual_value = read_attribute(driver, attribute, find, **kwargs)
         logger.info("Element contains attribute: %s", actual_value)
         if exact and value != actual_value:
-            _fail(soft, "assert_attribute_contains, attribute is not exact match. {%s=%s}", attribute, value)
+            _fail(soft,
+                  ("assert_attribute_contains, "
+                   "attribute is not exact match. {%s=%s}"),
+                  attribute, value)
         elif value not in actual_value:
-            _fail(soft, "assert_attribute_contains, attribute does not match. {%s=%s}", attribute, value)
+            _fail(soft,
+                  ("assert_attribute_contains, "
+                   "attribute does not match. {%s=%s}"),
+                  attribute, value)
         else:
-            logger.info("Element contains attribute: %s with value:", attribute, value)
+            logger.info("Element contains attribute: %s with value: %s",
+                        attribute, value)
     except WebDriverException as e:
         logger.debug("Driver reporting error. %r", kwargs)
         if (soft):
             raise TassSoftAssertionError(
-                '''Soft Assertion failed: assert_contains_text
-                -> Element does not contain given text.''',
+                '''Soft Assertion failed: assert_attribute_contains_value
+                -> Element attribute does not contain given value.''',
                 e, *kwargs)
         else:
             raise TassHardAssertionError(
-                '''Hard Assertion failed: assert_contains_text
-                ->  Element does not contain given text.''',
+                '''Hard Assertion failed: assert_attribute_contains_value
+                ->  Element attribute does not contain given value.''',
                 e, *kwargs)
