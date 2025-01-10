@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>Page One</title>
+    <title test-id="title-test">Page One</title>
 
   </head>
   <body>
@@ -16,7 +16,7 @@
 	<li><button type="button" name="buttonZ" id="btn-z" onclick="onClick(this)" disabled>Button Z</button></li>
 	<li><button type="button" name="buttonA" id="btn-a" onclick="displayed()">Button A</button><button type="button" name="buttonB" id="btn-b" style="display: none;" onclick="onClick(this)">Button B</button></li>
     <li><a href="page2.html" id="nextBtn">NEXT</a>
-	
+
 	<iframe src="page2.html" height="200" width="300" title="Iframe 1" id="FrameA" name="FrameAlpha"></iframe>
 	<iframe src="page2.html" height="200" width="300" title="Iframe 2"></iframe>
 
@@ -28,36 +28,36 @@
 	</select>
     </ul>
     <script>
-	
+
 		function displayed() {
 			var btn = document.getElementById("btn-b");
 			if (btn.style.display == 'none'){
-				setTimeout(()=> { 
+				setTimeout(()=> {
 					btn.style.display =  "block";}, 8000);
   			} else {
-				setTimeout(()=> { 
+				setTimeout(()=> {
 					btn.style.display = "none";}, 8000);
 			}
 		}
-	
+
 		function enable() {
 			var btn = document.getElementById("btn-z");
 			if (btn.disabled){
-				setTimeout(()=> { 
+				setTimeout(()=> {
 					btn.disabled = false;}, 8000);
   			} else {
-				setTimeout(()=> { 
+				setTimeout(()=> {
 					btn.disabled = true;}, 8000);
 			}
 		}
 
 		function onClick(btn) {
-        
+
         btn.style.color = 'white';
-		setTimeout(()=> { 
-			btn.style.backgroundColor = colors[index]; 
+		setTimeout(()=> {
+			btn.style.backgroundColor = colors[index];
 			index = index >= colors.length - 1 ? 0 : index + 1;}, 6000);
-        
+
       }
 
       let index = 0;
