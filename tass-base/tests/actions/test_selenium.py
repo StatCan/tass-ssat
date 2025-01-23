@@ -380,6 +380,53 @@ class TestSelenium(unittest.TestCase):
                         locator={"by": "id", "value": "nextBtn"})
                 driver.quit()
 
+    def test_SeleniumAssertExactTextDisplayedSuccess(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        text = "NEXT"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                try:
+                    selenium.assert_contains_text(
+                        driver,
+                        text,
+                        locator={"by": "id", "value": "nextBtn"},
+                        exact=True)
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
+    def test_SeleniumAssertExactTextDisplayedSoftFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        text = "NEX"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassSoftAssertionError):
+                    selenium.assert_contains_text(
+                        driver,
+                        text, soft=True,
+                        locator={"by": "id", "value": "nextBtn"},
+                        exact=True)
+                driver.quit()
+
+    def test_SeleniumAssertExactTextDisplayedFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        text = "NEX"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassHardAssertionError):
+                    selenium.assert_contains_text(
+                        driver,
+                        text,
+                        locator={"by": "id", "value": "nextBtn"},
+                        exact=True)
+                driver.quit()
+
     def test_SeleniumAssertDisplayedSuccess(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
@@ -700,10 +747,10 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumSwitchWindowByTitle(self):
         url_0 = pathlib.Path(self.test_page_url).resolve().as_uri()
         url_1 = 'https://www.google.ca'
-        url_2 = 'https://www.github.com'
+        url_2 = 'https://www.statcan.gc.ca/en/start'
         google = 'Google'
         pageOne = 'Page One'
-        github = 'GitHub: Let’s build from here · GitHub'
+        statcan = "Statistics Canada: Canada's national statistical agency"
         for browser in self.drivers:
             driver = new_driver(**browser[0])
             with self.subTest(browser=browser[1].__name__):
@@ -715,8 +762,8 @@ class TestSelenium(unittest.TestCase):
                 self.assertEqual(driver().title, pageOne)
                 selenium.switch_window(driver, google)
                 self.assertEqual(driver().title, google)
-                selenium.switch_window(driver, github)
-                self.assertEqual(driver().title, github)
+                selenium.switch_window(driver, statcan)
+                self.assertEqual(driver().title, statcan)
                 selenium.switch_window(driver, pageOne)
                 self.assertEqual(driver().title, pageOne)
 
@@ -734,9 +781,9 @@ class TestSelenium(unittest.TestCase):
             {}
         }
 
-        github = {
-            "title": "GitHub: Let’s build from here · GitHub",
-            "url": "https://www.github.com",
+        statcan = {
+            "title": "Statistics Canada: Canada's national statistical agency",
+            "url": "https://www.statcan.gc.ca/en/start",
             "page_id":
             {
                 "method": "title",
@@ -757,7 +804,7 @@ class TestSelenium(unittest.TestCase):
         }
         try:
             PageReader().add_page('google', google)
-            PageReader().add_page('github', github)
+            PageReader().add_page('statcan', statcan)
             PageReader().add_page('page1', page_1)
 
             for browser in self.drivers:
@@ -765,14 +812,14 @@ class TestSelenium(unittest.TestCase):
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(google['url'])
                     driver().switch_to.new_window('tab')
-                    driver().get(github['url'])
+                    driver().get(statcan['url'])
                     driver().switch_to.new_window('tab')
                     driver().get(page_1['url'])
                     self.assertEqual(driver().title, page_1['title'])
                     selenium.switch_window(driver, page=('custom', 'google'))
                     self.assertEqual(driver().title, google['title'])
-                    selenium.switch_window(driver, page=('custom', 'github'))
-                    self.assertEqual(driver().title, github['title'])
+                    selenium.switch_window(driver, page=('custom', 'statcan'))
+                    self.assertEqual(driver().title, statcan['title'])
                     selenium.switch_window(driver, page=('custom', 'page1'))
                     self.assertEqual(driver().title, page_1['title'])
 
@@ -825,3 +872,128 @@ class TestSelenium(unittest.TestCase):
             self.assertEqual(loc_out['value'], 'btnRed')
         finally:
             PageReader.reset()
+
+    def test_SeleniumAssertAttributeDisplayedSuccess(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+
+        value = "title-test"
+        attribute = "test-id"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                try:
+                    selenium.assert_attribute_contains_value(
+                        driver,
+                        attribute,
+                        value,
+                        locator={"by": "xpath", "value": "//title"})
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
+    def test_SeleniumAssertPartialAttributeDisplayedSuccess(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+
+        value = "title"
+        attribute = "test-id"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                try:
+                    selenium.assert_attribute_contains_value(
+                        driver,
+                        attribute,
+                        value,
+                        locator={"by": "xpath", "value": "//title"})
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
+    def test_SeleniumAssertAttributeDisplayedSoftFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        value = "FAIL"
+        attribute = "test-id"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassSoftAssertionError):
+                    selenium.assert_attribute_contains_value(
+                        driver,
+                        attribute,
+                        value,
+                        soft=True,
+                        locator={"by": "xpath", "value": "//title"})
+                driver.quit()
+
+    def test_SeleniumAssertAttributeDisplayedFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        value = "FAIL"
+        attribute = "test-id"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassHardAssertionError):
+                    selenium.assert_attribute_contains_value(
+                        driver,
+                        attribute,
+                        value,
+                        locator={"by": "xpath", "value": "//title"})
+                driver.quit()
+
+    def test_SeleniumAssertExactAttributeDisplayedSuccess(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        value = "title-test"
+        attribute = "test-id"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                try:
+                    selenium.assert_attribute_contains_value(
+                        driver,
+                        attribute,
+                        value,
+                        locator={"by": "xpath", "value": "//title"},
+                        exact=True)
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
+    def test_SeleniumAssertExactAttributeDisplayedSoftFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        value = "FAIL"
+        attribute = "test-id"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassSoftAssertionError):
+                    selenium.assert_attribute_contains_value(
+                        driver,
+                        attribute,
+                        value,
+                        soft=True,
+                        locator={"by": "xpath", "value": "//title"},
+                        exact=True)
+                driver.quit()
+
+    def test_SeleniumAssertExactAttributeDisplayedFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        value = "FAIL"
+        attribute = "test-id"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassHardAssertionError):
+                    selenium.assert_attribute_contains_value(
+                        driver,
+                        attribute,
+                        value,
+                        locator={"by": "xpath", "value": "//title"},
+                        exact=True)
+                driver.quit()

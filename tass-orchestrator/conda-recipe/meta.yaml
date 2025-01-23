@@ -1,6 +1,6 @@
 package:
-  name: tass-base
-  version: 0.8.1
+  name: tass-orchestrator
+  version: 0.1.0
 
 source:
   path: ../
@@ -16,8 +16,5 @@ requirements:
     - pip
   run:
     - python >3.10
-    - selenium >=4.7.2
-    - tass-report
-    - openpyxl
-    - packaging
-    - jsonschema
+    - tass.base
+    - tass.converter

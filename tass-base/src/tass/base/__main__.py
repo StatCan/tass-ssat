@@ -26,15 +26,25 @@ class TassEncoder(json.JSONEncoder):
                 )
 
 
-def main(args):
+def _make_report(registrar, func_name, *args, **kwargs):
+    if registrar:
+        log.debug("Running report function: %s", func_name)
+        for reporter in registrar.iter_reporters():
+            log.debug("Reporter: %s executing function", reporter.uuid)
+            getattr(reporter, func_name)(*args, **kwargs)
+
+    # TODO: add logging messages.
+
+
+def main(file_path, no_validate):
     """
     Starting point for execution of tests.
     """
     log.info("\n\n <<<<<< TASS Starting >>>>>> \n\n")
 
-    path = Path(args.file).resolve()
+    path = Path(file_path).resolve()
 
-    test = parse(path, args.no_validate)
+    runs, registrar = parse(path, no_validate)
 
     log.info("<<<<< Starting Run: %s >>>>>", test.uuid)
     for case in test.collect():
@@ -74,4 +84,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     log.debug("Launch arguments:", vars(args))
-    main(args)
+    main(args.file, args.no_validate)

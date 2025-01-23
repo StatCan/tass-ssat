@@ -3,21 +3,16 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tass-base"
-
-version = "0.8.1"
-
+name = "tass-orchestrator"
+version = "0.1.0"
 authors = [
     {name = "Dominic Parent", email="dominic.parent@statcan.gc.ca"},
     {name = "Tyler Desjardins", email="josephgillestyler.desjardins@statcan.gc.ca"},
 ]
 requires-python = ">3.10"
 dependencies = [
-    "selenium>=4.7.2",
-	"tass-report",
-	"openpyxl",
-    "packaging",
-    "jsonschema"
+    "tass.base",
+    "tass.converter"
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
