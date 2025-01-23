@@ -16,5 +16,5 @@ requirements:
     - pip
   run:
     - python >=3.10
-    - tass.base
-    - tass.converter
+    - tass-base
+    - tass-converter
