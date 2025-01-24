@@ -26,15 +26,7 @@ class TassEncoder(json.JSONEncoder):
                 )
 
 
-def _make_report(registrar, func_name, *args, **kwargs):
-    if registrar:
-        log.debug("Running report function: %s", func_name)
-        for reporter in registrar.iter_reporters():
-            log.debug("Reporter: %s executing function", reporter.uuid)
-            getattr(reporter, func_name)(*args, **kwargs)
-
-
-def main(file_path, no_validate):
+def main(args):
     """
     Starting point for execution of tests.
     """
