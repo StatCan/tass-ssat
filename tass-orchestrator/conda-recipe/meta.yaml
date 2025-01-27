@@ -15,6 +15,6 @@ requirements:
     - setuptools
     - pip
   run:
-    - python >3.10
-    - tass.base
-    - tass.converter
+    - python >=3.10
+    - tass-base
+    - tass-converter
