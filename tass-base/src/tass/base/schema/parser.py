@@ -130,7 +130,11 @@ class Tass1Parser(Parser):
             raise TassUUIDNotFound(uuid)
 
         _case = deepcopy(found[0])
+<<<<<<< HEAD
         _case['steps'] = self._parse_steps(found[0]['steps'], job)
+=======
+        _case['steps'] = self._parse_steps(found[0]['steps'], job)        
+>>>>>>> c2533cac81010f0c600785399ca2aa39c950007d
 
         _case.update(self._parse_configurations())
 

@@ -26,6 +26,7 @@ class TassEncoder(json.JSONEncoder):
                 )
 
 
+<<<<<<< HEAD
 def _make_report(registrar, func_name, *args, **kwargs):
     if registrar:
         log.debug("Running report function: %s", func_name)
@@ -37,6 +38,9 @@ def _make_report(registrar, func_name, *args, **kwargs):
 
 
 def main(file_path, no_validate):
+=======
+def main(args):
+>>>>>>> c2533cac81010f0c600785399ca2aa39c950007d
     """
     Starting point for execution of tests.
     """
@@ -44,7 +48,11 @@ def main(file_path, no_validate):
 
     path = Path(file_path).resolve()
 
+<<<<<<< HEAD
     runs, registrar = parse(path, no_validate)
+=======
+    test = parse(path, args.no_validate)
+>>>>>>> c2533cac81010f0c600785399ca2aa39c950007d
 
     log.info("<<<<< Starting Run: %s >>>>>", test.uuid)
     for case in test.collect():
