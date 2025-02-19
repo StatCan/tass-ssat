@@ -26,21 +26,7 @@ class TassEncoder(json.JSONEncoder):
                 )
 
 
-<<<<<<< HEAD
-def _make_report(registrar, func_name, *args, **kwargs):
-    if registrar:
-        log.debug("Running report function: %s", func_name)
-        for reporter in registrar.iter_reporters():
-            log.debug("Reporter: %s executing function", reporter.uuid)
-            getattr(reporter, func_name)(*args, **kwargs)
-
-    # TODO: add logging messages.
-
-
 def main(file_path, no_validate):
-=======
-def main(args):
->>>>>>> c2533cac81010f0c600785399ca2aa39c950007d
     """
     Starting point for execution of tests.
     """
@@ -48,14 +34,10 @@ def main(args):
 
     path = Path(file_path).resolve()
 
-<<<<<<< HEAD
-    runs, registrar = parse(path, no_validate)
-=======
-    test = parse(path, args.no_validate)
->>>>>>> c2533cac81010f0c600785399ca2aa39c950007d
+    run = parse(path, no_validate)
 
-    log.info("<<<<< Starting Run: %s >>>>>", test.uuid)
-    for case in test.collect():
+    log.info("<<<<< Starting Run: %s >>>>>", run.uuid)
+    for case in run.collect():
         log.info("")
         log.info("< < < Starting Case: %s > > >", case.uuid)
         log.info("")
@@ -68,7 +50,7 @@ def main(args):
 
     Path('results').mkdir(exist_ok=True)
 
-    file_name = test.uuid + '---' + test.start_time + '.json'
+    file_name = run.uuid + '---' + run.start_time + '.json'
     result_path = Path().resolve() / "results" / file_name
     try:
         f = open(result_path, 'w+', encoding='utf-8')
@@ -76,7 +58,7 @@ def main(args):
         log.error("An IOError occured: %s" % e)
         return
     with f:
-        json.dump(test, f, indent=4, cls=TassEncoder)
+        json.dump(run, f, indent=4, cls=TassEncoder)
 
 
 if __name__ == '__main__':

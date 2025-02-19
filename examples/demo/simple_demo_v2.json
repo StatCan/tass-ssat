@@ -19,8 +19,8 @@
             ]
         },
         {
-            "uuid": "tr100101--uuid-tc-02--ffox002",
-            "case": "uuid-tc-02",
+            "uuid": "tr100101--Uuid-tc-02--ffox002",
+            "case": "Uuid-tc-02",
             "configurations": [
                 {
                     "type": "browser",

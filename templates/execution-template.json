@@ -123,7 +123,7 @@
                     "type": "string",
                     "description": "Version of the application being tested."
                 },
-                "steps": {"$ref": "#/$defs/uuid-list"},
+                "steps": {"$ref": "#/$defs/uuid-list"}
             },
             "required": ["uuid", "title", "steps"]
         },

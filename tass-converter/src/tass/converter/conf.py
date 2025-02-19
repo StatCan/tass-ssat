@@ -1,21 +1,22 @@
 import openpyxl
+from pathlib import Path
 
 
 def convert(path):
     """
     Helper tool to convert xlsx config file to a in-memory json equivalent.
     """
+
     conf_file = {}
-    conf_file["Test_runs"] = []
-    conf_file["Test_suites"] = []
-    conf_file["Test_cases"] = []
+    conf_file["Tests"] = []
+    conf_file["Cases"] = []
     conf_file["Steps"] = {}  # Will be converted to list later.
     conf_file["Reporters"] = []
     conf_file["Browsers"] = []
     wb = openpyxl.load_workbook(path, data_only=True)  # Open conf file.
+    wb.name = Path(path).resolve().as_uri()
 
     test_run = []  # Holds all test_run worksheet names.
-    test_suite = []  # Holds all test_suite worksheet names.
     test_case = []  # Holds all test_case worksheet names.
     test_reporter = []  # Holds all reporter worksheet names.
     test_browsers = []  # Holds all the browser worksheet names.
@@ -26,8 +27,6 @@ def convert(path):
         test_type = wb[sheet]['A1'].value
         if test_type == 'tr_uuid:':
             test_run.append(sheet)
-        elif test_type == 'ts_uuid:':
-            test_suite.append(sheet)
         elif test_type == 'tc_uuid:':
             test_case.append(sheet)
         elif test_type == 'r_uuid:':
@@ -38,33 +37,37 @@ def convert(path):
             print('Not a tass Excel template.')
 
     # Call the different convert methods for each type if they exist.
+
     if test_run:
-        conf_file = convert_test_run(test_run, conf_file, wb)
-    if test_suite:
-        conf_file = convert_test_suite(test_suite, conf_file, wb)
+        tests = convert_test_run(test_run, wb)
+        breakpoint()
     if test_case:
-        conf_file = convert_test_case(test_case, conf_file, wb)
+        cases, steps = convert_test_case(test_case, conf_file, wb)
     if test_reporter:
         conf_file = convert_reporters(test_reporter, conf_file, wb)
     if test_browsers:
-        conf_file = convert_browsers(test_browsers, conf_file, wb)
+        browsers = convert_browsers(test_browsers, wb)
 
+    # Convert above lists to create multiple dicts
+    # each one being an execution file
     conf_file['schema-version'] = "1.0.0"
     return conf_file
 
 
-def convert_browsers(browsers, conf, wb):
+def convert_browsers(browsers, wb):
+    conf = []
     for browser in browsers:
-        b = {}
-        s = wb[browser]
+        b = {} # Browser definition dict
+        s = wb[browser] # Browser definition worksheet
 
         browser_name = s['D1'].value
         uuid = s['B1'].value
 
-        b_args = set()
-        b_pref = {}
-        d_config = {}
-        # Driver and browser arguments/config
+        b_args = set() # Browser arguments (flags)
+        b_pref = {} # Browser preferences (key/value)
+        d_config = {} # Driver configurations
+
+        # Get Driver and browser arguments/config from sheet
         for row in s.iter_rows(min_row=3, min_col=2, max_col=6):
             if row[0].value:
                 k, v = row[0].value.split(',', maxsplit=1)
@@ -87,11 +90,13 @@ def convert_browsers(browsers, conf, wb):
         b['uuid'] = uuid
         b['configs'] = config
 
-        conf['Browsers'].append(b)
+        conf.append(b)
+    breakpoint()
     return conf
 
 
 def convert_reporters(reporters, conf, wb):
+    # TODO: reporters should be outputted to their own file.
     for reporter in reporters:
         r = {}
         s = wb[reporter]  # Excel sheet for reporter
@@ -128,6 +133,7 @@ def convert_reporters(reporters, conf, wb):
 
 
 def convert_test_case(test_case, conf, wb):
+    # TODO: Create Cases list and Steps List separately.
     for case in test_case:
         tc = {}
         tc["uuid"] = wb[case]['B1'].value
@@ -211,54 +217,61 @@ def convert_test_case(test_case, conf, wb):
                 steps['parameters'] = parameters
                 conf["Steps"][row[0].value] = steps
         # Add the list of testcases to the main config file.
-        conf["Test_cases"].append(tc)
+        conf["Cases"].append(tc)
     # Convert dictionary to list as mentioned in convert(path) above.
     conf["Steps"] = (list(conf["Steps"].values()))
     return conf
 
 
-def convert_test_suite(test_suite, conf, wb):
-    for suite in test_suite:
-        ts = {}
-        ts["uuid"] = wb[suite]['B1'].value
-        ts["test_cases"] = []
-        ts["keywords"] = []
-        for row in wb[suite].iter_rows(min_row=2, min_col=2, max_col=2):
-            if row[0].value is not None:
-                ts["test_cases"].append(row[0].value)
-        for row in wb[suite].iter_rows(min_row=1, min_col=4, max_col=4):
-            if row[0].value is not None:
-                ts["keywords"].append(row[0].value)
-        conf["Test_suites"].append(ts)
-
-    return conf
-
-
-def convert_test_run(test_run, conf, wb):
+def convert_test_run(test_run, wb):
+    # TODO: "Explode" tests to include configurations and cases for each test in a separate json.
+    # The former Test Run object becomes a Job file.
+    runs = []
     for run in test_run:
         tr = {}
-        tr["uuid"] = wb[run]['B1'].value
-        tr["build"] = wb[run]['B2'].value
-        tr["title"] = wb[run]['D1'].value
-        # tr["start_time"] = wb[run]['D1'].value
-        # tr["end_time"] = wb[run]['D2'].value
-        tr["test_cases"] = []
-        tr["test_suites"] = []
-        tr["browsers"] = []
-        tr["reporters"] = []
+        # ///// This information is converted to a Job.
+        uuid = wb[run]['B1'].value
+        build = wb[run]['B2'].value or "000"
+        title = wb[run]['D1'].value or "TASS JOB"
+        parent = wb.name
+
+        job = {
+            "uuid": uuid,
+            "build": build,
+            "title": title,
+            "parent": parent
+        }
+
+        tr["Job"] = job
+        # \\\\\
+
+        cases = set()
+        browsers = set()
         for row in wb[run].iter_rows(min_row=3, min_col=2, max_col=8):
-            # Add suites
-            if row[0].value:
-                tr["test_suites"].append(row[0].value)
             # Add cases
             if row[2].value:
-                tr["test_cases"].append(row[2].value)
-            # Add reporters
-            if row[4].value:
-                tr["reporters"].append(row[4].value)
+                cases.add(row[2].value)
             # Add browsers
             if row[6].value:
-                tr["browsers"].append(row[6].value)
+                browsers.add(row[6].value)
+
+        tests = []
+        for browser in browsers:
+            for c in cases:
+                uuid = "--".join([job['uuid'], c, browser])
+                test = {
+                    "uuid": uuid,
+                    "case": c,
+                    "configurations": [
+                        {
+                            "type": "browser",
+                            "uuid": browser
+                        }
+                    ]
+                }
+
+                tests.append(test)
+        tr['Tests'] = tests
 
         # other attributes:
         for col in wb[run].iter_cols(min_row=3, max_row=3, min_col=10):
@@ -275,6 +288,6 @@ def convert_test_run(test_run, conf, wb):
                 k, v = row[0].value.split(",", maxsplit=1)
                 attr[k] = v
             tr[header] = attr
-        conf["Test_runs"].append(tr)
+        runs.append(tr)
 
-    return conf
+    return runs

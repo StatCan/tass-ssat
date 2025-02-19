@@ -1,6 +1,7 @@
 import argparse
 import json
-from . import conf as conf
+# from . import conf as conf
+from .conf import excel as conf
 from pathlib import Path
 
 
@@ -14,7 +15,8 @@ def scenario_excel(source, target):
         "Converting Excel:", source,
         "scenario to JSON:", target, "\n\n"
         )
-    s = conf.convert(source)
+
+    s = conf.convert(Path(source).resolve())
     t = target + ".json"
     json.dump(s, open(t, 'w+', encoding='utf-8'), indent=4)
     return str(Path(t).resolve())
