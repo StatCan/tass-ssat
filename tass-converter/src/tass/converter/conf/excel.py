@@ -5,7 +5,6 @@ def convert(path):
     """
     Helper tool to convert xlsx config file to a in-memory json equivalent.
     """
-    breakpoint()
     wb = openpyxl.load_workbook(path, data_only=True)  # Open excel file.
     wb.name = path.resolve().as_uri()
 
@@ -30,13 +29,14 @@ def convert(path):
             print('Not a tass Excel template.')
 
     # Extract configurations from sheets using sheet names
-    breakpoint()
     if s_cases:
         cases, steps = convert_cases(s_cases, wb) # Extract cases and steps from sheets
     if s_browsers:
         browsers = convert_browsers(s_browsers, wb) # Extract browser configs from sheets
     if s_runs:
         runs = convert_runs(s_runs, cases, steps, browsers, wb)
+    if s_reporters:
+        reporters = convert_reporters(s_reporters, wb) # TODO: define and print reporters.
 
     return runs
 
@@ -72,12 +72,12 @@ def convert_cases(cases, wb):
 
                 header = wb[c].cell(2, col[0].column).value
 
-                if (header == '//end//'):
+                if (header == '//end//'): # e.o.f indicator for TASS
                     break
 
                 if (col[0].value is not None):
 
-                    if (header == 'locator'):
+                    if (header == 'locator'): # locator parameter. key,value pair or single string. ',' is reserved character.
                         locator = str(col[0].value).split(',', maxsplit=1)
 
                         if (len(locator) == 2):
@@ -88,21 +88,26 @@ def convert_cases(cases, wb):
                         else:
                             parameters['locator'] = locator[0]
 
-                    elif (header == 'page'):
+                    elif (header == 'page'): # page parameter. read as "project(JSON),page(dict key)"
                         parameters['page'] = (col[0]
                                             .value
                                             .split(',', maxsplit=1))
 
-                    elif ('action' in header):
+                    elif ('action' in header): # action parameter. read as "module,action"
                         parameters['action'] = (col[0]
                                                 .value
                                                 .split(',', maxsplit=1))
 
                     elif (header == 'locator_args'):
+                        # locator_args parameter. "," separated list of arguments for locator.
+                        # arguments are filled in order of definition at run time.
                         parameters['locator_args'] = str(col[0].value)\
                                                     .split(',')
 
                     elif (header == 'stored_filter'):
+                        # stored_filter parameter. read as key/value_key
+                        # where key is the key assigned to TASS
+                        # value_key is the key/header for the column of the desired value to store
                         parameters['stored_filter'] = (col[0]
                                                     .value
                                                     .split(',', maxsplit=1))
@@ -192,6 +197,7 @@ def convert_runs(runs, cases, steps, browsers, wb):
         }
 
         tr["Job"] = job
+        tr["schema-version"] = "1.1.0"
         # \\\\\
 
         caseset = set()
@@ -206,18 +212,20 @@ def convert_runs(runs, cases, steps, browsers, wb):
                 browserset.add(row[6].value)
 
         for case in caseset:
+            # add step ids
             c = cases[case]
             for step in c['steps']:
                 stepset.add(step)
 
-        tr["Cases"] = [cases[c] for c in caseset]
-        tr["Steps"] = [steps[s] for s in stepset]
-        tr["Browsers"] = [browsers[b] for b in browserset]
+        tr["Cases"] = [cases[c] for c in caseset] # extract cases for this job
+        tr["Steps"] = [steps[s] for s in stepset] # extract steps for this job
+        tr["Browsers"] = [browsers[b] for b in browserset] # extract browsers for this job
 
         tests = []
+        # "Explode" test cases + configurations
         for browser in browserset:
             for c in caseset:
-                uuid = "--".join([job['uuid'], c, browser])
+                uuid = "--".join([job['uuid'], c, browser]) # Hybrid uuid
                 test = {
                     "uuid": uuid,
                     "case": c,
@@ -252,3 +260,7 @@ def convert_runs(runs, cases, steps, browsers, wb):
 
     return execs
 
+
+def convert_reporters(reporters, wb):
+    # TODO: define reporters
+    pass

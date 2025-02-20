@@ -1,6 +1,6 @@
 SCHEMA_1_0_0 = {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "TASS Job File",
+    "title": "TASS Execution File",
     "description": "A TASS job file, to be executed using the TASS framework.",
     "type": "object",
     "properties": {
@@ -8,38 +8,71 @@ SCHEMA_1_0_0 = {
             "type": "string",
             "pattern": "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
         },
-        "Test_runs": {
-            "description": "List of Test runs objects to be executed.",
-            "type": "array",
-            "items": {"$ref": "#/$defs/test-run"}
+        "Job": {
+            "description": "Description of the job. Sets default values for undefined test case values.",
+            "type": "object",
+            "properties": {
+                "title": {
+                    "description": "Name of the job. Defaults to the file name.",
+                    "type": "string"
+                },
+                "uuid": {"$ref": "#/$defs/uuid"},
+                "build": {
+                    "description": "Build of the application being tested. Inherited by test cases if not specified.",
+                    "type": "string"
+                },
+                "parent": {
+                    "description": "Description of the parent job if generated from converter.",
+                    "type": ["object", "string"],
+                    "properties": {
+                        "uuid": {"$ref": "#/$defs/uuid"},
+                        "title": {
+                            "description": "Title of the parent document.",
+                            "type": "string"
+                        },
+                        "path": {
+                            "description": "File path of the parent document at the time of conversion.",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         },
-        "Test_suites": {
-            "description": "List of Test suite objects to be executed",
+        "Tests": {
+            "description": "List of Test cases with configurations that may be executed.",
             "type": "array",
-            "$comment": "Not implemented"
+            "items": {"$ref": "#/$defs/test"}
         },
-        "Test_cases": {
+        "Cases": {
             "description": "List of Test cases that may be executed.",
             "type": "array",
-            "items": {"$ref": "#/$defs/test-case"}
+            "items": {"$ref": "#/$defs/case"}
         },
         "Steps": {
             "description": "List of steps, singular actions, that can be executed in a test case.",
             "type": "array",
             "items": {"$ref": "#/$defs/step"}
         },
-        "Reporters": {
-            "description": "List of reporters that may be used with this job.",
-            "type": "array",
-            "items": {"$ref": "#/$defs/reporter"}
-        },
         "Browsers": {
-            "description": "List of browser configurations that may be used.",
+            "description": "Browser configurations to be used in this test run.",
             "type": "array",
             "items": {"$ref": "#/$defs/browser"}
+        },
+        "Meta": {
+            "description": "Additional information about this test run that does not affect the test.",
+            "type": "object",
+            "properties": {
+                "results-path": {
+                    "type": "string",
+                    "description": "File path to write results. Overwrites default."
+                },
+                "pages-path": {
+                    "type": "string",
+                    "description": "File path to read POM files from."
+                }
+            }
         }
     },
-    "required": ["Test_runs", "Test_cases", "Test_suites", "Steps", "Reporters", "Browsers"],
     "$defs": {
         "uuid": {
             "type": "string",
@@ -53,27 +86,31 @@ SCHEMA_1_0_0 = {
             },
             "description": "List of uuids"
         },
-        "test-run": {
+        "test": {
             "type": "object",
-            "description": "Describes a singular test run to be executed.",
+            "description": "Test to be executed. Includes which case and any other configuration settings.",
             "properties": {
-                "uuid": {"$ref": "#/$defs/uuid"},
-                "build": {
-                    "type": "string",
-                    "description": "Build of the product being tested."
+                "uuid": {
+                    "$ref": "#/$defs/uuid",
+                    "description": "The uuid of this test. Typically a compounded uuid of the job, case, and configuration uuids."
                 },
-                "title": {
-                    "type": "string",
-                    "description": "Human readable name for the test."
+                "case": {
+                    "$ref": "#/$defs/uuid",
+                    "description": "The uuid of the case that will be executed."
                 },
-                "test_cases": {"$ref": "#/$defs/uuid-list"},
-                "test_suites": {"$ref": "#/$defs/uuid-list"},
-                "browsers": {"$ref": "#/$defs/uuid-list"},
-                "reporters": {"$ref": "#/$defs/uuid-list"}
-            },
-            "required": ["uuid", "title", "build", "test_cases", "test_suites", "browsers", "reporters"]
+                "configuration": {
+                    "type": "object",
+                    "description": "Contains the various configurations for running a case.",
+                    "properties": {
+                        "browser": {
+                            "ref": "#/$defs/uuid",
+                            "description": "The uuid of the browser used in this configuration."
+                        }
+                    }
+                }
+            }
         },
-        "test-case": {
+        "case": {
             "type": "object",
             "description": "Describes a singular test case. Test cases should be independant of one another.",
             "properties": {
@@ -81,6 +118,10 @@ SCHEMA_1_0_0 = {
                 "title": {
                     "type": "string",
                     "description": "Human readable descriptor for the test case."
+                },
+                "build": {
+                    "type": "string",
+                    "description": "Version of the application being tested."
                 },
                 "steps": {"$ref": "#/$defs/uuid-list"}
             },
@@ -100,7 +141,7 @@ SCHEMA_1_0_0 = {
                     "type": "array",
                     "minItems": 2,
                     "maxItems": 2,
-                    "items": {
+                    "items":{
                         "type": "string"
                     },
                     "description": "An array with a length of 2, the first string states the module, the second the action."
@@ -111,30 +152,6 @@ SCHEMA_1_0_0 = {
                 }
             },
             "required": ["uuid", "title", "action", "parameters"]
-        },
-        "reporter": {
-            "type": "object",
-            "description": "Configuration for a reporter.",
-            "properties": {
-                "uuid": {"$ref": "#/$defs/uuid"},
-                "type": {
-                    "type": "string",
-                    "description": "The type of reporter."
-                },
-                "package": {
-                    "type": "string",
-                    "description": "The full package descriptor for the reporter module to be found."
-                },
-                "class_name": {
-                    "type": "string",
-                    "description": "The name of the reporter class to be used."
-                },
-                "config": {
-                    "type": "object",
-                    "description": "Additional configuration options for the reporter."
-                }
-            },
-            "required": ["uuid", "type", "package", "class_name", "config"]
         },
         "browser": {
             "type": "object",
@@ -158,7 +175,7 @@ SCHEMA_1_0_0 = {
                             "properties": {
                                 "arguments": {
                                     "type": "array",
-                                    "items": {"type": "string"},
+                                    "items": { "type": "string" },
                                     "description": "Flags to be passed to the browser instance"
                                 },
                                 "preferences": {
