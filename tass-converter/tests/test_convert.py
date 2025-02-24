@@ -5,7 +5,9 @@ import json
 
 
 class TestConvert(unittest.TestCase):
+
     def setUp(self):
+        self.maxDiff = None
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         print("Beginning new test TestCase %s" % self._testMethodName)
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")

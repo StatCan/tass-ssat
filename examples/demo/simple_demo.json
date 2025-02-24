@@ -1,0 +1,312 @@
+{
+    "Test_runs": [
+        {
+            "uuid": "tr100101",
+            "build": "V2.4",
+            "title": "Simple Demo v.1",
+            "test_cases": [
+                "uuid-tc-01",
+                "Uuid-tc-02"
+            ],
+            "test_suites": [],
+            "browsers": [
+                "chrome001",
+				"chrome002",
+                "ffox001",
+                "ffox002"
+            ],
+            "reporters": []
+        },
+		{
+            "uuid": "tr100102",
+            "build": "V2.4",
+            "title": "Simple Demo v.2",
+            "test_cases": [
+                "uuid-tc-01",
+                "Uuid-tc-02"
+            ],
+            "test_suites": [],
+            "browsers": [
+                "chrome001",
+				"chrome001A",
+				"chrome001B",
+				"ffox001"
+            ],
+            "reporters": []
+        }
+    ],
+    "Test_suites": [],
+    "Test_cases": [
+        {
+            "uuid": "uuid-tc-01",
+            "title": "Tass Sample Case A",
+            "steps": [
+                "q1",
+                "q2",
+                "q3",
+                "q4",
+                "q5",
+                "q6",
+                "q7",
+                "q8"
+            ]
+        },
+        {
+            "uuid": "Uuid-tc-02",
+            "title": "Tass Sample Case B",
+            "steps": [
+                "q1",
+                "q2",
+                "q3",
+                "q4",
+                "q5",
+                "q1",
+                "q2",
+                "q3",
+                "q4",
+                "q5",
+                "q6a"
+            ]
+        }
+    ],
+    "Steps": [
+        {
+            "uuid": "q1",
+            "title": "Launch test page",
+            "action": [
+                "selenium",
+                "load_file"
+            ],
+            "parameters": {
+                "relative_path": "examples/demo-html/page1.html"
+            }
+        },
+        {
+            "uuid": "q2",
+            "title": "Assert page is open",
+            "action": [
+                "selenium",
+                "assert_page_is_open"
+            ],
+            "parameters": {
+                "page": [
+                    "sample",
+                    "page1"
+                ]
+            }
+        },
+        {
+            "uuid": "q3",
+            "title": "Wait for element then type",
+            "action": [
+                "selwait",
+                "wait_element_visible"
+            ],
+            "parameters": {
+                "locator": {
+                    "by": "id",
+                    "value": "nameField"
+                },
+                "action": [
+                    "selenium",
+                    "write"
+                ],
+                "text": "do a barrel roll"
+            }
+        },
+        {
+            "uuid": "q4",
+            "title": "Click a button",
+            "action": [
+                "selenium",
+                "click"
+            ],
+            "parameters": {
+                "locator": "btnColor",
+                "page": [
+                    "sample",
+                    "page1"
+                ]
+            }
+        },
+        {
+            "uuid": "q5",
+            "title": "Read CSS",
+            "action": [
+                "selenium",
+                "read_css"
+            ],
+            "parameters": {
+                "locator": "btnColor",
+                "page": [
+                    "sample",
+                    "page1"
+                ],
+                "attribute": "background-color"
+            }
+        },
+        {
+            "uuid": "q6",
+            "title": "Assert element is displayed",
+            "action": [
+                "selenium",
+                "assert_displayed"
+            ],
+            "parameters": {
+                "locator": "btnX",
+                "page": [
+                    "sample",
+                    "page1"
+                ],
+                "soft": "true"
+            }
+        },
+        {
+            "uuid": "q7",
+            "title": "Assert element is displayed",
+            "action": [
+                "selenium",
+                "assert_displayed"
+            ],
+            "parameters": {
+                "locator": "btnX",
+                "page": [
+                    "sample",
+                    "page1"
+                ]
+            }
+        },
+        {
+            "uuid": "q8",
+            "title": "Assert element is displayed",
+            "action": [
+                "selenium",
+                "assert_displayed"
+            ],
+            "parameters": {
+                "locator": "btnX",
+                "page": [
+                    "sample",
+                    "page1"
+                ],
+                "soft": "true"
+            }
+        },
+        {
+            "uuid": "q6a",
+            "title": "Click a button",
+            "action": [
+                "selenium",
+                "click"
+            ],
+            "parameters": {
+                "locator": "btnFormat",
+                "page": [
+                    "sample",
+                    "page1"
+                ],
+                "locator_args": [
+                    "Color"
+                ]
+            }
+        }
+    ],
+    "Reporters": [],
+    "Browsers": [
+        {
+            "browser_name": "chrome",
+            "uuid": "chrome001",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "10"
+                },
+                "browser": {
+                    "arguments": [
+                        "--start-maximized"
+                    ],
+                    "preferences": {}
+                }
+            }
+        },
+		{
+            "browser_name": "chrome",
+            "uuid": "chrome001A",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "10"
+                },
+                "browser": {
+                    "arguments": [
+                        "--window-size=1920,1080"
+                    ],
+                    "preferences": {}
+                }
+            }
+        },
+		{
+            "browser_name": "chrome",
+            "uuid": "chrome001B",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "10"
+                },
+                "browser": {
+                    "arguments": [
+                        "--window-size=900,600"
+                    ],
+                    "preferences": {}
+                }
+            }
+        },
+        {
+            "browser_name": "chrome",
+            "uuid": "chrome002",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "10"
+                },
+                "browser": {
+                    "arguments": [
+                        "--headless",
+                        "--start-maximized"
+                    ],
+                    "preferences": {}
+                }
+            }
+        },
+        {
+            "browser_name": "firefox",
+            "uuid": "ffox001",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "15",
+                    "explicit_wait": "30"
+                },
+                "browser": {
+                    "arguments": [
+                        "--start-maximized"
+                    ],
+                    "preferences": {}
+                }
+            }
+        },
+        {
+            "browser_name": "firefox",
+            "uuid": "ffox002",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "15",
+                    "explicit_wait": "30"
+                },
+                "browser": {
+                    "arguments": ["--headless"],
+                    "preferences": {}
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+package:
+  name: tass-report
+  version: 0.1.1
+
+source:
+  path: ../
+
+build:
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - pip
+  run:
+    - python >=3.10
+    - requests

@@ -1,0 +1,81 @@
+{
+	"schema-version": "test",
+	"Test_flow": [
+		{
+			"conversion": [
+				{
+					"conv-prop": {
+						"convert": "1",
+						"source": "2",
+						"target": "3"
+					}
+				}
+			],
+			"executor": [
+				{
+					"base-prop":
+					{
+						"file_path": "test path",
+						"no_validate": true
+					}
+				}
+			],
+			"reporter": [
+				"6",
+				"7",
+				"8",
+				"9"
+			]
+		},
+		{
+			"conversion": [
+				{
+					"conv-prop": {
+						"convert":"4",
+						"source": "5",
+						"target": "6"
+					}
+				}
+			],
+			"executor": [
+				{
+					"base-prop":{
+						"file_path": "yet another test path",
+						"no_validate": true
+					}
+				}
+			],
+			"reporter": [
+				"4",
+				"5",
+				"1",
+				"5"
+			]
+		},
+		{
+			"conversion": [
+				{
+					"conv-prop": {
+						"convert": "3",
+						"source": "8",
+						"target": "1"
+					}
+				}
+			],
+			"executor": [
+				{
+					"base-prop": {
+						"file_path": "last test path",
+						"no_validate": true
+					}
+				}
+			],
+			"reporter": [
+				"5",
+				"6",
+				"7",
+				"8"
+			]
+		}
+	]
+}

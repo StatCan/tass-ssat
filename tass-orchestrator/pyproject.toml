@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tass-orchestrator"
+version = "0.1.0"
+authors = [
+    {name = "Dominic Parent", email="dominic.parent@statcan.gc.ca"},
+    {name = "Tyler Desjardins", email="josephgillestyler.desjardins@statcan.gc.ca"},
+]
+requires-python = ">=3.10"
+dependencies = [
+    "tass-base",
+    "tass-converter"
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+]
