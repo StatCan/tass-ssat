@@ -178,7 +178,7 @@ def convert_browsers(browsers, wb):
         config = {
             'driver': d_config,
             'browser': {
-                'arguments': list(b_args),
+                'arguments': sorted(list(b_args)),
                 'preferences': b_pref
                 }
             }

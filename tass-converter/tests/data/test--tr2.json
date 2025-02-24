@@ -192,8 +192,8 @@
                 },
                 "browser": {
                     "arguments": [
-                        "--start-maximized",
-                        "--headless"
+                        "--headless",
+                        "--start-maximized"
                     ],
                     "preferences": {}
                 }
