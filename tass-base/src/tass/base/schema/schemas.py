@@ -1,0 +1,176 @@
+SCHEMA_1_0_0 = {
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "TASS Job File",
+    "description": "A TASS job file, to be executed using the TASS framework.",
+    "type": "object",
+    "properties": {
+        "schema-version": {
+            "type": "string",
+            "pattern": "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
+        },
+        "Test_runs": {
+            "description": "List of Test runs objects to be executed.",
+            "type": "array",
+            "items": {"$ref": "#/$defs/test-run"}
+        },
+        "Test_suites": {
+            "description": "List of Test suite objects to be executed",
+            "type": "array",
+            "$comment": "Not implemented"
+        },
+        "Test_cases": {
+            "description": "List of Test cases that may be executed.",
+            "type": "array",
+            "items": {"$ref": "#/$defs/test-case"}
+        },
+        "Steps": {
+            "description": "List of steps, singular actions, that can be executed in a test case.",
+            "type": "array",
+            "items": {"$ref": "#/$defs/step"}
+        },
+        "Reporters": {
+            "description": "List of reporters that may be used with this job.",
+            "type": "array",
+            "items": {"$ref": "#/$defs/reporter"}
+        },
+        "Browsers": {
+            "description": "List of browser configurations that may be used.",
+            "type": "array",
+            "items": {"$ref": "#/$defs/browser"}
+        }
+    },
+    "required": ["Test_runs", "Test_cases", "Test_suites", "Steps", "Reporters", "Browsers"],
+    "$defs": {
+        "uuid": {
+            "type": "string",
+            "description": "Universally Unique Identifier",
+            "$comment": "Created as a definition for possible future functionality. Validating uuids."
+        },
+        "uuid-list": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/uuid"
+            },
+            "description": "List of uuids"
+        },
+        "test-run": {
+            "type": "object",
+            "description": "Describes a singular test run to be executed.",
+            "properties": {
+                "uuid": {"$ref": "#/$defs/uuid"},
+                "build": {
+                    "type": "string",
+                    "description": "Build of the product being tested."
+                },
+                "title": {
+                    "type": "string",
+                    "description": "Human readable name for the test."
+                },
+                "test_cases": {"$ref": "#/$defs/uuid-list"},
+                "test_suites": {"$ref": "#/$defs/uuid-list"},
+                "browsers": {"$ref": "#/$defs/uuid-list"},
+                "reporters": {"$ref": "#/$defs/uuid-list"}
+            },
+            "required": ["uuid", "title", "build", "test_cases", "test_suites", "browsers", "reporters"]
+        },
+        "test-case": {
+            "type": "object",
+            "description": "Describes a singular test case. Test cases should be independant of one another.",
+            "properties": {
+                "uuid": {"$ref": "#/$defs/uuid"},
+                "title": {
+                    "type": "string",
+                    "description": "Human readable descriptor for the test case."
+                },
+                "steps": {"$ref": "#/$defs/uuid-list"}
+            },
+            "required": ["uuid", "title", "steps"]
+        },
+        "step": {
+            "type": "object",
+            "description": "Describes a singular step, a single action to be takenby the automation.",
+            "properties": {
+                "uuid": {"$ref": "#/$defs/uuid"},
+                "title": {
+                    "type": "string",
+                    "description": "Human readable descriptor for the step."
+                },
+                "action": {
+                    "$comment": "TODO: Create external step schema to further validate steps for each action/parameters.",
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "An array with a length of 2, the first string states the module, the second the action."
+                },
+                "parameters": {
+                    "type": "object",
+                    "description": "Parameters content is dependant on the action used."
+                }
+            },
+            "required": ["uuid", "title", "action", "parameters"]
+        },
+        "reporter": {
+            "type": "object",
+            "description": "Configuration for a reporter.",
+            "properties": {
+                "uuid": {"$ref": "#/$defs/uuid"},
+                "type": {
+                    "type": "string",
+                    "description": "The type of reporter."
+                },
+                "package": {
+                    "type": "string",
+                    "description": "The full package descriptor for the reporter module to be found."
+                },
+                "class_name": {
+                    "type": "string",
+                    "description": "The name of the reporter class to be used."
+                },
+                "config": {
+                    "type": "object",
+                    "description": "Additional configuration options for the reporter."
+                }
+            },
+            "required": ["uuid", "type", "package", "class_name", "config"]
+        },
+        "browser": {
+            "type": "object",
+            "description": "Configuration for a browser.",
+            "properties": {
+                "uuid": {"$ref": "#/$defs/uuid"},
+                "browser_name": {
+                    "enum": ["chrome", "firefox", "edge"],
+                    "description": "The name of the browser to be used."
+                },
+                "configs": {
+                    "type": "object",
+                    "properties": {
+                        "driver": {
+                            "type": "object",
+                            "description": "Configuration values for the automated driver."
+                        },
+                        "browser": {
+                            "type": "object",
+                            "description": "Configurations for browser preferences.",
+                            "properties": {
+                                "arguments": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                    "description": "Flags to be passed to the browser instance"
+                                },
+                                "preferences": {
+                                    "type": "object",
+                                    "description": "Key value pairs to set preferences of a browser."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "required": ["uuid", "browser_name", "configs"]
+        }
+    }
+}

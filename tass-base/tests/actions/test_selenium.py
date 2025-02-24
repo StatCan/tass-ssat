@@ -2,7 +2,6 @@ import unittest
 import pathlib
 
 import tass.base.actions.selenium as selenium
-import tass.base.config.browserconfig as bc
 from tass.base.core.page_reader import PageReader
 from tass.base.exceptions.assertion_errors import (
     TassAssertionError,
@@ -12,8 +11,8 @@ from tass.base.exceptions.assertion_errors import (
 
 import selenium.webdriver.support.expected_conditions as EC
 from selenium.webdriver.support.select import Select
-
-from tass.base.drivers.browserdriver import (
+from tass.base.drivers.driverconfig import new_driver
+from tass.base.drivers.custombrowserdrivers import (
     ChromeDriver as CDriver,
     EdgeDriver as EDriver,
     FirefoxDriver as FDriver
@@ -22,30 +21,59 @@ from tass.base.drivers.browserdriver import (
 
 class TestSelenium(unittest.TestCase):
 
-    config = bc.load(
+    config = [
         {
-            "DEFAULT": {
-                "implicit_wait": 5,
-                "explicit_wait": 10,
-                "options": {
-                    "arguments": ["--start-maximized", "--headless"],
-                    "preferences": []
-                    }
+            "browser_name": "chrome",
+            "uuid": "chromeTEST",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "20"
                 },
-            "firefox": {
-                "name": "firefox",
-                "options": {
+                "browser": {
                     "arguments": [
                         "--start-maximized",
                         "--headless"
-                        ],
-                    "preferences": [
-                        ["app.update.auto", False],
-                        ["app.update.enabled", False]
-                        ]
-                    }
+                    ],
+                    "preferences": {}
                 }
-        })
+            }
+        },
+        {
+            "browser_name": "firefox",
+            "uuid": "firefoxTEST",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "20"
+                },
+                "browser": {
+                    "arguments": [
+                        "--start-maximized",
+                        "--headless"
+                    ],
+                    "preferences": {}
+                }
+            }
+        },
+        {
+            "browser_name": "edge",
+            "uuid": "edgeTEST",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "20"
+                },
+                "browser": {
+                    "arguments": [
+                        "--start-maximized",
+                        "--headless"
+                    ],
+                    "preferences": {}
+                }
+            }
+        }
+    ]
 
     test_page_url = (
         str(pathlib.Path(__file__).parents[1].resolve())
@@ -57,23 +85,31 @@ class TestSelenium(unittest.TestCase):
         print("Beginning new test TestCase %s" % self._testMethodName)
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
-        self.drivers = [CDriver, EDriver, FDriver]
+        self.drivers = [(self.config[0], CDriver),
+                        (self.config[1], FDriver),
+                        (self.config[2], EDriver)]
+
+    def test_SeleniumNewDriver(self):
+        for browser in self.drivers:
+            with self.subTest(browser=browser[1].__name__):
+                driver = new_driver(**browser[0])
+                self.assertIsInstance(driver(), browser[1])
 
     def test_SeleniumLoadURL(self):
         url = "https://www.google.ca"
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
                 selenium.load_url(driver, url)
-                self.assertEqual(driver.title, "Google")
+                self.assertEqual(driver().title, "Google")
                 driver.quit()
 
     def test_SeleniumLoadFile(self):
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
                 selenium.load_file(driver, self.test_page_url)
-                self.assertEqual(driver.title, "Page One")
+                self.assertEqual(driver().title, "Page One")
                 driver.quit()
 
     def test_SeleniumLoadLocalPage(self):
@@ -106,14 +142,14 @@ class TestSelenium(unittest.TestCase):
             }
         }
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
                 try:
                     PageReader().add_page('test', page)
                     selenium.load_page(driver,
                                        ('custom', 'test'),
                                        use_local=True)
-                    self.assertEqual(driver.title, "Page One")
+                    self.assertEqual(driver().title, "Page One")
                     driver.quit()
                 finally:
                     PageReader.reset()
@@ -131,12 +167,12 @@ class TestSelenium(unittest.TestCase):
             {}
         }
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
                 try:
                     PageReader().add_page('test', page)
                     selenium.load_page(driver, ('custom', 'test'))
-                    self.assertEqual(driver.title, "Google")
+                    self.assertEqual(driver().title, "Google")
                     driver.quit()
                 finally:
                     PageReader.reset()
@@ -144,9 +180,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumClick(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 selenium.click(driver,
                                locator={"by": "id", "value": "btnColor"})
                 self.assertIsNotNone(driver.wait_until(
@@ -158,15 +194,15 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumWrite(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 text = 'Selenium Test Type'
                 selenium.write(
                     driver, text=text,
                     locator={"by": "id", "value": "nameField"})
                 self.assertEqual(
-                    driver
+                    driver()
                     .find_element('id', 'nameField')
                     .get_attribute('value'), text)
                 driver.quit()
@@ -174,20 +210,20 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumClear(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 text = 'Selenium Test Type'
-                driver.find_element('id', 'nameField').send_keys(text)
+                driver().find_element('id', 'nameField').send_keys(text)
                 self.assertEqual(
-                    driver
+                    driver()
                     .find_element('id', 'nameField')
                     .get_attribute('value'), text)
                 selenium.clear(
                     driver,
                     locator={"by": "id", "value": "nameField"})
                 self.assertEqual(
-                    driver
+                    driver()
                     .find_element('id', 'nameField')
                     .get_attribute('value'), '')
                 driver.quit()
@@ -195,9 +231,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumReadAttribute(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 self.assertEqual(selenium.read_attribute(
                         driver, attribute='name',
                         locator={"by": "id", "value": "btn2"}), 'button2')
@@ -206,9 +242,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumReadCSS(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 self.assertEqual(selenium.read_css(
                         driver, attribute='width',
                         locator={"by": "id", "value": "btn1"}), '300px')
@@ -217,11 +253,11 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumSwitchToFrameId(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 selenium.switch_frame(driver, frame='FrameA')
-                btnName = driver.find_element(
+                btnName = driver().find_element(
                     *('id', 'btnColor')).get_attribute('name')
                 self.assertEqual(btnName, 'buttonAlpha')
                 driver.quit()
@@ -229,15 +265,15 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumSwitchToFrameElement(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 selenium.switch_frame(driver, frame={
                                     'locator': {
                                         'by': 'xpath',
                                         'value': '//iframe[@title="Iframe 2"]'
                                     }})
-                btnName = driver.find_element(
+                btnName = driver().find_element(
                     *('id', 'btnColor')).get_attribute('name')
                 self.assertEqual(btnName, 'buttonAlpha')
                 driver.quit()
@@ -245,51 +281,158 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumSelectDropdownByText(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 selenium.select_dropdown(driver, 'AA', 'text',
                                          locator={
                                             'by': 'id', 'value': 'dropdown'
                                             })
-                sel = Select(driver.find_element('id', 'dropdown'))
+                sel = Select(driver().find_element('id', 'dropdown'))
                 self.assertEqual(sel.first_selected_option.text, 'AA')
                 driver.quit()
 
     def test_SeleniumSelectDropdownByValue(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 selenium.select_dropdown(driver, 'last', 'value',
                                          locator={
                                             'by': 'id', 'value': 'dropdown'
                                             })
-                sel = Select(driver.find_element('id', 'dropdown'))
+                sel = Select(driver().find_element('id', 'dropdown'))
                 self.assertEqual(sel.first_selected_option.text, 'AA')
                 driver.quit()
 
     def test_SeleniumSelectDropdownByIndex(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 selenium.select_dropdown(driver, 3, 'index',
                                          locator={
                                             'by': 'id', 'value': 'dropdown'
                                             })
-                sel = Select(driver.find_element('id', 'dropdown'))
+                sel = Select(driver().find_element('id', 'dropdown'))
                 self.assertEqual(sel.first_selected_option.text, 'AA')
+                driver.quit()
+
+    def test_SeleniumAssertTextDisplayedSuccess(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        text = "NEXT"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                try:
+                    selenium.assert_contains_text(
+                        driver,
+                        text,
+                        locator={"by": "id", "value": "nextBtn"})
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
+    def test_SeleniumAssertPartialTextDisplayedSuccess(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        text = "EX"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                try:
+                    selenium.assert_contains_text(
+                        driver,
+                        text,
+                        locator={"by": "id", "value": "nextBtn"})
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
+    def test_SeleniumAssertTextDisplayedSoftFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        text = "FAIL"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassSoftAssertionError):
+                    selenium.assert_contains_text(
+                        driver,
+                        text, soft=True,
+                        locator={"by": "id", "value": "nextBtn"})
+                driver.quit()
+
+    def test_SeleniumAssertTextDisplayedFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        text = "FAIL"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassHardAssertionError):
+                    selenium.assert_contains_text(
+                        driver,
+                        text,
+                        locator={"by": "id", "value": "nextBtn"})
+                driver.quit()
+
+    def test_SeleniumAssertExactTextDisplayedSuccess(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        text = "NEXT"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                try:
+                    selenium.assert_contains_text(
+                        driver,
+                        text,
+                        locator={"by": "id", "value": "nextBtn"},
+                        exact=True)
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
+    def test_SeleniumAssertExactTextDisplayedSoftFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        text = "NEX"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassSoftAssertionError):
+                    selenium.assert_contains_text(
+                        driver,
+                        text, soft=True,
+                        locator={"by": "id", "value": "nextBtn"},
+                        exact=True)
+                driver.quit()
+
+    def test_SeleniumAssertExactTextDisplayedFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        text = "NEX"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassHardAssertionError):
+                    selenium.assert_contains_text(
+                        driver,
+                        text,
+                        locator={"by": "id", "value": "nextBtn"},
+                        exact=True)
                 driver.quit()
 
     def test_SeleniumAssertDisplayedSuccess(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 try:
                     selenium.assert_displayed(
                         driver,
@@ -301,9 +444,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertDisplayedFailed(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 with self.assertRaises(TassHardAssertionError):
                     selenium.assert_displayed(
                         driver,
@@ -314,9 +457,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertDisplayedSoftSuccess(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 try:
                     selenium.assert_displayed(
                         driver, soft=True,
@@ -328,9 +471,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertDisplayedSoftFailed(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 with self.assertRaises(TassSoftAssertionError):
                     selenium.assert_displayed(
                         driver, soft=True,
@@ -341,9 +484,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertNotDisplayedSuccess(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 try:
                     selenium.assert_not_displayed(
                         driver,
@@ -355,9 +498,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertNotDisplayedFailed(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 with self.assertRaises(TassHardAssertionError):
                     selenium.assert_not_displayed(
                         driver,
@@ -368,9 +511,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertNotDisplayedSoftSuccess(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 try:
                     selenium.assert_not_displayed(
                         driver, soft=True,
@@ -382,9 +525,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertNotDisplayedSoftFailed(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 with self.assertRaises(TassSoftAssertionError):
                     selenium.assert_not_displayed(
                         driver, soft=True,
@@ -395,9 +538,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertPageIsOpenByTitleSoftFailure(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 with self.assertRaises(TassSoftAssertionError):
                     selenium.assert_page_is_open(
                         driver, soft=True, page_id={
@@ -409,9 +552,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertPageIsOpenByURLSoftFailure(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 with self.assertRaises(TassSoftAssertionError):
                     selenium.assert_page_is_open(
                         driver, soft=True, page_id={
@@ -423,9 +566,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertPageIsOpenByElementSoftFailure(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 with self.assertRaises(TassSoftAssertionError):
                     selenium.assert_page_is_open(
                         driver, page_id={
@@ -442,9 +585,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertPageIsOpenByTitleSoftSuccess(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 try:
                     selenium.assert_page_is_open(
                         driver, soft=True, page_id={
@@ -457,9 +600,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertPageIsOpenByURLSoftSuccess(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 try:
                     selenium.assert_page_is_open(
                         driver, soft=True, page_id={
@@ -473,9 +616,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertPageIsOpenByElementSoftSuccess(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 try:
                     selenium.assert_page_is_open(
                         driver, page_id={
@@ -493,9 +636,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertPageIsOpenByTitleFailure(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 with self.assertRaises(TassHardAssertionError):
                     selenium.assert_page_is_open(
                         driver, page_id={
@@ -507,9 +650,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertPageIsOpenByURLFailure(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 with self.assertRaises(TassHardAssertionError):
                     selenium.assert_page_is_open(
                         driver, page_id={
@@ -521,9 +664,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertPageIsOpenByElementFailure(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 with self.assertRaises(TassHardAssertionError):
                     selenium.assert_page_is_open(
                         driver, page_id={
@@ -539,9 +682,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertPageIsOpenByTitleSuccess(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 try:
                     selenium.assert_page_is_open(
                         driver, page_id={
@@ -554,9 +697,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertPageIsOpenByURLSuccess(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 try:
                     selenium.assert_page_is_open(
                         driver, page_id={
@@ -570,9 +713,9 @@ class TestSelenium(unittest.TestCase):
     def test_SeleniumAssertPageIsOpenByElementSuccess(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
                 try:
                     selenium.assert_page_is_open(
                         driver, page_id={
@@ -590,39 +733,39 @@ class TestSelenium(unittest.TestCase):
         url_0 = pathlib.Path(self.test_page_url).resolve().as_uri()
         url_1 = 'https://www.google.ca'
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url_1)
-                driver.switch_to.new_window('tab')
-                driver.get(url_0)
-                self.assertEqual(driver.title, 'Page One')
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url_1)
+                driver().switch_to.new_window('tab')
+                driver().get(url_0)
+                self.assertEqual(driver().title, 'Page One')
                 selenium.switch_window(driver)
-                self.assertEqual(driver.title, 'Google')
+                self.assertEqual(driver().title, 'Google')
 
             driver.quit()
 
     def test_SeleniumSwitchWindowByTitle(self):
         url_0 = pathlib.Path(self.test_page_url).resolve().as_uri()
         url_1 = 'https://www.google.ca'
-        url_2 = 'https://www.github.com'
+        url_2 = 'https://www.statcan.gc.ca/en/start'
         google = 'Google'
         pageOne = 'Page One'
-        github = 'GitHub: Let’s build from here · GitHub'
+        statcan = "Statistics Canada: Canada's national statistical agency"
         for browser in self.drivers:
-            driver = browser(self.config)
-            with self.subTest(browser=driver.toJson()):
-                driver.get(url_1)
-                driver.switch_to.new_window('tab')
-                driver.get(url_2)
-                driver.switch_to.new_window('tab')
-                driver.get(url_0)
-                self.assertEqual(driver.title, pageOne)
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url_1)
+                driver().switch_to.new_window('tab')
+                driver().get(url_2)
+                driver().switch_to.new_window('tab')
+                driver().get(url_0)
+                self.assertEqual(driver().title, pageOne)
                 selenium.switch_window(driver, google)
-                self.assertEqual(driver.title, google)
-                selenium.switch_window(driver, github)
-                self.assertEqual(driver.title, github)
+                self.assertEqual(driver().title, google)
+                selenium.switch_window(driver, statcan)
+                self.assertEqual(driver().title, statcan)
                 selenium.switch_window(driver, pageOne)
-                self.assertEqual(driver.title, pageOne)
+                self.assertEqual(driver().title, pageOne)
 
             driver.quit()
 
@@ -638,9 +781,9 @@ class TestSelenium(unittest.TestCase):
             {}
         }
 
-        github = {
-            "title": "GitHub: Let’s build from here · GitHub",
-            "url": "https://www.github.com",
+        statcan = {
+            "title": "Statistics Canada: Canada's national statistical agency",
+            "url": "https://www.statcan.gc.ca/en/start",
             "page_id":
             {
                 "method": "title",
@@ -661,24 +804,24 @@ class TestSelenium(unittest.TestCase):
         }
         try:
             PageReader().add_page('google', google)
-            PageReader().add_page('github', github)
+            PageReader().add_page('statcan', statcan)
             PageReader().add_page('page1', page_1)
 
             for browser in self.drivers:
-                driver = browser(self.config)
-                with self.subTest(browser=driver.toJson()):
-                    driver.get(google['url'])
-                    driver.switch_to.new_window('tab')
-                    driver.get(github['url'])
-                    driver.switch_to.new_window('tab')
-                    driver.get(page_1['url'])
-                    self.assertEqual(driver.title, page_1['title'])
+                driver = new_driver(**browser[0])
+                with self.subTest(browser=browser[1].__name__):
+                    driver().get(google['url'])
+                    driver().switch_to.new_window('tab')
+                    driver().get(statcan['url'])
+                    driver().switch_to.new_window('tab')
+                    driver().get(page_1['url'])
+                    self.assertEqual(driver().title, page_1['title'])
                     selenium.switch_window(driver, page=('custom', 'google'))
-                    self.assertEqual(driver.title, google['title'])
-                    selenium.switch_window(driver, page=('custom', 'github'))
-                    self.assertEqual(driver.title, github['title'])
+                    self.assertEqual(driver().title, google['title'])
+                    selenium.switch_window(driver, page=('custom', 'statcan'))
+                    self.assertEqual(driver().title, statcan['title'])
                     selenium.switch_window(driver, page=('custom', 'page1'))
-                    self.assertEqual(driver.title, page_1['title'])
+                    self.assertEqual(driver().title, page_1['title'])
 
                 driver.quit()
         finally:
@@ -729,3 +872,128 @@ class TestSelenium(unittest.TestCase):
             self.assertEqual(loc_out['value'], 'btnRed')
         finally:
             PageReader.reset()
+
+    def test_SeleniumAssertAttributeDisplayedSuccess(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+
+        value = "title-test"
+        attribute = "test-id"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                try:
+                    selenium.assert_attribute_contains_value(
+                        driver,
+                        attribute,
+                        value,
+                        locator={"by": "xpath", "value": "//title"})
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
+    def test_SeleniumAssertPartialAttributeDisplayedSuccess(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+
+        value = "title"
+        attribute = "test-id"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                try:
+                    selenium.assert_attribute_contains_value(
+                        driver,
+                        attribute,
+                        value,
+                        locator={"by": "xpath", "value": "//title"})
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
+    def test_SeleniumAssertAttributeDisplayedSoftFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        value = "FAIL"
+        attribute = "test-id"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassSoftAssertionError):
+                    selenium.assert_attribute_contains_value(
+                        driver,
+                        attribute,
+                        value,
+                        soft=True,
+                        locator={"by": "xpath", "value": "//title"})
+                driver.quit()
+
+    def test_SeleniumAssertAttributeDisplayedFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        value = "FAIL"
+        attribute = "test-id"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassHardAssertionError):
+                    selenium.assert_attribute_contains_value(
+                        driver,
+                        attribute,
+                        value,
+                        locator={"by": "xpath", "value": "//title"})
+                driver.quit()
+
+    def test_SeleniumAssertExactAttributeDisplayedSuccess(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        value = "title-test"
+        attribute = "test-id"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                try:
+                    selenium.assert_attribute_contains_value(
+                        driver,
+                        attribute,
+                        value,
+                        locator={"by": "xpath", "value": "//title"},
+                        exact=True)
+                except TassAssertionError as e:
+                    self.fail(e.message)
+                driver.quit()
+
+    def test_SeleniumAssertExactAttributeDisplayedSoftFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        value = "FAIL"
+        attribute = "test-id"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassSoftAssertionError):
+                    selenium.assert_attribute_contains_value(
+                        driver,
+                        attribute,
+                        value,
+                        soft=True,
+                        locator={"by": "xpath", "value": "//title"},
+                        exact=True)
+                driver.quit()
+
+    def test_SeleniumAssertExactAttributeDisplayedFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        value = "FAIL"
+        attribute = "test-id"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassHardAssertionError):
+                    selenium.assert_attribute_contains_value(
+                        driver,
+                        attribute,
+                        value,
+                        locator={"by": "xpath", "value": "//title"},
+                        exact=True)
+                driver.quit()

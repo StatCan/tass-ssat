@@ -1,7 +1,11 @@
 from .singleton import Singleton
 import json
 from pathlib import Path
+from ..log.logging import getLogger
 from ..secrets.excel import Excel
+
+
+log = getLogger(__name__)
 
 
 def _secret_type(secret_type):
@@ -16,7 +20,12 @@ class Secrets(metaclass=Singleton):
 
     def add_source(self, config_path):
         path = Path(config_path).resolve()
-        with open(path) as conf:
+        try:
+            conf = open(path)
+        except IOError as e:
+            log.error("An IOError occured: %s" % e)
+            return
+        with conf:
             config = json.load(conf)
 
         key = config['source']['name']

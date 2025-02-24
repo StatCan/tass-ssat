@@ -1,13 +1,33 @@
 {
+    "schema-version": "1.0.0",
     "Test_runs": [
         {
             "uuid": "tr100101",
             "build": "V2.4",
+			"title": "sample-run-1",
             "test_cases": [
                 "uuid-tc-01",
                 "Uuid-tc-02"
             ],
-            "test_suites": []
+            "test_suites": [],
+            "browsers": [
+                "chrome001"
+            ],
+            "reporters": []
+        },
+        {
+            "uuid": "tr100102",
+            "build": "V2.4",
+			"title": "sample-run-2",
+            "test_cases": [
+                "uuid-tc-01",
+                "Uuid-tc-02"
+            ],
+            "test_suites": [],
+            "browsers": [
+                "chrome001"
+            ],
+            "reporters": []
         }
     ],
     "Test_suites": [],
@@ -164,6 +184,25 @@
                     "page1"
                 ],
                 "soft": "true"
+            }
+        }
+    ],
+	"Reporters": [],
+    "Browsers": [
+        {
+            "browser_name": "chrome",
+            "uuid": "chrome001",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "10"
+                },
+                "browser": {
+                    "arguments": [
+                        "--start-maximized"
+                    ],
+                    "preferences": {}
+                }
             }
         }
     ]

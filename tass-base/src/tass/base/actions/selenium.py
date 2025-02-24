@@ -25,6 +25,7 @@ def locate(page, locator, locator_args):
 
     if locator_args:
         logger.debug("Filling in blanks in locator using: %s", locator_args)
+        # scenario converter shold convert locator args to a list by default
         _loc['value'] = _loc['value'].format(*locator_args)
 
     logger.debug("Using locator: %s", _loc)
@@ -33,7 +34,7 @@ def locate(page, locator, locator_args):
 
 def _find_element(driver, locator, locator_args=None, page=None):
     logger.debug("Searching for element...")
-    return driver.find_element(**locate(page, locator, locator_args))
+    return driver().find_element(**locate(page, locator, locator_args))
 
 
 def _is_displayed(driver, find=_find_element, **kwargs):
@@ -141,8 +142,8 @@ def write_stored_value(driver, find=_find_element, text_key='', **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    from tass.actions.core import read_value
-    text = read_value(text_key)
+    from . import core
+    text = core.read_value(text_key)
     write(driver, find=find, text=text, **kwargs)
 
 
@@ -249,7 +250,7 @@ def load_url(driver, url):
         url:
             The url to be loaded. Must be complete and correctly formatted.
     """
-    driver.get(url)
+    driver().get(url)
     logger.debug("Loaded url in browser: %s", url)
 
 
@@ -268,7 +269,7 @@ def load_file(driver, relative_path):
     """
     url = pathlib.Path(relative_path).resolve().as_uri()
     logger.debug("Looking for file to open at: %s", url)
-    driver.get(url)
+    driver().get(url)
     logger.debug("Loaded local file in browser.")
 
 
@@ -385,6 +386,40 @@ def read_css(driver, attribute, find=_find_element, **kwargs):
     return prop
 
 
+def read_text(driver, find=_find_element, **kwargs):
+    """Read the text value for an element in the DOM
+
+    Get the text value of the element with the locator
+    that is part of the kwargs argument. If a WebDriverException
+    occurs the action is attempted a second time before
+    allowing the exception to be raised to the next level.
+
+    Args:
+        driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+        find:
+            The function to be called when attempting to locate
+            an element. Must use either a explicit wait function
+            or the default _find_element fuinction.
+        **kwargs:
+            Dictionary containing additional parameters. Contents
+            of the dictionary will vary based on the find function used.
+            By default, _find_element is used and thus kwargs
+            requires: locator.
+    """
+
+    try:
+        text = find(driver, **kwargs).text
+        logger.info("Element has text: '%s'", text)
+    except WebDriverException as e:
+        logger.warning("Something went wrong, %s -- Trying again", e)
+        text = find(driver, **kwargs).text
+        logger.info("Attempt 2 >> Element has text: '%s'", text)
+
+    return text
+
+
 def switch_frame(driver, frame, page=None, find=_find_element):
     """Change the active frame by name or element
 
@@ -413,11 +448,11 @@ def switch_frame(driver, frame, page=None, find=_find_element):
             logger.debug("Found frame in POM.")
             switch_frame(driver, _frame, page=None, find=find)
         elif (isinstance(frame, str)):
-            driver.switch_to.frame(frame)
+            driver().switch_to.frame(frame)
             logger.debug("Switched active frame to: %s", frame)
         else:
             element = find(driver, page=page, **frame)
-            driver.switch_to.frame(element)
+            driver().switch_to.frame(element)
             logger.debug("Switched active frame to element: %r", element)
     except WebDriverException as e:
         logger.warning("Something went wrong, %s -- Trying again", e)
@@ -426,10 +461,10 @@ def switch_frame(driver, frame, page=None, find=_find_element):
             logger.debug("Attempt 2 >> Found frame in POM.")
             switch_frame(driver, _frame, page=None, find=find)
         elif (isinstance(frame, str)):
-            driver.switch_to.frame(frame)
+            driver().switch_to.frame(frame)
             logger.debug("Attempt 2 >> Switched active frame to: %s", frame)
         else:
-            driver.switch_to.frame(find(driver, **frame))
+            driver().switch_to.frame(find(driver, **frame))
             logger.debug("Attempt 2 >> Switched active frame to element: %r",
                          element)
 
@@ -455,33 +490,33 @@ def switch_window(driver, title=None, page=None):
     """
     # TODO: Keep track of window handles to avoid loop?
     # TODO: Handle switching from closed tabs
-    cur_handle = driver.current_window_handle
+    cur_handle = driver().current_window_handle
     logger.debug("Current window handle: %s -- title: %s",
-                 cur_handle, driver.title)
+                 cur_handle, driver().title)
     if (page):
         switch_window(driver,
                       title=PageReader().get_page_title(*page),
                       page=None)
         return
 
-    handles = driver.window_handles
+    handles = driver().window_handles
     if (title is None):
         logger.info("Switching to next tab or window...")
         for handle in handles:
             # TODO: Handle switching if only 1 tab/window
             if (handle != cur_handle):
-                driver.switch_to.window(handle)
+                driver().switch_to.window(handle)
                 return
     elif (isinstance(title, str)):
         for handle in handles:
             if (handle == cur_handle):
                 continue
             else:
-                driver.switch_to.window(handle)
-                if (driver.title == title):
+                driver().switch_to.window(handle)
+                if (driver().title == title):
                     return
 
-    driver.switch_to.window(cur_handle)
+    driver().switch_to.window(cur_handle)
     raise ValueError('No other window with title: {}'.format(title))
 
 
@@ -513,7 +548,7 @@ def assert_page_is_open(driver, page=None, find=_find_element,
         find:
             The function to be called when attempting to locate
             an element. Must use either a explicit wait function
-            or the default _find_element fuinction.
+            or the default _find_element function.
         method:
             The str representation of the desired method.
             Value must match one of the predefined methods
@@ -541,14 +576,15 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                   'Element {identifier} not found. Page is not open')
 
     def _title(driver, title, soft):
-        if (driver.title != title):
+        if (driver().title != title):
             _fail(soft,
                   'Expected title not found. Page is not open')
 
         logger.info("Found expected title. Page is open")
 
     def _url(driver, url, soft):
-        if (driver.current_url != url):
+        logger.info('Current url: %s', driver().current_url)
+        if (driver().current_url != url):
             _fail(soft,
                   'Expected url not open. Page is not open')
 
@@ -564,12 +600,11 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                          page,
                          soft)
             case 'title':
-                title = PageReader() \
-                    .get_page_title(*page, default=page_id['identifier'])
+                title = page_id.get('identifier',
+                                    PageReader().get_page_title(*page))
                 _title(driver, title, soft)
             case 'url':
-                url = PageReader() \
-                    .get_url(*page, default=page_id['identifier'])
+                url = page_id.get('identifier', PageReader().get_url(*page))
                 _url(driver, url, soft)
             case _:
                 raise ValueError(
@@ -595,8 +630,53 @@ def assert_page_is_open(driver, page=None, find=_find_element,
         raise ValueError('Either page or page_id must not be None')
 
 
+def assert_contains_text(driver, text, find=_find_element,
+                         soft=False, exact=False, **kwargs):
+    """Assert the given text is displayed in the element.
+       Can be soft, or hard check.
+
+    Using the WebElement text attribute, confirm that the specified element
+    contains the text fragment provided.
+
+    Args:
+        driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+        text:
+            The complete text or a text fragment that
+            should be in the given element
+        find:
+            The function to be called when attempting to locate
+            an element. Must use either a explicit wait function
+            or the default _find_element function.
+
+    """
+    actual_text = None
+    try:
+        actual_text = read_text(driver, find, **kwargs)
+        logger.info("Element contains text: %s", actual_text)
+        if exact and text != actual_text:
+            _fail(soft, "assert_text_contains, text is not exact match.")
+        elif text not in actual_text:
+            _fail(soft, "assert_text_contains, text is not displayed.")
+        else:
+            logger.info("Element contains text: %s", text)
+    except WebDriverException as e:
+        logger.debug("Driver reporting error. %r", kwargs)
+        if (soft):
+            raise TassSoftAssertionError(
+                '''Soft Assertion failed: assert_contains_text
+                -> Element does not contain given text.''',
+                e, *kwargs)
+        else:
+            raise TassHardAssertionError(
+                '''Hard Assertion failed: assert_contains_text
+                ->  Element does not contain given text.''',
+                e, *kwargs)
+
+
 def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
-    """Assert the given element is displayed. Can be a soft of hard check
+    """Assert the given element is displayed. Can be a soft or hard check
 
     Execute the selenium is_displayed function against the locator
     provided. Then return true if it is displayed.
@@ -694,4 +774,38 @@ def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
             raise TassHardAssertionError(
                 '''Hard Assertion failed: assert_not_displayed
                 ->  Element is displayed.''',
+                e, *kwargs)
+
+
+def assert_attribute_contains_value(driver, attribute, value,
+                                    find=_find_element, soft=False,
+                                    exact=False, **kwargs):
+    actual_value = None
+    try:
+        actual_value = read_attribute(driver, attribute, find, **kwargs)
+        logger.info("Element contains attribute: %s", actual_value)
+        if exact and value != actual_value:
+            _fail(soft,
+                  ("assert_attribute_contains, "
+                   "attribute is not exact match. {%s=%s}"),
+                  attribute, value)
+        elif value not in actual_value:
+            _fail(soft,
+                  ("assert_attribute_contains, "
+                   "attribute does not match. {%s=%s}"),
+                  attribute, value)
+        else:
+            logger.info("Element contains attribute: %s with value: %s",
+                        attribute, value)
+    except WebDriverException as e:
+        logger.debug("Driver reporting error. %r", kwargs)
+        if (soft):
+            raise TassSoftAssertionError(
+                '''Soft Assertion failed: assert_attribute_contains_value
+                -> Element attribute does not contain given value.''',
+                e, *kwargs)
+        else:
+            raise TassHardAssertionError(
+                '''Hard Assertion failed: assert_attribute_contains_value
+                ->  Element attribute does not contain given value.''',
                 e, *kwargs)
