@@ -12,12 +12,15 @@ class TestConvert(unittest.TestCase):
         print("Beginning new test TestCase %s" % self._testMethodName)
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
-    def test_Convert(self):
+    def test_ConvertExcel(self):
         flder = str(Path(__file__).parent.resolve())
         excel_path = (Path(flder)
                       .joinpath("data", "simple_demo")
                       .with_suffix(".xlsx"))
         excel_conf = excel.convert(excel_path)
+
+        excel1 = next(filter(lambda x: x["Job"]["uuid"] == "tr1", excel_conf))
+        excel2 = next(filter(lambda x: x["Job"]["uuid"] == "tr2", excel_conf))
 
         expected_path1 = (Path(flder)
                           .joinpath("data", "test--tr1")
@@ -32,9 +35,8 @@ class TestConvert(unittest.TestCase):
         with open(file=expected_path2, mode='r') as f:
             expected_file2 = json.load(f)
 
-        breakpoint()
-        self.assertIn(expected_file1, excel_conf)
-        self.assertIn(expected_file2, excel_conf)
+        self.assertDictEqual(expected_file1, excel1)
+        self.assertDictEqual(expected_file2, excel2)
 
 
 if __name__ == '__main__':
