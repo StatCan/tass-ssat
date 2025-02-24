@@ -1,6 +1,6 @@
 import unittest
 from pathlib import Path
-from tass.converter import conf
+from tass.converter.conf import excel as excel
 import json
 
 
@@ -14,19 +14,27 @@ class TestConvert(unittest.TestCase):
 
     def test_Convert(self):
         flder = str(Path(__file__).parent.resolve())
-        conf_file = conf.convert(flder + '/data/simple_demo.xlsx')
-        conf_file = json.dumps(conf_file, indent=4)
+        excel_path = (Path(flder)
+                      .joinpath("data", "simple_demo")
+                      .with_suffix(".xlsx"))
+        excel_conf = excel.convert(excel_path)
 
-        with open(file=flder + '/data/simple_demo.json', mode='r') as f:
-            conf_file2 = json.load(f)
+        expected_path1 = (Path(flder)
+                          .joinpath("data", "test--tr1")
+                          .with_suffix(".json"))
+        expected_path2 = (Path(flder)
+                          .joinpath("data", "test--tr2")
+                          .with_suffix(".json"))
 
-        with open(file=flder + '/data/testfile2.json', mode='w') as f:
-            f.write(conf_file)
+        with open(file=expected_path1, mode='r') as f:
+            expected_file1 = json.load(f)
 
-        with open(file=flder + '/data/testfile2.json', mode='r') as f:
-            conf_file3 = json.load(f)
+        with open(file=expected_path2, mode='r') as f:
+            expected_file2 = json.load(f)
 
-        self.assertEqual(conf_file2, conf_file3)
+        breakpoint()
+        self.assertIn(expected_file1, excel_conf)
+        self.assertIn(expected_file2, excel_conf)
 
 
 if __name__ == '__main__':

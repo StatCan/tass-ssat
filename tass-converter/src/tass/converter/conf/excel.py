@@ -6,7 +6,7 @@ def convert(path):
     Helper tool to convert xlsx config file to a in-memory json equivalent.
     """
     wb = openpyxl.load_workbook(path, data_only=True)  # Open excel file.
-    wb.name = path.resolve().as_uri()
+    wb.name = path.resolve().name
 
     s_runs = []  # Holds all test_run worksheet names.
     s_cases = []  # Holds all test_case worksheet names.
@@ -30,13 +30,17 @@ def convert(path):
 
     # Extract configurations from sheets using sheet names
     if s_cases:
-        cases, steps = convert_cases(s_cases, wb) # Extract cases and steps from sheets
+        # Extract cases and steps from sheets
+        cases, steps = convert_cases(s_cases, wb)
     if s_browsers:
-        browsers = convert_browsers(s_browsers, wb) # Extract browser configs from sheets
+        # Extract browser configs from sheets
+        browsers = convert_browsers(s_browsers, wb)
     if s_runs:
+        # Extract all jobs to executed as a list.
         runs = convert_runs(s_runs, cases, steps, browsers, wb)
     if s_reporters:
-        reporters = convert_reporters(s_reporters, wb) # TODO: define and print reporters.
+        # TODO: define and print reporters.
+        reporters = convert_reporters(s_reporters, wb)
 
     return runs
 
@@ -212,14 +216,17 @@ def convert_runs(runs, cases, steps, browsers, wb):
                 browserset.add(row[6].value)
 
         for case in caseset:
-            # add step ids
+            # Add step ids
             c = cases[case]
             for step in c['steps']:
                 stepset.add(step)
 
-        tr["Cases"] = [cases[c] for c in caseset] # extract cases for this job
-        tr["Steps"] = [steps[s] for s in stepset] # extract steps for this job
-        tr["Browsers"] = [browsers[b] for b in browserset] # extract browsers for this job
+        # Extract cases for this job
+        tr["Cases"] = sorted([cases[c] for c in caseset], key=lambda x: x['uuid'])
+        # Extract steps for this job
+        tr["Steps"] = sorted([steps[s] for s in stepset], key=lambda x: x['uuid'])
+        # Extract browsers for this job
+        tr["Browsers"] = sorted([browsers[b] for b in browserset], key=lambda x: x['uuid'])
 
         tests = []
         # "Explode" test cases + configurations
@@ -238,7 +245,7 @@ def convert_runs(runs, cases, steps, browsers, wb):
                 }
 
                 tests.append(test)
-        tr['Tests'] = tests
+        tr['Tests'] = sorted(tests, key=lambda x: x['uuid'])
 
         # other attributes:
         for col in wb[run].iter_cols(min_row=3, max_row=3, min_col=10):
