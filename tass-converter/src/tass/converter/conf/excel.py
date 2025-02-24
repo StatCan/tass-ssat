@@ -46,11 +46,11 @@ def convert(path):
 
 
 def convert_cases(cases, wb):
-    _cases = {} # Dict of all test cases. Ensures unique case ids.
-    _steps = {} # Dict of all test steps. Ensures unique step ids.
+    _cases = {}  # Dict of all test cases. Ensures unique case ids.
+    _steps = {}  # Dict of all test steps. Ensures unique step ids.
 
     for c in cases:
-        tc = {} # Test case dict, to be printed in JSON
+        tc = {}  # Test case dict, to be printed in JSON
         tc["uuid"] = wb[c]['B1'].value
 
         if tc['uuid'] in _cases:
@@ -71,17 +71,20 @@ def convert_cases(cases, wb):
 
             # The locator value is split on the comma
             for col in wb[c].iter_cols(min_row=row_num,
-                                        max_row=row_num,
-                                        min_col=4):
+                                       max_row=row_num,
+                                       min_col=4):
 
                 header = wb[c].cell(2, col[0].column).value
 
-                if (header == '//end//'): # e.o.f indicator for TASS
+                if (header == '//end//'):  # e.o.f indicator for TASS
                     break
 
                 if (col[0].value is not None):
 
-                    if (header == 'locator'): # locator parameter. key,value pair or single string. ',' is reserved character.
+                    # locator parameter.
+                    # key,value pair or single string.
+                    # ',' is reserved character.
+                    if (header == 'locator'):
                         locator = str(col[0].value).split(',', maxsplit=1)
 
                         if (len(locator) == 2):
@@ -92,29 +95,34 @@ def convert_cases(cases, wb):
                         else:
                             parameters['locator'] = locator[0]
 
-                    elif (header == 'page'): # page parameter. read as "project(JSON),page(dict key)"
+                    # page parameter. read as "project(JSON),page(dict key)"
+                    elif (header == 'page'):
                         parameters['page'] = (col[0]
-                                            .value
-                                            .split(',', maxsplit=1))
+                                              .value
+                                              .split(',', maxsplit=1))
 
-                    elif ('action' in header): # action parameter. read as "module,action"
+                    # action parameter. read as "module,action"
+                    elif ('action' in header):
                         parameters['action'] = (col[0]
                                                 .value
                                                 .split(',', maxsplit=1))
 
                     elif (header == 'locator_args'):
-                        # locator_args parameter. "," separated list of arguments for locator.
-                        # arguments are filled in order of definition at run time.
-                        parameters['locator_args'] = str(col[0].value)\
-                                                    .split(',')
+                        # locator_args parameter.
+                        # "," separated list of arguments for locator.
+                        # arguments are filled in order
+                        # of definition at run time.
+                        parameters['locator_args'] = (str(col[0].value)
+                                                      .split(','))
 
                     elif (header == 'stored_filter'):
                         # stored_filter parameter. read as key/value_key
                         # where key is the key assigned to TASS
-                        # value_key is the key/header for the column of the desired value to store
+                        # value_key is the key/header for the
+                        # column of the desired value to store
                         parameters['stored_filter'] = (col[0]
-                                                    .value
-                                                    .split(',', maxsplit=1))
+                                                       .value
+                                                       .split(',', maxsplit=1))
 
                     else:
                         parameters[header] = col[0].value
@@ -128,10 +136,10 @@ def convert_cases(cases, wb):
             # TODO: add better way of reporting (logger? exception?)
             if row[0].value in _steps:
                 if ((_steps[row[0].value]["uuid"] == steps["uuid"])
-                and (_steps[row[0].value]["action"] ==
-                        steps["action"])
-                and (_steps[row[0].value]['parameters'] ==
-                        parameters)):
+                    and (_steps[row[0].value]["action"] ==
+                         steps["action"])
+                    and (_steps[row[0].value]['parameters'] ==
+                         parameters)):
                     pass   # Do nothing
                 else:
                     print("Different steps with uuid: " + row[0].value)
@@ -142,18 +150,19 @@ def convert_cases(cases, wb):
         _cases[tc['uuid']] = tc
     return _cases, _steps
 
+
 def convert_browsers(browsers, wb):
     conf = {}
     for browser in browsers:
-        b = {} # Browser definition dict
-        s = wb[browser] # Browser definition worksheet
+        b = {}  # Browser definition dict
+        s = wb[browser]  # Browser definition worksheet
 
         browser_name = s['D1'].value
         uuid = s['B1'].value
 
-        b_args = set() # Browser arguments (flags)
-        b_pref = {} # Browser preferences (key/value)
-        d_config = {} # Driver configurations
+        b_args = set()  # Browser arguments (flags)
+        b_pref = {}  # Browser preferences (key/value)
+        d_config = {}  # Driver configurations
 
         # Get Driver and browser arguments/config from sheet
         for row in s.iter_rows(min_row=3, min_col=2, max_col=6):
@@ -181,12 +190,13 @@ def convert_browsers(browsers, wb):
         conf[uuid] = b
     return conf
 
+
 def convert_runs(runs, cases, steps, browsers, wb):
-    execs = [] # Holds all ready-to-run test runs as dict
+    execs = []  # Holds all ready-to-run test runs as dict
 
     for run in runs:
-        tr = {} # Test run to be built
-        ts = wb[run] # Excel sheet containing test run configs.
+        tr = {}  # Test run to be built
+        ts = wb[run]  # Excel sheet containing test run configs.
         # ///// This information is converted to a Job.
         uuid = ts['B1'].value
         build = ts['B2'].value or "000"
@@ -194,11 +204,11 @@ def convert_runs(runs, cases, steps, browsers, wb):
         parent = wb.name
 
         job = {
-        "uuid": uuid,
-        "build": build,
-        "title": title,
-        "parent": parent
-        }
+            "uuid": uuid,
+            "build": build,
+            "title": title,
+            "parent": parent
+            }
 
         tr["Job"] = job
         tr["schema-version"] = "1.1.0"
@@ -222,17 +232,20 @@ def convert_runs(runs, cases, steps, browsers, wb):
                 stepset.add(step)
 
         # Extract cases for this job
-        tr["Cases"] = sorted([cases[c] for c in caseset], key=lambda x: x['uuid'])
+        tr["Cases"] = sorted([cases[c] for c in caseset],
+                             key=lambda x: x['uuid'])
         # Extract steps for this job
-        tr["Steps"] = sorted([steps[s] for s in stepset], key=lambda x: x['uuid'])
+        tr["Steps"] = sorted([steps[s] for s in stepset],
+                             key=lambda x: x['uuid'])
         # Extract browsers for this job
-        tr["Browsers"] = sorted([browsers[b] for b in browserset], key=lambda x: x['uuid'])
+        tr["Browsers"] = sorted([browsers[b] for b in browserset],
+                                key=lambda x: x['uuid'])
 
         tests = []
         # "Explode" test cases + configurations
         for browser in browserset:
             for c in caseset:
-                uuid = "--".join([job['uuid'], c, browser]) # Hybrid uuid
+                uuid = "--".join([job['uuid'], c, browser])  # Hybrid uuid
                 test = {
                     "uuid": uuid,
                     "case": c,
@@ -255,8 +268,8 @@ def convert_runs(runs, cases, steps, browsers, wb):
             col_num = col[0].column
             attr = {}
             for row in wb[run].iter_rows(min_row=4,
-                                        min_col=col_num,
-                                        max_col=col_num):
+                                         min_col=col_num,
+                                         max_col=col_num):
                 if not row or row[0].value is None:
                     continue
                 k, v = row[0].value.split(",", maxsplit=1)
