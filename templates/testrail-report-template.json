@@ -1,0 +1,93 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Testrail Report Template",
+    "description": "Describes how to submit a testrail report.",
+    "type": "object",
+    "properties": {
+        "project_id": {
+            "type": "string",
+            "pattern": "\\A\\d+$\\Z",
+            "description": "The TestRail project id to push reports to."
+        },
+        "Cases": {
+            "type": "array",
+            "items": {"$ref": "#/$defs/test-case"}
+        },
+        "Runs": {
+            "type": "array",
+            "items": {"$ref": "#/$defs/test-run"}
+        },
+        "Plans": {
+            "type": "array",
+            "items": {"$ref": "#/$defs/test-plan"}
+        }
+
+    },
+    "$defs": {
+        "test-case":{
+            "description": "Mappings for a TASS case to convert to a  Testrail case",
+            "type": "object",
+            "properties": {
+                 "tuuid": {
+                    "description": "TASS uuid of the specific case.",
+                    "type": "string"
+                 },
+                 "id": {
+                    "description": "The case ID of the case in Testrail.",
+                    "type": "string",
+                    "pattern": "\\A\\d+$\\Z"
+                 }
+            }
+        },
+        "test-run": {
+            "description": "Mappings and description to prepare a TestRail run.",
+            "type": "object",
+            "properties": {
+                 "cases": {
+                    "description": "Cases should be either 'true' if all cases should be included, or an array containing a list of cases to include using the TASS uuid. Default is to include all cases.",
+                    "type": ["array", "boolean"],
+                    "items": {
+                        "type": "string",
+                        "pattern": "\\A\\d+$\\Z"
+                    },
+                    "uniqueItems": true
+                 },
+                 "name": {
+                    "type": "string",
+                    "description": "The name for the run created in Testrail. Defaults to the name of the Tass Execution file."
+                 },
+                 "description": {
+                    "type": "string",
+                    "description": "Description for the Testrail run. Defaults to use TASS details."
+                 },
+                 "suite_id": {
+                    "type": "string",
+                    "description": "The suite ID of the Testrail case if applicable",
+                    "pattern": "\\A\\d+$\\Z"
+                 }
+            }
+        },
+        "test-plan": {
+            "description": "Mappings and description to prepare a TestRail plan.",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The name for the run created in Testrail. Defaults to the name of the Tass Execution file."
+                 },
+                 "description": {
+                    "type": "string",
+                    "description": "Description for the Testrail run. Defaults to use TASS details."
+                 },
+                 "entries": {
+                    "description": "List of runs as decribed above to include in the plan.",
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "pattern": "\\A\\d+$\\Z"
+                    }
+                 }
+            }
+        }
+    }
+}

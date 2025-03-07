@@ -1,27 +1,36 @@
 {
-    "Test_runs": [
+    "schema-version": "1.0.0",
+    "Job":
+    {
+        "uuid": "tr100101",
+        "build": "V2.4",
+        "title": "Simple Demo v.1",
+        "parent": "None"
+    },
+    "Tests": [
         {
-            "uuid": "tr100101",
-            "build": "V2.4",
-            "title": "sample-run",
-            "test_cases": [
-                "uuid-tc-01",
-                "Uuid-tc-02"
-            ],
-            "test_suites": [],
-            "browsers": [
-                "chrome001"
-            ],
-            "reporters": [
-                "testrail-1"
-            ],
-            "testrail": {
-                "project_id": "321"
-            }
+            "uuid": "tr100101--uuid-tc-01--chrome001",
+            "case": "uuid-tc-01",
+            "configurations": [
+                {
+                    "type": "browser",
+                    "uuid": "chrome001"
+                }
+            ]
+        },
+        {
+            "uuid": "tr100101--Uuid-tc-02--ffox002",
+            "case": "Uuid-tc-02",
+            "configurations": [
+                {
+                    "type": "browser",
+                    "uuid": "ffox002"
+                }
+            ]
         }
     ],
-    "Test_suites": [],
-    "Test_cases": [
+    "Cases":
+    [
         {
             "uuid": "uuid-tc-01",
             "title": "Tass Sample Case A",
@@ -49,7 +58,8 @@
                 "q2",
                 "q3",
                 "q4",
-                "q5"
+                "q5",
+                "q6a"
             ]
         }
     ],
@@ -62,7 +72,7 @@
                 "load_file"
             ],
             "parameters": {
-                "relative_path": "tests/pages/page1.html"
+                "relative_path": "examples/demo-html/page1.html"
             }
         },
         {
@@ -88,8 +98,8 @@
             ],
             "parameters": {
                 "locator": {
-                    "by": "xpath",
-                    "value": "//*[contains(@id, 'test')]"
+                    "by": "id",
+                    "value": "nameField"
                 },
                 "action": [
                     "selenium",
@@ -175,22 +185,24 @@
                 ],
                 "soft": "true"
             }
-        }
-    ],
-    "Reporters": [
+        },
         {
-            "uuid": "testrail-1",
-            "type": "testrail",
-            "mode": "single",
-            "package": "tass.report.testrail",
-            "class_name": "TassTestrailReporter",
-            "connection": {
-                "user": "~",
-                "host": "abc",
-                "url-base": "abc.123",
-                "ssl-verify": "3"
-            },
-            "config": {}
+            "uuid": "q6a",
+            "title": "Click a button",
+            "action": [
+                "selenium",
+                "click"
+            ],
+            "parameters": {
+                "locator": "btnFormat",
+                "page": [
+                    "sample",
+                    "page1"
+                ],
+                "locator_args": [
+                    "Color"
+                ]
+            }
         }
     ],
     "Browsers": [
@@ -209,7 +221,85 @@
                     "preferences": {}
                 }
             }
+        },
+		{
+            "browser_name": "chrome",
+            "uuid": "chrome001A",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "10"
+                },
+                "browser": {
+                    "arguments": [
+                        "--window-size=1920,1080"
+                    ],
+                    "preferences": {}
+                }
+            }
+        },
+		{
+            "browser_name": "chrome",
+            "uuid": "chrome001B",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "10"
+                },
+                "browser": {
+                    "arguments": [
+                        "--window-size=900,600"
+                    ],
+                    "preferences": {}
+                }
+            }
+        },
+        {
+            "browser_name": "chrome",
+            "uuid": "chrome002",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "10"
+                },
+                "browser": {
+                    "arguments": [
+                        "--headless",
+                        "--start-maximized"
+                    ],
+                    "preferences": {}
+                }
+            }
+        },
+        {
+            "browser_name": "firefox",
+            "uuid": "ffox001",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "15",
+                    "explicit_wait": "30"
+                },
+                "browser": {
+                    "arguments": [
+                        "--start-maximized"
+                    ],
+                    "preferences": {}
+                }
+            }
+        },
+        {
+            "browser_name": "firefox",
+            "uuid": "ffox002",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "15",
+                    "explicit_wait": "30"
+                },
+                "browser": {
+                    "arguments": ["--headless"],
+                    "preferences": {}
+                }
+            }
         }
-    ],
-    "schema-version": "1.0.0"
+    ]
 }
