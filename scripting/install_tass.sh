@@ -32,6 +32,6 @@ eval "$(conda shell.bash hook)"
 conda activate tass_ssat-dev
 
 pip install -e tass-report
-pip install -e tass-base
+pip install -e tass-core
 pip install -e tass-converter
 pip install -e tass-orchestrator
