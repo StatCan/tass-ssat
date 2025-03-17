@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from tass.converter import __main__ as tass_conv
-from tass.base import __main__ as tass_base
+from tass.core import __main__ as tass_base
 
 def run_conversion(conversion):
 	tass_conv.main(conversion["conv-prop"]["convert"],

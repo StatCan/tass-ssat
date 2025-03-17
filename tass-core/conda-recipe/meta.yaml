@@ -1,6 +1,6 @@
 package:
-  name: tass-orchestrator
-  version: 0.1.0
+  name: tass-core
+  version: 0.9.0
 
 source:
   path: ../
@@ -16,5 +16,7 @@ requirements:
     - pip
   run:
     - python >=3.10
-    - tass-core
-    - tass-converter
+    - selenium >=4.7.2
+    - openpyxl
+    - packaging
+    - jsonschema

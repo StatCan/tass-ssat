@@ -7,8 +7,8 @@ call conda env create -f environment.yaml
 call conda activate tass_ssat-dev
 @echo "INSTALLING EDITABLE TASS-REPORT"
 pip install -e tass-report
-@echo "INSTALLING EDITABLE TASS-BASE"
-pip install -e tass-base
+@echo "INSTALLING EDITABLE TASS-CORE"
+pip install -e tass-core
 @echo "INSTALLING EDITABLE TASS-CONVERTER"
 pip install -e tass-converter
 @echo "INSTALLING EDITABLE TASS-ORCHESTRATOR"
