@@ -1,4 +1,4 @@
-from .apiclient import TestRailAPIClient
+from .client import TestRailAPIClient
 from . import items
 
 

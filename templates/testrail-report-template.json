@@ -4,6 +4,21 @@
     "description": "Describes how to submit a testrail report.",
     "type": "object",
     "properties": {
+        "_type": {
+            "type": "string",
+            "const": "testrail",
+            "description": "The type of reporter."
+        },
+        "package": {
+            "type":"string",
+            "description": "The package string to import the reporter from. Optional, for using custom reporter.",
+            "pattern": "^[a-zA-Z]\\w+$|^[a-zA-Z]\\w+(\\.[a-zA-Z]\\w+)+$"
+        },
+        "class_name": {
+            "type": "string",
+            "description": "The name of the reporter class to use. Optional, for using custom reporters.",
+            "pattern": "^[a-zA-Z]\\w+$"
+        },
         "project_id": {
             "type": "string",
             "pattern": "\\A\\d+$\\Z",
@@ -19,10 +34,11 @@
         },
         "Plans": {
             "type": "array",
-            "items": {"$ref": "#/$defs/test-plan"}
+            "items": {"$ref": "#/$defs/test-plan"},
+            "description": "Plans are optional"
         }
-
     },
+    "required": ["_type", "project_id", "Cases", "Runs"],
     "$defs": {
         "test-case":{
             "description": "Mappings for a TASS case to convert to a  Testrail case",
