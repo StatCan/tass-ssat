@@ -1,5 +1,5 @@
 import json
-from ..apiclient import APIClient
+from ..api.client import APIClient
 
 
 class TestRailAPIClient(APIClient):
