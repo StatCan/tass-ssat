@@ -162,7 +162,7 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
         find:
             The function to be called when attempting to locate
             an element. Must use either a explicit wait function
-            or the default _find_element fuinction.
+            or the default _find_element function.
         value:
             The DOM value to be used for selection. This can be
             the visible text (which must match the element text in
@@ -177,7 +177,7 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
         **kwargs:
             Dictionary containing additional parameters. Contents
             of the dictionary will vary based on the find function used.
-            By default, _find_element is used and thus kwargs
+            By default, _find_element is used thus kwargs
             requires: locator.
 
     """
@@ -193,7 +193,7 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
             select = Select.select_by_index
             logger.debug("Selecting using option index")
         case _:
-            raise ValueError('Select method {using} is not a valid method.')
+            raise ValueError(f'Select method {using} is not a valid method.')
 
     try:
         dropdown = Select(find(driver, **kwargs))
