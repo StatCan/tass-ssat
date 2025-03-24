@@ -16,7 +16,7 @@ class TestrailReporter(ReporterBase):
         defaults = {
             "DEFAULT": {
                 "always-close-runs": False,
-                "close-succesful-runs": False
+                "close-successful-runs": False
             }
         }
 

@@ -9,7 +9,7 @@ class Parser():
     def __init__(self):
         self.log = getLogger(__name__)
 
-    def parse(self, job):
+    def parse(self, path, job):
         raise NotImplementedError("Parse is not implemented.")
 
 

@@ -1,4 +1,4 @@
-{
+TESTRAIL_1_0_0 = {
     "$schema": "http://json-schema.org/draft-07/schema",
     "title": "Testrail Report Template",
     "description": "Describes how to submit a testrail report.",
@@ -117,7 +117,7 @@
                         "type": "string",
                         "pattern": "\\A\\d+$\\Z"
                     },
-                    "uniqueItems": true
+                    "uniqueItems": True
                  },
                  "name": {
                     "type": "string",

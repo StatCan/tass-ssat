@@ -19,6 +19,8 @@ def get_reporter(_type, package=None, class_name=None, *args, **kwargs):
             DEFAULTS[_type]["class_name"]
             )
 
-        return get_reporter(__type, __package, __class_name, *args, **kwargs)
+        return get_reporter(__type, package=__package,
+                            class_name=__class_name,
+                            *args, **kwargs)
     module = importlib.import_module(f".{_type}", package=package)
     return getattr(module, class_name)(*args, **kwargs)

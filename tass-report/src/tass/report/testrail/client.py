@@ -7,10 +7,11 @@ class TestRailAPIClient(APIClient):
                  base_url,
                  auth,
                  ssl_verification_level):
-        if base_url.endswith("/"):
-            base_url += "index.php?/api/v2/"
-        else:
-            base_url += "/index.php?/api/v2/"
+        if not base_url.endswith("index.php?/api/v2/"):
+            if base_url.endswith("/"):
+                base_url += "index.php?/api/v2/"
+            else:
+                base_url += "/index.php?/api/v2/"
         super().__init__(base_url,
                          auth,
                          ssl_verification_level)

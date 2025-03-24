@@ -8,9 +8,15 @@ log = logging.getLogger("tass.report")
 
 class TassTestrailReporter(TestrailReporter):
 
-    def __init__(self, connection, config, *args, **kwargs):
+    def __init__(self, connection, config,
+                 case_map, runs, plans,
+                 *args, **kwargs):
         super().__init__(connection, config, *args, **kwargs)
-        self._case_list = set()
+        self._map = case_map # dictionary -> {testrail id: tass uuid}
+        self._runs = runs
+        self._plans = plans
+        self._case_list = set()        
+
 
     def _connect(self, connection):
         if "user" in connection and connection["user"] != "~":

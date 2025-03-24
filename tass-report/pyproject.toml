@@ -10,7 +10,7 @@ authors = [
     {name = "Tyler Desjardins", email="josephgillestyler.desjardins@statcan.gc.ca"},
 ]
 requires-python = ">=3.10"
-dependencies = ["requests"]
+dependencies = ["requests", "tass-core"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: Apache Software License",

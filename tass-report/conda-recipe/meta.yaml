@@ -17,3 +17,4 @@ requirements:
   run:
     - python >=3.10
     - requests
+    - tass-core
