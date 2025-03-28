@@ -2,8 +2,8 @@
 
 The TASS application assists users in creating and running reproducible
 test cases for web applications. TASS uses json configuration files to
-define test cases, organize them as test suites and run them via test
-runs.
+define test cases, with each JSON file representing a single "job"
+executing the defined tests.
 
 ## Getting Started
 
@@ -23,8 +23,10 @@ correct versions. To run tests, make sure you have an editable install
 with `pip install -e <module>` from the root directory. Where `<module>`
 is replaced with the desired component of TASS:
 
-- tass-base
+- tass-core
 - tass-converter
+- tass-report
+- tass-orchestrator
 
 You can also download the "install_tass" script appropriate for your
 platform from the "scripting" folder and run it to automatically clone the
@@ -34,7 +36,8 @@ the tass modules.
 #### Build Pypi Package
 
 To build the pypi package, navigate to the root of the directory and type
-`python -m build`. This will use the `pyproject.toml` file to build the
+`python -m build <module>` with `<module>` being replaced by the TASS module
+to be built. This will use the `pyproject.toml` file to build the
 package. The package will be in the `dist` folder in your repository.
 
 #### Build Conda Package
@@ -63,9 +66,11 @@ dependencies.
 
 ### Utilization
 
-The testing framework can be invoked from your CLI with the command
+The testing framework can be invoked from your CLI with the commands described in the module README:
 
-`python -m tass.base --file/-f ./path/to/config/file`.
+- [tass-core](./tass-core/README.md)
+- [tass-converter](./tass-converter/README.md)
+- [tass-orchestrator](./tass-orchestrator/README.md)
 
 #### Demo
 
