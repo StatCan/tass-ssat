@@ -1,5 +1,7 @@
-from .reporter_factory import get_reporter
 
 
 def report(reporter, result):
-    _reporter = get_reporter(**reporter)
+
+    reporter.start_report(result)
+    reporter.report(result)
+    reporter.end_report(result)

@@ -8,7 +8,6 @@ class TestrailReporter(ReporterBase):
     def __init__(self, connection, config, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._testrail = self._connect(connection)
-        # TODO: load configuration
         self._config = self._load_config(config)
 
     def _load_config(self, config):
@@ -43,9 +42,6 @@ class TestrailReporter(ReporterBase):
     # TODO: Include logic to switch to different Testrail modes
     # ex: single suite, multiple suite.
 
-    def start_report(self, project_id, run, *args, **kwargs):
-        return self._start_run(project_id, run)
-
     def report(self, reportable, report_all=True, *args, **kwargs):
         if report_all:
             return self._add_results(reportable)
@@ -59,6 +55,10 @@ class TestrailReporter(ReporterBase):
         response = self._testrail.runs().add_run(project_id, run)
         return response
         # TODO: examine response for status etc.
+
+    def _start_plan(self, project_id, plan):
+        response = self._testrail.plans().add_plan(project_id, plan)
+        return response
 
     def _add_results(self, run_result):
         response = self._testrail.results().add_results_for_cases(**run_result)
@@ -74,20 +74,3 @@ class TestrailReporter(ReporterBase):
         response = self._testrail.runs().close_run(run_id)
         return response
         # TODO: examine response for status etc.
-
-    '''
-    TODO:
-    A (here)-- > Responsible for converting
-                 to testrail format using config template.
-
-    B (tass-base)-- > Implement TASS specific behaviour
-
-    1. Need Project id, check if numeric
-        a) If given name, filter and get ID
-        b) If given ID use directly.
-    2. Convert TASS run to Testrail run using config
-        i) Assume single suite mode
-        ii) Get the testrail id for each case, filter on uuid.
-    3. Add Testrail run with API
-    4. Update run with results of cases.
-    '''

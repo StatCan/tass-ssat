@@ -8,6 +8,10 @@
             "type": "string",
             "pattern": "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
         },
+        "uuid": {
+            "type": "string",
+            "description": "Unique ID for reporter."
+        },
         "_type": {
             "type": "string",
             "const": "testrail",
@@ -24,8 +28,7 @@
             "pattern": "^[a-zA-Z]\\w+$"
         },
         "project_id": {
-            "type": "string",
-            "pattern": "\\A\\d+$\\Z",
+            "type": "integer",
             "description": "The TestRail project id to push reports to."
         },
         "connection": {
@@ -104,7 +107,8 @@
                     "type": "string",
                     "pattern": "\\A\\d+$\\Z"
                  }
-            }
+            },
+            "required": ["id", "tuuid"]
         },
         "test-run": {
             "description": "Mappings and description to prepare a TestRail run.",
@@ -153,8 +157,13 @@
                         "type": "string",
                         "pattern": "\\A\\d+$\\Z"
                     }
+                 },
+                 "milestone_id":{
+                    "type": "integer",
+                    "description": "Testrail ID for milestone."
                  }
-            }
+            },
+            "required": ["name"]
         }
     }
 }

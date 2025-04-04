@@ -1,3 +1,4 @@
+from . import parser
 from ..testrail import schemas
 from tass.core.schema.validator import Validator
 
@@ -7,5 +8,4 @@ class Testrail1Validator(Validator):
         super.__init__(schemas.TESTRAIL_1_0_0)
 
     def parser(self):
-        # TODO: return testrail config parser
-        pass
+        return parser.Testrail1Parser()
