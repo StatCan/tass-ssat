@@ -2,7 +2,7 @@
 
 The tool is used to simplify the execution of multiple test case files. It is a simple orchestrator that uses the other TASS modules, and is meant for those without an orchestrator already present.
 
-Most of the information regarding development and contribution from the TASS readme are applicable and should be followed.
+Most of the information regarding development and contribution from the [TASS readme](../README.md) are applicable and should be followed.
 
 ## Installation
 
