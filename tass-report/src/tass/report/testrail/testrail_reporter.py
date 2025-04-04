@@ -18,6 +18,7 @@ class TassTestrailReporter(TestrailReporter):
         self._plans = plans
         self._project_id = project_id
         self._case_list = set()
+        self._testrail_report = []
 
 
     def _connect(self, connection):
@@ -55,6 +56,15 @@ class TassTestrailReporter(TestrailReporter):
                     "description": _plan["description"],
                     "project_id": self._project_id
                 }
+                for entry in plan[""]:
+                    run = next(filter(lambda r: r[""]))
+                    if run:
+                        _entry = {
+
+                        }
+                    else:
+                        log.warning("Entry: %s was not found.", entry)
+
         else:
             # TODO: create runs with api
             pass
