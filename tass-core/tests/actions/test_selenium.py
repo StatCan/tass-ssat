@@ -997,3 +997,32 @@ class TestSelenium(unittest.TestCase):
                         locator={"by": "xpath", "value": "//title"},
                         exact=True)
                 driver.quit()
+
+    def test_SeleniumScreenshotPage(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        name = "test"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                try:
+                    out = pathlib.Path(selenium.screenshot(driver, name=name)).resolve()
+                    self.assertTrue(out.exists() and out.is_file())
+                finally:
+                    if out.exists() and out.is_file():
+                        out.unlink()
+
+    def test_SeleniumScreenshotElement(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        name = "test"
+        locator = {"by": "id", "value": "btnColor"}
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                try:
+                    out = pathlib.Path(selenium.screenshot(driver, name=name, locator=locator)).resolve()
+                    self.assertTrue(out.exists() and out.is_file())
+                finally:
+                    if out.exists() and out.is_file():
+                        out.unlink()

@@ -44,6 +44,25 @@ class BaseDriverWrapper():
                 self._conf['driver'].get('implicit_wait', 5)
                 )
         return self._driver
+    
+    @property
+    def name(self):
+        if (self._driver):
+            return self._driver.capabilities["browserName"]
+        return None
+    
+    @property
+    def version(self):
+        if (self._driver):
+            return self._driver.capabilities["browserVersion"]
+        return None
+    
+    @property
+    def os(self):
+        if (self._driver):
+            return self._driver.capabilities["platformName"]
+        return None
+
 
     def _set_defaults(self, configs):
         # set default values for driver settings
