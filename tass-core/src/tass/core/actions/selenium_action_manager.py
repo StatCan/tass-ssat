@@ -5,6 +5,7 @@ from . import selenium_wait as selwait
 
 all_managers = {}
 
+
 def get_manager(browser_config, *args, **kwargs):
     if browser_config['uuid'] in all_managers:
         return all_managers[browser_config['uuid']]
