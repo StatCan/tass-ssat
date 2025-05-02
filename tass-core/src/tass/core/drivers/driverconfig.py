@@ -75,7 +75,6 @@ class BaseDriverWrapper():
         return options
     
     def chain(self):
-        breakpoint()
         if not self._chain:
             self._chain = ActionChains(self())
         return self._chain
