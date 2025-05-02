@@ -112,13 +112,18 @@ class Tass1Parser(Parser):
 
     def _parse_managers(self, c, job):
         def sel_managers(_manager, _c):
-            browser_configs = c['browser']
+            browser_configs = _c['browser']
             manager = get_manager(_manager, browser_configs)
+            return manager
+        
+        def core_manager(_manager, _c):
+            manager = get_manager(_manager)
             return manager
 
         parsers = {
             "selenium": sel_managers,
-            "selwait": sel_managers
+            "selwait": sel_managers,
+            "core": core_manager
         }
 
         steps = c['steps']

@@ -1,4 +1,5 @@
 from enum import Enum
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver import (
     ChromeOptions,
     FirefoxOptions,
@@ -33,6 +34,7 @@ class BaseDriverWrapper():
         self._conf = self._set_defaults(configs)
         self._driver = None
         self._uuid = uuid
+        self._chain = None
 
     def __call__(self, browser_options, driver_init, *args, **kwargs):
         if not self._driver:
@@ -40,7 +42,7 @@ class BaseDriverWrapper():
             self._driver = driver_init(options=options, *args, **kwargs)
 
             # set driver settings
-            self._driver .implicitly_wait(
+            self._driver.implicitly_wait(
                 self._conf['driver'].get('implicit_wait', 5)
                 )
         return self._driver
@@ -71,6 +73,12 @@ class BaseDriverWrapper():
             options.add_argument(args)
 
         return options
+    
+    def chain(self):
+        breakpoint()
+        if not self._chain:
+            self._chain = ActionChains(self())
+        return self._chain
 
     def wait_until(self, until_func, time=None,
                    poll_frequency=0,
@@ -89,9 +97,12 @@ class BaseDriverWrapper():
         return wait_.until(until_func(**kwargs))
 
     def quit(self):
+        if self._chain:
+            self._chain.reset_actions()
         if self._driver:
             self._driver.quit()
         self._waits = {}
+        self._chain = None
         self._driver = None
 
 

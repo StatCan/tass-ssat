@@ -2,6 +2,7 @@ from .action_manager import ActionManager
 from ..drivers.driverconfig import new_driver
 from . import selenium as sel
 from . import selenium_wait as selwait
+from . import selenium_chain as selchain
 
 all_managers = {}
 
@@ -15,9 +16,11 @@ def get_manager(browser_config, *args, **kwargs):
             }
     selenium = SeleniumActionManager(manager)
     waiter = SeleniumActionManager(manager, module=selwait)
+    chain = SeleniumActionManager(manager, module=selchain)
 
     managers['selenium'] = selenium
     managers['selwait'] = waiter
+    managers['selchain'] = chain
 
     all_managers[browser_config['uuid']] = managers
 
