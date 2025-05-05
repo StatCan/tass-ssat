@@ -3,6 +3,9 @@ from . import selenium as sel
 from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from selenium.common.exceptions import WebDriverException
 
+#  For additional documentation, see selenium docs:
+#  https://www.selenium.dev/selenium/docs/api/py/webdriver/selenium.webdriver.common.action_chains.html
+
 
 logger = getLogger(__name__)
 
@@ -225,15 +228,21 @@ def scroll(driver, locator=None, deltax=0, deltay=0,
             logger.warning("Something went wrong: %s -- Trying again", e)
             ele = sel._find_element(driver, locator, **kwargs)
 
+    #  Set origin point, if there is one.
+    #  Determined by the presence of an offset.
     if (xoffset is not None or yoffset is not None) and ele:
         #  Both an element and offset is provided
         #  Scroll by delta amount from element offset origin
         logger.info("Element: %s with offset: %s,%s set as origin",
                     locator, xoffset, yoffset)
+        xoffset = xoffset or 0 #  Ensure the value is not None
+        yoffset = yoffset or 0 
         origin = ScrollOrigin.from_element(ele, xoffset, yoffset)
     elif xoffset is not None or yoffset is not None:
         #  Only an offset is provided
         #  Origin is assumed to be viewport
+        xoffset = xoffset or 0 #  Ensure the value is not None
+        yoffset = yoffset or 0
         logger.info("Top of page with offset: %s,%s set as origin", xoffset, yoffset)
         origin = ScrollOrigin.from_viewport(xoffset, yoffset)
     
