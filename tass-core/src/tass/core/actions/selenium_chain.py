@@ -230,7 +230,8 @@ def scroll(driver, locator=None, deltax=0, deltay=0,
 
     #  Set origin point, if there is one.
     #  Determined by the presence of an offset.
-    if (xoffset is not None or yoffset is not None) and ele:
+    if (xoffset is not None or yoffset is not None
+        or deltax or deltay) and ele:
         #  Both an element and offset is provided
         #  Scroll by delta amount from element offset origin
         logger.info("Element: %s with offset: %s,%s set as origin",
@@ -255,6 +256,3 @@ def scroll(driver, locator=None, deltax=0, deltay=0,
     else:
         logger.info("Scroll page by: %s,%s added to Action Chain", deltax, deltay)
         driver.chain().scroll_by_amount(deltax, deltay)
-
-    
-
