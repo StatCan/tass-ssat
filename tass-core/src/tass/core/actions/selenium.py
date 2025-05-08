@@ -7,6 +7,9 @@ from ..exceptions.assertion_errors import TassHardAssertionError
 from ..exceptions.assertion_errors import TassSoftAssertionError
 from ..log.logging import getLogger
 
+#  For additional documentation, see selenium docs:
+#  https://www.selenium.dev/selenium/docs/api/py/webdriver_remote/selenium.webdriver.remote.webelement.html
+
 
 logger = getLogger(__name__)
 
