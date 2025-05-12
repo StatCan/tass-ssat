@@ -1,6 +1,9 @@
 import openpyxl
 
 
+k_V_PARAMS = ["page", "stored_filter", "locator", "offset", "delta", "target"]
+
+
 def convert(path):
     """
     Helper tool to convert xlsx config file to a in-memory json equivalent.
@@ -79,27 +82,33 @@ def convert_cases(cases, wb):
                 if (header == '//end//'):  # e.o.f indicator for TASS
                     break
 
+                header = header.lower()
+
                 if (col[0].value is not None):
 
                     # locator parameter.
                     # key,value pair or single string.
                     # ',' is reserved character.
-                    if (header == 'locator'):
-                        locator = str(col[0].value).split(',', maxsplit=1)
+                    if header in k_V_PARAMS:
+                        param = str(col[0].value).split(',', maxsplit=1)
 
-                        if (len(locator) == 2):
-                            parameters['locator'] = {
-                                'by': locator[0],
-                                'value': locator[1]
-                            }
+                        if header == 'locator' or header == 'target':
+                            if (len(param) == 2):
+                                parameters[header] = {
+                                    'by': param[0],
+                                    'value': param[1]
+                                }
+                            else:
+                                parameters[header] = param[0]
+                        elif header == 'offset':
+                            parameters['xoffset'] = int(param[0])
+                            parameters['yoffset'] = int(param[1])
+                        elif header == 'delta':
+                            parameters['deltax'] = int(param[0])
+                            parameters['deltay'] = int(param[1])
                         else:
-                            parameters['locator'] = locator[0]
+                            parameters[header] = param
 
-                    # page parameter. read as "project(JSON),page(dict key)"
-                    elif (header == 'page'):
-                        parameters['page'] = (col[0]
-                                              .value
-                                              .split(',', maxsplit=1))
 
                     # action parameter. read as "module,action"
                     elif ('action' in header):
@@ -112,17 +121,8 @@ def convert_cases(cases, wb):
                         # "," separated list of arguments for locator.
                         # arguments are filled in order
                         # of definition at run time.
-                        parameters['locator_args'] = (str(col[0].value)
+                        parameters[header] = (str(col[0].value)
                                                       .split(','))
-
-                    elif (header == 'stored_filter'):
-                        # stored_filter parameter. read as key/value_key
-                        # where key is the key assigned to TASS
-                        # value_key is the key/header for the
-                        # column of the desired value to store
-                        parameters['stored_filter'] = (col[0]
-                                                       .value
-                                                       .split(',', maxsplit=1))
 
                     else:
                         parameters[header] = col[0].value
