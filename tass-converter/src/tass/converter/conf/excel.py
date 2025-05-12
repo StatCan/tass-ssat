@@ -87,6 +87,8 @@ def convert_cases(cases, wb):
 
                 header = header.lower()
 
+                header = header.lower()
+
                 if (col[0].value is not None):
 
                     # locator parameter.
@@ -94,7 +96,23 @@ def convert_cases(cases, wb):
                     # ',' is reserved character.
                     if header in k_V_PARAMS:
                         param = str(col[0].value).split(',', maxsplit=1)
+                    if header in k_V_PARAMS:
+                        param = str(col[0].value).split(',', maxsplit=1)
 
+                        if header == 'locator' or header == 'target':
+                            if (len(param) == 2):
+                                parameters[header] = {
+                                    'by': param[0],
+                                    'value': param[1]
+                                }
+                            else:
+                                parameters[header] = param[0]
+                        elif header == 'offset':
+                            parameters['xoffset'] = int(param[0])
+                            parameters['yoffset'] = int(param[1])
+                        elif header == 'delta':
+                            parameters['deltax'] = int(param[0])
+                            parameters['deltay'] = int(param[1])
                         if header == 'locator' or header == 'target':
                             if (len(param) == 2):
                                 parameters[header] = {
