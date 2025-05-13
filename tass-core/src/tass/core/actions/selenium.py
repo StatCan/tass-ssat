@@ -1,4 +1,5 @@
 import pathlib
+from datetime import datetime
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.select import Select
 from ..tools.page_reader import PageReader
@@ -524,6 +525,49 @@ def switch_window(driver, title=None, page=None):
 
     driver().switch_to.window(cur_handle)
     raise ValueError('No other window with title: {}'.format(title))
+
+
+def screenshot(driver,
+               name="screenshot",
+               locator=None,
+               find=_find_element,
+               **kwargs):
+    screenshotsfldr = pathlib.Path("screenshots").resolve()
+    driverfldr = [driver.os, driver.name, driver.version] #  Sort png by browser config
+    screenshotsfldr = screenshotsfldr.joinpath(*driverfldr).resolve()
+    screenshotsfldr.mkdir(exist_ok=True, parents=True)
+    date_tag = datetime.now().strftime("%d-%m-%y--%H-%M-%S")
+    name = name.replace(" ", "_")  #  Remove spaces from file name
+    file_name = "_".join([name, date_tag])
+    _file = screenshotsfldr.joinpath(file_name).with_suffix(".png")
+    count = 0
+
+    while _file.exists():
+        count += 1
+        file_name = "".join([name, date_tag, f"({count})"])
+        _file = _file.with_stem(file_name)
+
+    out = str(_file.resolve())
+    logger.info("Saving screenshot as: %s", out)
+
+    try:
+        if locator:
+            status = find(driver, locator, **kwargs).screenshot(out)
+        else:
+            status = driver().save_screenshot(out)
+    except WebDriverException as e:
+        logger.warning("Something went wrong, %s -- Trying again", e)
+        if locator:
+            status = find(driver, locator, **kwargs).screenshot(out)
+        else:
+            status = driver().save_screenshot(out)
+
+    if status:
+        logger.info("Screenshot saved successfully.")
+    else:
+        logger.warning("Screenshot was not saved!")
+    
+    return out
 
 
 # / / / / / / / Assertions / / / / / / /
