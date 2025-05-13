@@ -26,7 +26,8 @@ class TestSeleniumChain(unittest.TestCase):
                     },
                     "browser": {
                         "arguments": [
-                            "--start-maximized"
+                            "--start-maximized",
+                            "--headless"
                         ],
                         "preferences": {}
                     }
