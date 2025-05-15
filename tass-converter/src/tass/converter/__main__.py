@@ -12,7 +12,6 @@ def scenario(source, target):
         "Converting Excel:", source,
         "scenario to JSON:", target, "\n\n"
         )
-
     return conf.convert(source, target)
 
 
