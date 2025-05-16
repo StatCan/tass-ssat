@@ -109,7 +109,6 @@ def convert_cases(cases, wb):
                         else:
                             parameters[header] = param
 
-
                     # action parameter. read as "module,action"
                     elif ('action' in header):
                         parameters['action'] = (col[0]
@@ -122,7 +121,7 @@ def convert_cases(cases, wb):
                         # arguments are filled in order
                         # of definition at run time.
                         parameters[header] = (str(col[0].value)
-                                                      .split(','))
+                                              .split(','))
 
                     else:
                         parameters[header] = col[0].value

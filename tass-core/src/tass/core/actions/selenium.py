@@ -533,11 +533,12 @@ def screenshot(driver,
                find=_find_element,
                **kwargs):
     screenshotsfldr = pathlib.Path("screenshots").resolve()
-    driverfldr = [driver.os, driver.name, driver.version] #  Sort png by browser config
+    # Sort png by browser config
+    driverfldr = [driver.os, driver.name, driver.version]
     screenshotsfldr = screenshotsfldr.joinpath(*driverfldr).resolve()
     screenshotsfldr.mkdir(exist_ok=True, parents=True)
     date_tag = datetime.now().strftime("%d-%m-%y--%H-%M-%S")
-    name = name.replace(" ", "_")  #  Remove spaces from file name
+    name = name.replace(" ", "_")  # Remove spaces from file name
     file_name = "_".join([name, date_tag])
     _file = screenshotsfldr.joinpath(file_name).with_suffix(".png")
     count = 0
@@ -566,7 +567,7 @@ def screenshot(driver,
         logger.info("Screenshot saved successfully.")
     else:
         logger.warning("Screenshot was not saved!")
-    
+
     return out
 
 
