@@ -35,7 +35,8 @@
                 "q5",
                 "q6",
                 "q7",
-                "q8"
+                "q8",
+                "q9"
             ]
         }
     ],
@@ -178,6 +179,26 @@
                     "page1"
                 ],
                 "soft": "true"
+            }
+        },
+        {
+            "uuid": "q9",
+            "title": "Click and drag",
+            "action": [
+                "selchain",
+                "drag_and_drop"
+            ],
+            "parameters": {
+                "locator": "btnX",
+                "page": [
+                    "sample",
+                    "page1"
+                ],
+                "target": {"by": "id", "value": "btnX"},
+                "xoffset": 10,
+                "yoffset": 20,
+                "deltax": 100,
+                "deltay": 90
             }
         }
     ],

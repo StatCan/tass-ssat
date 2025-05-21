@@ -1006,7 +1006,11 @@ class TestSelenium(unittest.TestCase):
             with self.subTest(browser=browser[1].__name__):
                 driver().get(url)
                 try:
-                    out = pathlib.Path(selenium.screenshot(driver, name=name)).resolve()
+                    out = pathlib.Path(
+                        selenium.screenshot(
+                            driver,
+                            name=name
+                            )).resolve()
                     self.assertTrue(out.exists() and out.is_file())
                 finally:
                     if out.exists() and out.is_file():
@@ -1021,7 +1025,12 @@ class TestSelenium(unittest.TestCase):
             with self.subTest(browser=browser[1].__name__):
                 driver().get(url)
                 try:
-                    out = pathlib.Path(selenium.screenshot(driver, name=name, locator=locator)).resolve()
+                    out = pathlib.Path(
+                        selenium.screenshot(
+                            driver,
+                            name=name,
+                            locator=locator
+                            )).resolve()
                     self.assertTrue(out.exists() and out.is_file())
                 finally:
                     if out.exists() and out.is_file():
