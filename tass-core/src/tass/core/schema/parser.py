@@ -1,5 +1,7 @@
 from copy import deepcopy
-from tass.core.exceptions.tass_errors import TassUUIDException, TassUUIDNotFound, TassAmbiguousUUID
+from tass.core.exceptions.tass_errors import (
+    TassUUIDNotFound,
+    TassAmbiguousUUID)
 from tass.core.log.logging import getLogger
 from ..actions.action_manager import get_manager
 from ..job.tass_files import TassJob
@@ -39,13 +41,15 @@ class Tass1Parser(Parser):
             _out = {}
             _out['uuid'] = test['uuid']
             _out.update(self._parse_case(test['case'], job))
-            _out.update(self._parse_configurations(test['configurations'], job))
+            _out.update(
+                self._parse_configurations(
+                    test['configurations'], job))
             _out.update(self._parse_managers(_out, job))
             yield _out
 
     def _parse_case(self, uuid, job):
         found = list(filter(lambda c: uuid == c['uuid'], job['Cases']))
-        if len(found)>1:
+        if len(found) > 1:
             self.log.warning("Ambiguous case selected. Checking compatibility")
             if not all(c == found[0] for c in found[1:]):
                 self.log.warning("Unable to resolve ambiguous uuids.")
@@ -63,6 +67,7 @@ class Tass1Parser(Parser):
 
     def _parse_configurations(self, config, job):
         configuration = {}
+
         def browser(uuid):
             _browser = self._parse_browser(uuid, job)
             configuration['browser'] = _browser
@@ -84,8 +89,9 @@ class Tass1Parser(Parser):
         step_config = []
         for uuid in steps:
             found = list(filter(lambda step: uuid == step['uuid'], all_steps))
-            if len(found)>1:
-                self.log.warning("Ambiguous step configuration selected. Checking compatibility")
+            if len(found) > 1:
+                self.log.warning(
+                    "Ambiguous step configuration. Checking compatibility")
                 if not all(step == found[0] for step in found[1:]):
                     self.log.warning("Unable to resolve ambiguous uuids.")
                     raise TassAmbiguousUUID(uuid)
@@ -98,9 +104,10 @@ class Tass1Parser(Parser):
 
     def _parse_browser(self, browser, job):
         self.log.debug("Using browsers: %s", browser)
-        found =  list(filter(lambda b: b['uuid'] in browser, job["Browsers"]))
-        if len(found)>1:
-            self.log.warning("Ambiguous browser configuration selected. Attempting to resolve.")
+        found = list(filter(lambda b: b['uuid'] in browser, job["Browsers"]))
+        if len(found) > 1:
+            self.log.warning(
+                "Ambiguous browser configuration. Attempting to resolve.")
             if not all(step == found[0] for step in found[1:]):
                 self.log.warning("Unable to resolve ambiguous uuids.")
                 raise TassAmbiguousUUID(browser)
@@ -111,11 +118,12 @@ class Tass1Parser(Parser):
         return deepcopy(found[0])
 
     def _parse_managers(self, c, job):
+
         def sel_managers(_manager, _c):
             browser_configs = _c['browser']
             manager = get_manager(_manager, browser_configs)
             return manager
-        
+
         def core_manager(_manager, _c):
             manager = get_manager(_manager)
             return manager
@@ -123,6 +131,7 @@ class Tass1Parser(Parser):
         parsers = {
             "selenium": sel_managers,
             "selwait": sel_managers,
+            "selchain": sel_managers,
             "core": core_manager
         }
 
@@ -131,9 +140,8 @@ class Tass1Parser(Parser):
         managers = {}
         for manager in _managers:
             if (manager in parsers
-                and manager not in managers):
+               and manager not in managers):
 
                 m = parsers[manager](manager, c)
                 managers.update(m)
-        return { "managers": managers }
-
+        return {"managers": managers}

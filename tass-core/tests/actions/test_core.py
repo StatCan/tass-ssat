@@ -8,7 +8,7 @@ class TestCore(unittest.TestCase):
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         print("Beginning new test TestCase %s" % self._testMethodName)
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-        
+
     def test_waitSeconds(self):
         wait = 3
         delta = 0.1

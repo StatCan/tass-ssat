@@ -7,7 +7,6 @@ class TassException(Exception):
         return self.args[0].format(*self.args[1:])
 
 
-
 class TassUUIDException(TassException):
     def __init__(self, message, *args):
         super().__init__(message, *args)
@@ -21,7 +20,6 @@ class TassUUIDNotFound(TassUUIDException):
 
 class TassAmbiguousUUID(TassUUIDException):
     def __init__(self, uuid):
-        message = "Given UUID: {} is ambiguous. Associated value is not unique."
+        message = ("Given UUID: {} is ambiguous."
+                   " Associated value is not unique.")
         super().__init__(message, uuid)
-
-
