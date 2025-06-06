@@ -8,6 +8,17 @@
             "type": "string",
             "pattern": "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
         },
+        "Logger": {
+            "path": {
+                "type": "string",
+                "description": "Path for where to create log files."
+            },
+            "config": {
+                "type": "object",
+                "description": "Python logger configuration object. See logging module for details."
+            }
+
+        },
         "Job": {
             "description": "Description of the job. Sets default values for undefined test case values.",
             "type": "object",
