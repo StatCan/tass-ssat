@@ -527,8 +527,8 @@ def switch_window(driver, title=None, page=None):
                 if (driver().title == title):
                     return
 
-        driver().switch_to.window(cur_handle)
-        raise ValueError('No other window with title: {}'.format(title))
+
+    raise ValueError('No other window/tab with title: {}'.format(title))
 
 
 def screenshot(driver,
