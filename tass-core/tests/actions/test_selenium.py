@@ -744,6 +744,22 @@ class TestSelenium(unittest.TestCase):
 
             driver.quit()
 
+    def test_SeleniumSwitchWindowClosed(self):
+        url_0 = pathlib.Path(self.test_page_url).resolve().as_uri()
+        url_1 = 'https://www.google.ca'
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url_0)
+                driver().switch_to.new_window('tab')
+                driver().get(url_1)
+                self.assertEqual(driver().title, 'Google')
+                driver().close()
+                selenium.switch_window(driver)
+                self.assertEqual(driver().title, 'Page One')
+
+            driver.quit()
+
     def test_SeleniumSwitchWindowByTitle(self):
         url_0 = pathlib.Path(self.test_page_url).resolve().as_uri()
         url_1 = 'https://www.google.ca'
