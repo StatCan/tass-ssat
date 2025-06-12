@@ -8,6 +8,31 @@
             "type": "string",
             "pattern": "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
         },
+        "Logger": {
+            "description": "Define a custom log path or a custom log handler as a JSON object",
+            "oneOf": [
+                {
+                    "properties": {
+                        "path": {
+                            "type": "string",
+                            "description": "Path for where to create log folder. 'log' will be appended to path if absent."
+                        }
+                    },
+                    "required": ["path"]
+
+                },
+                {
+                    "properties": {
+                        "config": {
+                            "type": "object",
+                            "description": "Python logger configuration object. See logging module for details."
+                        }
+                    },
+                    "required": ["config"]
+                }
+            ]
+
+        },
         "Job": {
             "description": "Description of the job. Sets default values for undefined test case values.",
             "type": "object",
