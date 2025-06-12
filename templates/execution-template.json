@@ -9,14 +9,28 @@
             "pattern": "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
         },
         "Logger": {
-            "path": {
-                "type": "string",
-                "description": "Path for where to create log files."
-            },
-            "config": {
-                "type": "object",
-                "description": "Python logger configuration object. See logging module for details."
-            }
+            "description": "Define a custom log path or a custom log handler as a JSON object",
+            "oneOf": [
+                {
+                    "properties": {
+                        "path": {
+                            "type": "string",
+                            "description": "Path for where to create log files."
+                        }
+                    },
+                    "required": ["path"]
+
+                },
+                {
+                    "properties": {
+                        "config": {
+                            "type": "object",
+                            "description": "Python logger configuration object. See logging module for details."
+                        }
+                    },
+                    "required": ["config"]
+                }
+            ]
 
         },
         "Job": {
