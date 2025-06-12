@@ -15,7 +15,7 @@ class CustomTassFileLogger(logging.handlers.RotatingFileHandler):
 
 DEFAULT_PATH = "./log"
 DEFAULT_NAME = "tass"
-def DEFAULT_CONFIG(log_fldr, log_name):
+def _DEFAULT_CONFIG(log_fldr, log_name):
     log = Path(log_fldr).joinpath(log_name).with_suffix(".log")
     debug = Path(log_fldr).joinpath(log_name+"-debug").with_suffix(".log")
     return {
@@ -75,7 +75,7 @@ def init_logger(file_name=DEFAULT_NAME, path=DEFAULT_PATH, config=None):
         _path.resolve().mkdir(parents=True, exist_ok=True)
         log_fldr = _path.resolve()
         log_name = file_name
-        _config = DEFAULT_CONFIG(log_fldr, log_name)
+        _config = _DEFAULT_CONFIG(log_fldr, log_name)
     else:
         _config = config
     logging.config.dictConfig(_config)
