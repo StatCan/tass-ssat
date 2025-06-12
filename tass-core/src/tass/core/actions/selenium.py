@@ -1,6 +1,6 @@
 import pathlib
 from datetime import datetime
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import WebDriverException, NoSuchWindowException
 from selenium.webdriver.support.select import Select
 from ..tools.page_reader import PageReader
 from ..exceptions.assertion_errors import TassHardAssertionError
@@ -497,9 +497,13 @@ def switch_window(driver, title=None, page=None):
     """
     # TODO: Keep track of window handles to avoid loop?
     # TODO: Handle switching from closed tabs
-    cur_handle = driver().current_window_handle
-    logger.debug("Current window handle: %s -- title: %s",
-                 cur_handle, driver().title)
+    cur_handle = None
+    try:
+        cur_handle = driver().current_window_handle
+        logger.debug("Current window handle: %s -- title: %s",
+                     cur_handle, driver().title)
+    except NoSuchWindowException as e:
+        logger.info("Current window is closed or missing. Switching to other tab/window")
     if (page):
         switch_window(driver,
                       title=PageReader().get_page_title(*page),
@@ -523,8 +527,8 @@ def switch_window(driver, title=None, page=None):
                 if (driver().title == title):
                     return
 
-    driver().switch_to.window(cur_handle)
-    raise ValueError('No other window with title: {}'.format(title))
+
+    raise ValueError('No other window/tab with title: {}'.format(title))
 
 
 def screenshot(driver,
