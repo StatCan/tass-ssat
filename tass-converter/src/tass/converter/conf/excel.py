@@ -213,6 +213,12 @@ def convert_runs(runs, cases, steps, browsers, wb):
         tr["schema-version"] = "1.1.0"
         # \\\\\
 
+        # ///// Create custom Logger as applicable
+        if ts["D2"].value:
+            logger_path = ts["D2"].value
+            tr["Logger"] = {"path": logger_path}
+        # \\\\\
+
         caseset = set()
         browserset = set()
         stepset = set()

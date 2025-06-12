@@ -1,15 +1,24 @@
 import logging
 import logging.config
 import json
+import logging.handlers
 from pathlib import Path
 
-Path("./log").mkdir(parents=True, exist_ok=True)
-CONFIG_PATH = "configs/log-config.json"
 
-path = Path(CONFIG_PATH)
+class CustomTassFileLogger(logging.handlers.RotatingFileHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if Path(self.baseFilename).exists():
+            self.doRollover()
 
-if not path.exists():
-    config = {
+
+
+DEFAULT_PATH = "./log"
+DEFAULT_NAME = "tass"
+def _DEFAULT_CONFIG(log_fldr, log_name):
+    log = Path(log_fldr).joinpath(log_name).with_suffix(".log")
+    debug = Path(log_fldr).joinpath(log_name+"-debug").with_suffix(".log")
+    return {
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
@@ -32,16 +41,18 @@ if not path.exists():
                 "formatter": "simple"
             },
             "info-file": {
-                "class": "logging.handlers.TimedRotatingFileHandler",
-                "filename": "log/tass.log",
-                "when": "W0",
+                "()": CustomTassFileLogger,
+                "delay": True,
+                "filename": f"{log}",
+                "backupCount": 3,
                 "level": "INFO",
                 "formatter": "simple"
             },
             "debug-file": {
-                "class": "logging.handlers.TimedRotatingFileHandler",
-                "filename": "log/tass-debug.log",
-                "when": "D",
+                "()": CustomTassFileLogger,
+                "delay": True,
+                "filename": f"{debug}",
+                "backupCount": 3,
                 "level": "DEBUG",
                 "formatter": "detailed"
             }
@@ -54,15 +65,20 @@ if not path.exists():
         }
     }
 
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump(config, f, indent=4)
-
-else:
-    with open(path) as f:
-        config = json.load(f)
-
-logging.config.dictConfig(config)
+def init_logger(file_name=DEFAULT_NAME, path=DEFAULT_PATH, config=None):
+    # Create log folder
+    _config = None
+    if not config:
+        _path = Path(path)
+        if not path.endswith("log"):
+            _path = _path.joinpath("log")
+        _path.resolve().mkdir(parents=True, exist_ok=True)
+        log_fldr = _path.resolve()
+        log_name = file_name
+        _config = _DEFAULT_CONFIG(log_fldr, log_name)
+    else:
+        _config = config
+    logging.config.dictConfig(_config)
 
 
 def getLogger(*name):
