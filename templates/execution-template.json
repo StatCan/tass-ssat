@@ -15,7 +15,7 @@
                     "properties": {
                         "path": {
                             "type": "string",
-                            "description": "Path for where to create log files."
+                            "description": "Path for where to create log folder. 'log' will be appended to path if absent."
                         }
                     },
                     "required": ["path"]
