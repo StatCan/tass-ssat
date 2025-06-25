@@ -728,10 +728,23 @@ def assert_page_is_open(driver, page=None, find=_find_element,
             _fail(soft,
                   'Element {identifier} not found. Page is not open')
 
-    def _title(driver, title, soft):
+    def _title(driver, find, title, soft):
         if (driver().title != title):
-            _fail(soft,
-                  'Expected title not found. Page is not open')
+            ele = None
+            ele_title = {"by": "xpath", "value": f"//title[text()='{title}']"}
+            try:
+                ele = find(driver, ele_title, page=page)
+                logger.debug("Element: %s found, page is open.", ele_title)
+            except WebDriverException:
+                try:
+                    ele = find(driver, ele_title, page=page)
+                    logger.debug("Attempt 2 >> Element: %s found, page is open.",
+                                ele_title)
+                except WebDriverException as e:
+                    logger.warning('Exception raised: %s', e)
+            if not ele:
+                _fail(soft,
+                    'Expected title not found. Page is not open')
 
         logger.info("Found expected title. Page is open")
 
@@ -755,7 +768,7 @@ def assert_page_is_open(driver, page=None, find=_find_element,
             case 'title':
                 title = page_id.get('identifier',
                                     PageReader().get_page_title(*page))
-                _title(driver, title, soft)
+                _title(driver, find, title, soft)
             case 'url':
                 url = page_id.get('identifier', PageReader().get_url(*page))
                 _url(driver, url, soft)
@@ -772,7 +785,7 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                          soft)
             case 'title':
                 title = page_id['identifier']
-                _title(driver, title, soft)
+                _title(driver, find, title, soft)
             case 'url':
                 url = page_id['identifier']
                 _url(driver, url, soft)
