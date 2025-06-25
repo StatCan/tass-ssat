@@ -505,8 +505,10 @@ def switch_window(driver, title=None, page=None):
         cur_handle = driver().current_window_handle
         logger.debug("Current window handle: %s -- title: %s",
                      cur_handle, driver().title)
-    except NoSuchWindowException as e:
-        logger.info("Current window is closed or missing. Switching to other tab/window")
+    except NoSuchWindowException:
+        logger.info(
+            "Current window closed or missing. Switching to other tab/window"
+            )
     if (page):
         switch_window(driver,
                       title=PageReader().get_page_title(*page),
@@ -530,8 +532,8 @@ def switch_window(driver, title=None, page=None):
                 if (driver().title == title):
                     return
 
-
     raise ValueError('No other window/tab with title: {}'.format(title))
+
 
 def close(driver):
     """ Closes the currently open browser tab or window.
@@ -539,7 +541,7 @@ def close(driver):
     Execute the selenium close function, any alerts
     must be handled before continuing execution. Use
     handle_alert function.
-    
+
     Args:
         driver:
             The RemoteWebDriver object that is connected
@@ -552,14 +554,15 @@ def close(driver):
         logger.warning("Something went wrong, %s -- Trying again", e)
         driver().close()
         logger.info("Closed currently active tab/window.")
+
 
 def quit(driver):
     """ Closes the current browser session.
 
-    Executes the Selenium quit function. By default, 
-    will also reset all instances related to the 
+    Executes the Selenium quit function. By default,
+    will also reset all instances related to the
     browser driver (waits, driver, etc.).
-    
+
     Args:
         driver:
             The RemoteWebDriver object that is connected
@@ -573,6 +576,7 @@ def quit(driver):
         logger.warning("Something went wrong, %s -- Trying again", e)
         driver.quit()
         logger.info("Driver exited browser session.")
+
 
 def handle_alert(driver, handle=True, text=None, soft=True):
     """ Handle an expected browser alert.
@@ -588,9 +592,9 @@ def handle_alert(driver, handle=True, text=None, soft=True):
         handle:
             How to handle the alert. Options include:
             'accept', 1 or True to accept the the alert
-            and 'dismiss', 0, or False to dismiss the 
+            and 'dismiss', 0, or False to dismiss the
             alert. A value of None will provide default
-            behaviour of 'accept' 
+            behaviour of 'accept'
     """
     alert_accept = None
     if handle and isinstance(handle, str):
@@ -604,7 +608,6 @@ def handle_alert(driver, handle=True, text=None, soft=True):
             alert_accept = True
     else:
         alert_accept = bool(handle)
-
 
     if alert_accept:
         do_alert = Alert.accept
@@ -621,9 +624,13 @@ def handle_alert(driver, handle=True, text=None, soft=True):
         do_alert(alert)
     except NoAlertPresentException as na:
         if not soft:
-            raise TassHardAssertionError("No Alert was present. Ending Execution.", na)
+            raise TassHardAssertionError(
+                "No Alert was present. Ending Execution.", na
+                )
         else:
-            raise TassSoftAssertionError("No Alert was present. Continuing execution.", na)
+            raise TassSoftAssertionError(
+                "No Alert was present. Continuing execution.", na
+                )
     except WebDriverException as e:
         logger.error("Something went wrong, %s", e)
         raise e
@@ -738,13 +745,15 @@ def assert_page_is_open(driver, page=None, find=_find_element,
             except WebDriverException:
                 try:
                     ele = find(driver, ele_title, page=page)
-                    logger.debug("Attempt 2 >> Element: %s found, page is open.",
-                                ele_title)
+                    logger.debug(
+                        "Attempt 2 >> Element: %s found, page is open.",
+                        ele_title
+                        )
                 except WebDriverException as e:
                     logger.warning('Exception raised: %s', e)
             if not ele:
                 _fail(soft,
-                    'Expected title not found. Page is not open')
+                      'Expected title not found. Page is not open')
 
         logger.info("Found expected title. Page is open")
 

@@ -1053,7 +1053,7 @@ class TestSelenium(unittest.TestCase):
                     if out.exists() and out.is_file():
                         out.unlink()
                 driver.quit()
-    
+
     def test_SeleniumClose(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
@@ -1173,7 +1173,7 @@ class TestSelenium(unittest.TestCase):
                 selenium.handle_alert(driver, handle='dismiss', soft=False)
                 self.assertIsNotNone(driver().title)
                 driver.quit()
-    
+
     def test_SeleniumHandlePromptAlertAccept(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
@@ -1188,7 +1188,7 @@ class TestSelenium(unittest.TestCase):
                 response = driver().execute_script(promptScript)
                 self.assertEqual(response, "abc")
                 driver.quit()
-                
+
     def test_SeleniumHandlePromptAlertDismiss(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
@@ -1198,7 +1198,9 @@ class TestSelenium(unittest.TestCase):
                 alertScript = "window.promptResponse = prompt('testing')"
                 promptScript = "return window.promptResponse"
                 driver().execute_script(alertScript)
-                selenium.handle_alert(driver, handle='dismiss', text="abc", soft=False)
+                selenium.handle_alert(driver,
+                                      handle='dismiss',
+                                      text="abc", soft=False)
                 self.assertIsNotNone(driver().title)
                 response = driver().execute_script(promptScript)
                 self.assertIsNone(response)
@@ -1223,4 +1225,3 @@ class TestSelenium(unittest.TestCase):
                 with self.assertRaises(TassHardAssertionError):
                     selenium.handle_alert(driver, handle=False, soft=False)
                 driver.quit()
-    

@@ -1,6 +1,5 @@
 import logging
 import logging.config
-import json
 import logging.handlers
 from pathlib import Path
 
@@ -12,9 +11,10 @@ class CustomTassFileLogger(logging.handlers.RotatingFileHandler):
             self.doRollover()
 
 
-
 DEFAULT_PATH = "./log"
 DEFAULT_NAME = "tass"
+
+
 def _DEFAULT_CONFIG(log_fldr, log_name):
     log = Path(log_fldr).joinpath(log_name).with_suffix(".log")
     debug = Path(log_fldr).joinpath(log_name+"-debug").with_suffix(".log")
@@ -64,6 +64,7 @@ def _DEFAULT_CONFIG(log_fldr, log_name):
             }
         }
     }
+
 
 def init_logger(file_name=DEFAULT_NAME, path=DEFAULT_PATH, config=None):
     # Create log folder
