@@ -1,7 +1,10 @@
 import pathlib
 from datetime import datetime
-from selenium.common.exceptions import WebDriverException, NoSuchWindowException
+from selenium.common.exceptions import (WebDriverException,
+                                        NoSuchWindowException,
+                                        NoAlertPresentException)
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.common.alert import Alert
 from ..tools.page_reader import PageReader
 from ..exceptions.assertion_errors import TassHardAssertionError
 from ..exceptions.assertion_errors import TassSoftAssertionError
@@ -529,6 +532,101 @@ def switch_window(driver, title=None, page=None):
 
 
     raise ValueError('No other window/tab with title: {}'.format(title))
+
+def close(driver):
+    """ Closes the currently open browser tab or window.
+
+    Execute the selenium close function, any alerts
+    must be handled before continuing execution. Use
+    handle_alert function.
+    
+    Args:
+        driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+    """
+    try:
+        driver().close()
+        logger.info("Closed currently active tab/window.")
+    except WebDriverException as e:
+        logger.warning("Something went wrong, %s -- Trying again", e)
+        driver().close()
+        logger.info("Closed currently active tab/window.")
+
+def quit(driver):
+    """ Closes the current browser session.
+
+    Executes the Selenium quit function. By default, 
+    will also reset all instances related to the 
+    browser driver (waits, driver, etc.).
+    
+    Args:
+        driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+    """
+
+    try:
+        driver.quit()
+        logger.info("Driver exited browser session.")
+    except WebDriverException as e:
+        logger.warning("Something went wrong, %s -- Trying again", e)
+        driver.quit()
+        logger.info("Driver exited browser session.")
+
+def handle_alert(driver, handle=True, text=None, soft=True):
+    """ Handle an expected browser alert.
+
+    Utilizing the Selenium Alert class, handle an expected
+    alert using the method described by handle. The soft
+    parameter determines behaviour if an alert is not present.
+
+    Args:
+        driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+        handle:
+            How to handle the alert. Options include:
+            'accept', 1 or True to accept the the alert
+            and 'dismiss', 0, or False to dismiss the 
+            alert. A value of None will provide default
+            behaviour of 'accept' 
+    """
+    alert_accept = None
+    if handle and isinstance(handle, str):
+        if handle.lower() == 'accept':
+            alert_accept = True
+        elif handle.lower() == 'dismiss':
+            alert_accept = False
+        else:
+            logger.warning(f"Invalid handle function: {handle}")
+            logger.warning("Will use default function.")
+            alert_accept = True
+    else:
+        alert_accept = bool(handle)
+
+
+    if alert_accept:
+        do_alert = Alert.accept
+        logger.debug("Handle alert using Alert.accept()")
+    else:
+        do_alert = Alert.dismiss
+        logger.debug("Handle alert using Alert.dismiss()")
+
+    try:
+        alert = driver().switch_to.alert
+        if text and isinstance(text, str):
+            logger.info("Sending text to alert prompt: %s", text)
+            alert.send_keys(text)
+        do_alert(alert)
+    except NoAlertPresentException as na:
+        if not soft:
+            raise TassHardAssertionError("No Alert was present. Ending Execution.", na)
+        else:
+            raise TassSoftAssertionError("No Alert was present. Continuing execution.", na)
+    except WebDriverException as e:
+        logger.error("Something went wrong, %s", e)
+        raise e
 
 
 def screenshot(driver,
