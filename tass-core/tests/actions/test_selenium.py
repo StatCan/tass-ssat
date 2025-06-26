@@ -34,7 +34,7 @@ class TestSelenium(unittest.TestCase):
                     "arguments": [
                         "--start-maximized",
                         "--headless"
-                    ],
+                        ],
                     "preferences": {}
                 }
             }
@@ -1031,6 +1031,7 @@ class TestSelenium(unittest.TestCase):
                 finally:
                     if out.exists() and out.is_file():
                         out.unlink()
+                driver.quit()
 
     def test_SeleniumScreenshotElement(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
@@ -1051,3 +1052,176 @@ class TestSelenium(unittest.TestCase):
                 finally:
                     if out.exists() and out.is_file():
                         out.unlink()
+                driver.quit()
+
+    def test_SeleniumClose(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                driver().switch_to.new_window('tab')
+                before = len(driver().window_handles)
+                selenium.close(driver)
+                after = len(driver().window_handles)
+                self.assertEqual(before, 2)
+                self.assertEqual(after, 1)
+                driver.quit()
+
+    def test_SeleniumQuit(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                selenium.quit(driver)
+                self.assertIsNone(driver._driver)
+                driver.quit()
+
+    def test_SeleniumHandleAlertAccept(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                alertScript = "window.alert('testing')"
+                driver().execute_script(alertScript)
+                selenium.handle_alert(driver, soft=False)
+                self.assertIsNotNone(driver().title)
+                driver.quit()
+
+    def test_SeleniumHandleAlertAccept1(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                alertScript = "window.alert('testing')"
+                driver().execute_script(alertScript)
+                selenium.handle_alert(driver, handle=1, soft=False)
+                self.assertIsNotNone(driver().title)
+                driver.quit()
+
+    def test_SeleniumHandleAlertAcceptStr(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                alertScript = "window.alert('testing')"
+                driver().execute_script(alertScript)
+                selenium.handle_alert(driver, handle='accept', soft=False)
+                self.assertIsNotNone(driver().title)
+                driver.quit()
+
+    def test_SeleniumHandleAlertDismiss(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                alertScript = "window.alert('testing')"
+                driver().execute_script(alertScript)
+                selenium.handle_alert(driver, handle=False, soft=False)
+                self.assertIsNotNone(driver().title)
+                driver.quit()
+
+    def test_SeleniumHandleAlertDismiss0(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                alertScript = "window.alert('testing')"
+                driver().execute_script(alertScript)
+                selenium.handle_alert(driver, handle=0, soft=False)
+                self.assertIsNotNone(driver().title)
+                driver.quit()
+
+    def test_SeleniumHandleAlertDismissStr(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                alertScript = "window.alert('testing')"
+                driver().execute_script(alertScript)
+                selenium.handle_alert(driver, handle='dismiss', soft=False)
+                self.assertIsNotNone(driver().title)
+                driver.quit()
+
+    def test_SeleniumHandleConfirmationAlertAccept(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                alertScript = "window.confirm('testing')"
+                driver().execute_script(alertScript)
+                selenium.handle_alert(driver, soft=False)
+                self.assertIsNotNone(driver().title)
+                driver.quit()
+
+    def test_SeleniumHandleConfirmationAlertDismiss(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                alertScript = "window.confirm('testing')"
+                driver().execute_script(alertScript)
+                selenium.handle_alert(driver, handle='dismiss', soft=False)
+                self.assertIsNotNone(driver().title)
+                driver.quit()
+
+    def test_SeleniumHandlePromptAlertAccept(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                alertScript = "window.promptResponse = prompt('testing')"
+                promptScript = "return window.promptResponse"
+                driver().execute_script(alertScript)
+                selenium.handle_alert(driver, text="abc", soft=False)
+                self.assertIsNotNone(driver().title)
+                response = driver().execute_script(promptScript)
+                self.assertEqual(response, "abc")
+                driver.quit()
+
+    def test_SeleniumHandlePromptAlertDismiss(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                alertScript = "window.promptResponse = prompt('testing')"
+                promptScript = "return window.promptResponse"
+                driver().execute_script(alertScript)
+                selenium.handle_alert(driver,
+                                      handle='dismiss',
+                                      text="abc", soft=False)
+                self.assertIsNotNone(driver().title)
+                response = driver().execute_script(promptScript)
+                self.assertIsNone(response)
+                driver.quit()
+
+    def test_SeleniumHandleAlertSoftFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassSoftAssertionError):
+                    selenium.handle_alert(driver, handle=False, soft=True)
+                driver.quit()
+
+    def test_SeleniumHandleAlertHardFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                with self.assertRaises(TassHardAssertionError):
+                    selenium.handle_alert(driver, handle=False, soft=False)
+                driver.quit()
