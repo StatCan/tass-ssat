@@ -191,17 +191,20 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
     match using:
         case 'text':
             select = Select.select_by_visible_text
+            value = str(value)
             logger.debug('Selecting with visible text')
         case 'value':
             select = Select.select_by_value
+            value = str(value)
             logger.debug('Selecting using option value')
         case 'index':
             select = Select.select_by_index
+            value = int(value)
             logger.debug("Selecting using option index")
         case _:
             raise ValueError(f'Select method {using} is not a valid method.')
 
-    value = str(value)
+    
     try:
         dropdown = Select(find(driver, **kwargs))
         select(dropdown, value)
