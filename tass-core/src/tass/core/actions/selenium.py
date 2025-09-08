@@ -594,7 +594,7 @@ def handle_alert(driver, handle=True, text=None, soft=True):
             to the open browser.
         handle:
             How to handle the alert. Options include:
-            'accept', 1 or True to accept the the alert
+            'accept', 1 or True to accept the alert
             and 'dismiss', 0, or False to dismiss the
             alert. A value of None will provide default
             behaviour of 'accept'
