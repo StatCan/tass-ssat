@@ -4,7 +4,7 @@ dependencies:
   - jsonschema
   - packaging
   - requests
-  - selenium>=4.7.2
+  - selenium>=4.35.0
   - flake8
   - conda-build
   - python-build
