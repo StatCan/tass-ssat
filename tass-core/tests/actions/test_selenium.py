@@ -180,7 +180,7 @@ class TestSeleniumStartupActions(TestSelenium):
                 finally:
                     PageReader.reset()
 
-    
+
 class TestSeleniumBasicActions(TestSelenium):
 
     def test_SeleniumClose(self):
@@ -473,7 +473,8 @@ class TestSeleniumWindowControlActions(TestSelenium):
                 driver.quit()
         finally:
             PageReader.reset()
-            
+
+
 class TestSeleniumDropdownActions(TestSelenium):
 
     def test_SeleniumSelectDropdownByText(self):
@@ -518,7 +519,7 @@ class TestSeleniumDropdownActions(TestSelenium):
                 self.assertEqual(sel.first_selected_option.text, 'AA')
                 driver.quit()
 
-            
+
 class TestSeleniumAssertActions(TestSelenium):
 
     def test_SeleniumAssertTextDisplayedSuccess(self):
@@ -1055,7 +1056,7 @@ class TestSeleniumAssertActions(TestSelenium):
                         exact=True)
                 driver.quit()
 
-            
+
 class SeleniumScreenshotActions(TestSelenium):
 
     def test_SeleniumScreenshotPage(self):

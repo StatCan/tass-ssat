@@ -204,7 +204,6 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
         case _:
             raise ValueError(f'Select method {using} is not a valid method.')
 
-    
     try:
         dropdown = Select(find(driver, **kwargs))
         select(dropdown, value)
