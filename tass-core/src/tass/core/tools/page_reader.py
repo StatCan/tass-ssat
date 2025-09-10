@@ -21,11 +21,14 @@ class PageReader(metaclass=Singleton):
             pom = self._page_dict[file_key]
         else:
             pom = self._load_pages(file_key)
-        
+
         try:
             return pom[page_key]
         except KeyError as e:
-            log.error(f"No such page model exists. Page: \"{page_key}\" in POM: \"{file_key}\" not found.")
+            log.error(
+                ("No such page model exists. "
+                 f"Page: \"{page_key}\" in POM: \"{file_key}\" not found.")
+                )
             raise e
 
     def _load_pages(self, file_key):
@@ -45,7 +48,8 @@ class PageReader(metaclass=Singleton):
                     default=None, llist=None):
         if llist and [file_key, page_key] in llist:
             # If page has already been checked return None
-            # llist will only be None on the top level page in the inheritance schema.
+            # llist will only be None on the
+            # top level page in the inheritance schema.
             # Prevents possible infinite loops (a calls b calls a...)
             return None
         elif llist is None:
@@ -70,14 +74,23 @@ class PageReader(metaclass=Singleton):
 
         except KeyError as e:
             if default:
-                log.warning(f'One or more keys not found -> POM: \"{file_key}\", Page: \"{page_key}\". Falling back to default: {default}')
+                log.warning(
+                    ('One or more keys not found -> '
+                     f'POM: \"{file_key}\", Page: \"{page_key}\". '
+                     f'Falling back to default: {default}')
+                    )
             else:
-                log.error(f"Element not in POM with no fallback specified. Unable to continue.")
+                log.error(
+                    (f"Element \"{element_key}\" not in POM "
+                     "with no fallback specified. Unable to continue.")
+                     )
                 raise e
         """
         TODO: Finish default implementation.
-        If a given key is not found in the POM, then the given value should be treated using the "default"
-        value given. Potential use for dynamic or temporary pages that are not mapped to POMs.
+        If a given key is not found in the POM, then the given value
+        should be treated using the "default" value given.
+        Potential use for dynamic or temporary pages that
+        are not mapped to POMs.
         """
         return default
 
@@ -85,7 +98,8 @@ class PageReader(metaclass=Singleton):
                 page_key, url_key='url',
                 default=None, llist=None):
         if llist and [file_key, page_key] in llist:
-            # llist will only be None on the top level page in the inheritance schema.
+            # llist will only be None on the
+            # top level page in the inheritance schema.
             # If page has already been checked return None
             # Prevents possible infinite loops (a calls b calls a...)
             return None
@@ -106,20 +120,30 @@ class PageReader(metaclass=Singleton):
 
         except KeyError as e:
             if default:
-                log.warning(f'One or more keys not found -> POM: \"{file_key}\", Page: \"{page_key}\". Falling back to default: {default}')
+                log.warning(
+                    ('One or more keys not found -> '
+                     f'POM: \"{file_key}\", Page: \"{page_key}\". '
+                     f'Falling back to default: {default}')
+                    )
             else:
-                log.error(f"URL not in POM with no fallback specified. Unable to continue.")
+                log.error(
+                    ("URL not in POM with no fallback specified. "
+                     "Unable to continue.")
+                )
                 raise e
         """
         TODO: Finish default implementation.
-        If a given key is not found in the POM, then the given value should be treated using the "default"
-        value given. Potential use for dynamic or temporary pages that are not mapped to POMs.
+        If a given key is not found in the POM, then the given value
+        should be treated using the "default" value given.
+        Potential use for dynamic or temporary pages
+        that are not mapped to POMs.
         """
         return default
 
     def get_page_title(self, file_key, page_key, default=None, llist=None):
         if llist and [file_key, page_key] in llist:
-            # llist will only be None on the top level page in the inheritance schema.
+            # llist will only be None on the
+            # top level page in the inheritance schema.
             # If page has already been checked return None
             # Prevents possible infinite loops (a calls b calls a...)
             return None
@@ -141,20 +165,30 @@ class PageReader(metaclass=Singleton):
                         return title
         except KeyError as e:
             if default:
-                log.warning(f'One or more keys not found -> POM: \"{file_key}\", Page: \"{page_key}\". Falling back to default: {default}')
+                log.warning(
+                    ('One or more keys not found -> '
+                     f'POM: \"{file_key}\", Page: \"{page_key}\". '
+                     f'Falling back to default: {default}')
+                    )
             else:
-                log.warning(f"Title not in POM with no fallback specified. Unable to continue.")
+                log.warning(
+                    ("Title not in POM with no fallback specified. "
+                     "Unable to continue.")
+                    )
                 raise e
         """
         TODO: Finish default implementation.
-        If a given key is not found in the POM, then the given value should be treated using the "default"
-        value given. Potential use for dynamic or temporary pages that are not mapped to POMs.
+        If a given key is not found in the POM, then the given value
+        should be treated using the "default" value given.
+        Potential use for dynamic or temporary pages
+        that are not mapped to POMs.
         """
         return default
 
     def get_page_id(self, file_key, page_key, default=None, llist=None):
         if llist and [file_key, page_key] in llist:
-            # llist will only be None on the top level page in the inheritance schema.
+            # llist will only be None on the
+            # top level page in the inheritance schema.
             # If page has already been checked return None
             # Prevents possible infinite loops (a calls b calls a...)
             return None
@@ -180,14 +214,23 @@ class PageReader(metaclass=Singleton):
 
         except KeyError as e:
             if default:
-                log.warning(f'One or more keys not found -> POM: \"{file_key}\", Page: \"{page_key}\". Falling back to default: {default}')
+                log.warning(
+                    ('One or more keys not found -> '
+                     f'POM: \"{file_key}\", Page: \"{page_key}\". '
+                     f'Falling back to default: {default}')
+                    )
             else:
-                log.warning(f"Page ID not in POM with no fallback specified. Unable to continue.")
+                log.warning(
+                    ("Page ID not in POM with no fallback specified. "
+                     "Unable to continue.")
+                    )
                 raise e
         """
         TODO: Finish default implementation.
-        If a given key is not found in the POM, then the given value should be treated using the "default"
-        value given. Potential use for dynamic or temporary pages that are not mapped to POMs.
+        If a given key is not found in the POM, then the given value
+        should be treated using the "default" value given.
+        Potential use for dynamic or temporary pages
+        that are not mapped to POMs.
         """
         return default
 
