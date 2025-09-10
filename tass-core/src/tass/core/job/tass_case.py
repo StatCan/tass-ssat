@@ -26,7 +26,7 @@ class TassCase(TassItem):
                 step.update({"status": "passed"})
             except TassSoftAssertionError as soft_fail:
                 # TODO: Error message should be attached here.
-                self.logger.warning("Step failed. Continuing test.")
+                self.logger.warning(f"Step \"{step['uuid']}\": \"{step['title']}\" failed soft assertion. Continuing test.")
                 self.logger.warning("Failure message: %s", soft_fail.message)
                 error = {
                     "status": "failed",
@@ -37,11 +37,22 @@ class TassCase(TassItem):
                 self._errors.append(step)
             except TassHardAssertionError as fail:
                 # TODO: Error message should be attached here.
-                self.logger.warning("Step failed. Stopping test case.")
+                self.logger.warning(f"Step \"{step['uuid']}\": \"{step['title']}\" failed assertion. Stopping test case.")
                 self.logger.warning("Failure message: %s", fail.message)
                 error = {
                     "status": "failed",
                     "status_message": fail.message
+                    }
+                step.update(error)
+                self._errors.append(step)
+                break
+            except Exception as e:
+                self.logger.warning(f"Step \"{step['uuid']}\": \"{step['title']}\" failed. Stopping test case.")
+                self.logger.warning("Unexpected error raised. Message: %s", e)
+                error = {
+                    "status": "failed",
+                    "error": True,
+                    "status_message": str(e)
                     }
                 step.update(error)
                 self._errors.append(step)
