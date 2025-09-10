@@ -191,6 +191,7 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
     match using:
         case 'text':
             select = Select.select_by_visible_text
+            value = str(value)
             logger.debug('Selecting with visible text')
         case 'value':
             select = Select.select_by_value
@@ -198,10 +199,12 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
             logger.debug('Selecting using option value')
         case 'index':
             select = Select.select_by_index
+            value = int(value)
             logger.debug("Selecting using option index")
         case _:
             raise ValueError(f'Select method {using} is not a valid method.')
 
+    
     try:
         dropdown = Select(find(driver, **kwargs))
         select(dropdown, value)
@@ -265,7 +268,7 @@ def load_url(driver, url):
 def load_file(driver, relative_path):
     """Load the provided file in the current browser window
 
-    Execute the selenium get function. Requires a fa file
+    Execute the selenium get function. Requires a file
     path relative to the root directory.
 
     Args:
@@ -340,8 +343,8 @@ def read_attribute(driver, attribute, find=_find_element, **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
+    attribute = str(attribute)
     try:
-        attribute = str(attribute)
         attr = find(driver, **kwargs).get_attribute(attribute)
         logger.debug("Element has attribute: '%s'='%s'", attribute, attr)
     except WebDriverException as e:
@@ -383,8 +386,8 @@ def read_css(driver, attribute, find=_find_element, **kwargs):
             requires: locator.
     """
 
+    attribute = str(attribute)
     try:
-        attribute = str(attribute)
         prop = find(driver, **kwargs).value_of_css_property(attribute)
         logger.debug("Element has CSS property: '%s'='%s'", attribute, prop)
     except WebDriverException as e:
@@ -591,7 +594,7 @@ def handle_alert(driver, handle=True, text=None, soft=True):
             to the open browser.
         handle:
             How to handle the alert. Options include:
-            'accept', 1 or True to accept the the alert
+            'accept', 1 or True to accept the alert
             and 'dismiss', 0, or False to dismiss the
             alert. A value of None will provide default
             behaviour of 'accept'
@@ -956,6 +959,7 @@ def assert_attribute_contains_value(driver, attribute, value,
                                     find=_find_element, soft=False,
                                     exact=False, **kwargs):
     actual_value = None
+    value = str(value)
     try:
         actual_value = read_attribute(driver, attribute, find, **kwargs)
         logger.info("Element contains attribute: %s", actual_value)
