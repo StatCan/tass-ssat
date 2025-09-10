@@ -89,6 +89,9 @@ class TestSelenium(unittest.TestCase):
                         (self.config[1], FDriver),
                         (self.config[2], EDriver)]
 
+
+class TestSeleniumStartupActions(TestSelenium):
+
     def test_SeleniumNewDriver(self):
         for browser in self.drivers:
             with self.subTest(browser=browser[1].__name__):
@@ -177,6 +180,79 @@ class TestSelenium(unittest.TestCase):
                 finally:
                     PageReader.reset()
 
+    
+class TestSeleniumBasicActions(TestSelenium):
+
+    def test_SeleniumClose(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                driver().switch_to.new_window('tab')
+                before = len(driver().window_handles)
+                selenium.close(driver)
+                after = len(driver().window_handles)
+                self.assertEqual(before, 2)
+                self.assertEqual(after, 1)
+                driver.quit()
+
+    def test_SeleniumQuit(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url)
+                selenium.quit(driver)
+                self.assertIsNone(driver._driver)
+                driver.quit()
+
+    def test_SeleniumLocateFormated(self):
+        locator = {"by": "xpath", "value": "//testing/{}/{}/{}"}
+        args = ["locator", "formatting", "implementation"]
+        expected = "//testing/locator/formatting/implementation"
+
+        loc_out = selenium.locate(None, locator, args)
+
+        self.assertEqual(loc_out['value'], expected)
+
+    def test_SeleniumLocateFormattedPage(self):
+        page = {
+            "title": "Page One",
+            "url": "tests/pages/page1.html",
+            "alt-url": "alt/url",
+            "page_id":
+            {
+                "method": "element",
+                "identifier": "btnColor"
+            },
+            "elements":
+            {
+                "btnColor":
+                {
+                    "by": "id",
+                    "value": "btn{}"
+                }
+            }
+        }
+        try:
+            PageReader().add_page('test', page)
+
+            args = ["Color"]
+            locator = "btnColor"
+            loc_out = selenium.locate(["custom", "test"], locator, args)
+            self.assertEqual(loc_out['value'], 'btnColor')
+
+            args = ["Red"]
+            locator = PageReader().get_element(
+                                    "custom",
+                                    "test",
+                                    "btnColor")
+            loc_out = selenium.locate(["custom", "test"], locator, args)
+            self.assertEqual(loc_out['value'], 'btnRed')
+        finally:
+            PageReader.reset()
+
     def test_SeleniumClick(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
@@ -228,6 +304,9 @@ class TestSelenium(unittest.TestCase):
                     .get_attribute('value'), '')
                 driver.quit()
 
+
+class TestSeleniumReadOnlyActions(TestSelenium):
+
     def test_SeleniumReadAttribute(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
@@ -249,6 +328,9 @@ class TestSelenium(unittest.TestCase):
                         driver, attribute='width',
                         locator={"by": "id", "value": "btn1"}), '300px')
                 driver.quit()
+
+
+class TestSeleniumWindowControlActions(TestSelenium):
 
     def test_SeleniumSwitchToFrameId(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
@@ -277,6 +359,122 @@ class TestSelenium(unittest.TestCase):
                     *('id', 'btnColor')).get_attribute('name')
                 self.assertEqual(btnName, 'buttonAlpha')
                 driver.quit()
+
+    def test_SeleniumSwitchWindowNoTitle(self):
+        url_0 = pathlib.Path(self.test_page_url).resolve().as_uri()
+        url_1 = 'https://www.google.ca'
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url_1)
+                driver().switch_to.new_window('tab')
+                driver().get(url_0)
+                self.assertEqual(driver().title, 'Page One')
+                selenium.switch_window(driver)
+                self.assertEqual(driver().title, 'Google')
+
+            driver.quit()
+
+    def test_SeleniumSwitchWindowClosed(self):
+        url_0 = pathlib.Path(self.test_page_url).resolve().as_uri()
+        url_1 = 'https://www.google.ca'
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url_0)
+                driver().switch_to.new_window('tab')
+                driver().get(url_1)
+                self.assertEqual(driver().title, 'Google')
+                driver().close()
+                selenium.switch_window(driver)
+                self.assertEqual(driver().title, 'Page One')
+
+            driver.quit()
+
+    def test_SeleniumSwitchWindowByTitle(self):
+        url_0 = pathlib.Path(self.test_page_url).resolve().as_uri()
+        url_1 = 'https://www.google.ca'
+        url_2 = 'https://www.statcan.gc.ca/en/start'
+        google = 'Google'
+        pageOne = 'Page One'
+        statcan = "Statistics Canada: Canada's national statistical agency"
+        for browser in self.drivers:
+            driver = new_driver(**browser[0])
+            with self.subTest(browser=browser[1].__name__):
+                driver().get(url_1)
+                driver().switch_to.new_window('tab')
+                driver().get(url_2)
+                driver().switch_to.new_window('tab')
+                driver().get(url_0)
+                self.assertEqual(driver().title, pageOne)
+                selenium.switch_window(driver, google)
+                self.assertEqual(driver().title, google)
+                selenium.switch_window(driver, statcan)
+                self.assertEqual(driver().title, statcan)
+                selenium.switch_window(driver, pageOne)
+                self.assertEqual(driver().title, pageOne)
+
+            driver.quit()
+
+    def test_SeleniumSwitchWindowByPageTitle(self):
+        google = {
+            "title": "Google",
+            "url": "http://www.google.ca",
+            "page_id":
+            {
+                "method": "title",
+            },
+            "elements":
+            {}
+        }
+
+        statcan = {
+            "title": "Statistics Canada: Canada's national statistical agency",
+            "url": "https://www.statcan.gc.ca/en/start",
+            "page_id":
+            {
+                "method": "title",
+            },
+            "elements":
+            {}
+        }
+
+        page_1 = {
+            "title": "Page One",
+            "url": pathlib.Path(self.test_page_url).resolve().as_uri(),
+            "page_id":
+            {
+                "method": "title",
+            },
+            "elements":
+            {}
+        }
+        try:
+            PageReader().add_page('google', google)
+            PageReader().add_page('statcan', statcan)
+            PageReader().add_page('page1', page_1)
+
+            for browser in self.drivers:
+                driver = new_driver(**browser[0])
+                with self.subTest(browser=browser[1].__name__):
+                    driver().get(google['url'])
+                    driver().switch_to.new_window('tab')
+                    driver().get(statcan['url'])
+                    driver().switch_to.new_window('tab')
+                    driver().get(page_1['url'])
+                    self.assertEqual(driver().title, page_1['title'])
+                    selenium.switch_window(driver, page=('custom', 'google'))
+                    self.assertEqual(driver().title, google['title'])
+                    selenium.switch_window(driver, page=('custom', 'statcan'))
+                    self.assertEqual(driver().title, statcan['title'])
+                    selenium.switch_window(driver, page=('custom', 'page1'))
+                    self.assertEqual(driver().title, page_1['title'])
+
+                driver.quit()
+        finally:
+            PageReader.reset()
+            
+class TestSeleniumDropdownActions(TestSelenium):
 
     def test_SeleniumSelectDropdownByText(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
@@ -319,6 +517,9 @@ class TestSelenium(unittest.TestCase):
                 sel = Select(driver().find_element('id', 'dropdown'))
                 self.assertEqual(sel.first_selected_option.text, 'AA')
                 driver.quit()
+
+            
+class TestSeleniumAssertActions(TestSelenium):
 
     def test_SeleniumAssertTextDisplayedSuccess(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
@@ -729,166 +930,6 @@ class TestSelenium(unittest.TestCase):
                     self.fail(e.message)
                 driver.quit()
 
-    def test_SeleniumSwitchWindowNoTitle(self):
-        url_0 = pathlib.Path(self.test_page_url).resolve().as_uri()
-        url_1 = 'https://www.google.ca'
-        for browser in self.drivers:
-            driver = new_driver(**browser[0])
-            with self.subTest(browser=browser[1].__name__):
-                driver().get(url_1)
-                driver().switch_to.new_window('tab')
-                driver().get(url_0)
-                self.assertEqual(driver().title, 'Page One')
-                selenium.switch_window(driver)
-                self.assertEqual(driver().title, 'Google')
-
-            driver.quit()
-
-    def test_SeleniumSwitchWindowClosed(self):
-        url_0 = pathlib.Path(self.test_page_url).resolve().as_uri()
-        url_1 = 'https://www.google.ca'
-        for browser in self.drivers:
-            driver = new_driver(**browser[0])
-            with self.subTest(browser=browser[1].__name__):
-                driver().get(url_0)
-                driver().switch_to.new_window('tab')
-                driver().get(url_1)
-                self.assertEqual(driver().title, 'Google')
-                driver().close()
-                selenium.switch_window(driver)
-                self.assertEqual(driver().title, 'Page One')
-
-            driver.quit()
-
-    def test_SeleniumSwitchWindowByTitle(self):
-        url_0 = pathlib.Path(self.test_page_url).resolve().as_uri()
-        url_1 = 'https://www.google.ca'
-        url_2 = 'https://www.statcan.gc.ca/en/start'
-        google = 'Google'
-        pageOne = 'Page One'
-        statcan = "Statistics Canada: Canada's national statistical agency"
-        for browser in self.drivers:
-            driver = new_driver(**browser[0])
-            with self.subTest(browser=browser[1].__name__):
-                driver().get(url_1)
-                driver().switch_to.new_window('tab')
-                driver().get(url_2)
-                driver().switch_to.new_window('tab')
-                driver().get(url_0)
-                self.assertEqual(driver().title, pageOne)
-                selenium.switch_window(driver, google)
-                self.assertEqual(driver().title, google)
-                selenium.switch_window(driver, statcan)
-                self.assertEqual(driver().title, statcan)
-                selenium.switch_window(driver, pageOne)
-                self.assertEqual(driver().title, pageOne)
-
-            driver.quit()
-
-    def test_SeleniumSwitchWindowByPageTitle(self):
-        google = {
-            "title": "Google",
-            "url": "http://www.google.ca",
-            "page_id":
-            {
-                "method": "title",
-            },
-            "elements":
-            {}
-        }
-
-        statcan = {
-            "title": "Statistics Canada: Canada's national statistical agency",
-            "url": "https://www.statcan.gc.ca/en/start",
-            "page_id":
-            {
-                "method": "title",
-            },
-            "elements":
-            {}
-        }
-
-        page_1 = {
-            "title": "Page One",
-            "url": pathlib.Path(self.test_page_url).resolve().as_uri(),
-            "page_id":
-            {
-                "method": "title",
-            },
-            "elements":
-            {}
-        }
-        try:
-            PageReader().add_page('google', google)
-            PageReader().add_page('statcan', statcan)
-            PageReader().add_page('page1', page_1)
-
-            for browser in self.drivers:
-                driver = new_driver(**browser[0])
-                with self.subTest(browser=browser[1].__name__):
-                    driver().get(google['url'])
-                    driver().switch_to.new_window('tab')
-                    driver().get(statcan['url'])
-                    driver().switch_to.new_window('tab')
-                    driver().get(page_1['url'])
-                    self.assertEqual(driver().title, page_1['title'])
-                    selenium.switch_window(driver, page=('custom', 'google'))
-                    self.assertEqual(driver().title, google['title'])
-                    selenium.switch_window(driver, page=('custom', 'statcan'))
-                    self.assertEqual(driver().title, statcan['title'])
-                    selenium.switch_window(driver, page=('custom', 'page1'))
-                    self.assertEqual(driver().title, page_1['title'])
-
-                driver.quit()
-        finally:
-            PageReader.reset()
-
-    def test_SeleniumLocateFormated(self):
-        locator = {"by": "xpath", "value": "//testing/{}/{}/{}"}
-        args = ["locator", "formatting", "implementation"]
-        expected = "//testing/locator/formatting/implementation"
-
-        loc_out = selenium.locate(None, locator, args)
-
-        self.assertEqual(loc_out['value'], expected)
-
-    def test_SeleniumLocateFormattedPage(self):
-        page = {
-            "title": "Page One",
-            "url": "tests/pages/page1.html",
-            "alt-url": "alt/url",
-            "page_id":
-            {
-                "method": "element",
-                "identifier": "btnColor"
-            },
-            "elements":
-            {
-                "btnColor":
-                {
-                    "by": "id",
-                    "value": "btn{}"
-                }
-            }
-        }
-        try:
-            PageReader().add_page('test', page)
-
-            args = ["Color"]
-            locator = "btnColor"
-            loc_out = selenium.locate(["custom", "test"], locator, args)
-            self.assertEqual(loc_out['value'], 'btnColor')
-
-            args = ["Red"]
-            locator = PageReader().get_element(
-                                    "custom",
-                                    "test",
-                                    "btnColor")
-            loc_out = selenium.locate(["custom", "test"], locator, args)
-            self.assertEqual(loc_out['value'], 'btnRed')
-        finally:
-            PageReader.reset()
-
     def test_SeleniumAssertAttributeDisplayedSuccess(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
 
@@ -1014,6 +1055,9 @@ class TestSelenium(unittest.TestCase):
                         exact=True)
                 driver.quit()
 
+            
+class SeleniumScreenshotActions(TestSelenium):
+
     def test_SeleniumScreenshotPage(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         name = "test"
@@ -1054,29 +1098,8 @@ class TestSelenium(unittest.TestCase):
                         out.unlink()
                 driver.quit()
 
-    def test_SeleniumClose(self):
-        url = pathlib.Path(self.test_page_url).resolve().as_uri()
-        for browser in self.drivers:
-            driver = new_driver(**browser[0])
-            with self.subTest(browser=browser[1].__name__):
-                driver().get(url)
-                driver().switch_to.new_window('tab')
-                before = len(driver().window_handles)
-                selenium.close(driver)
-                after = len(driver().window_handles)
-                self.assertEqual(before, 2)
-                self.assertEqual(after, 1)
-                driver.quit()
 
-    def test_SeleniumQuit(self):
-        url = pathlib.Path(self.test_page_url).resolve().as_uri()
-        for browser in self.drivers:
-            driver = new_driver(**browser[0])
-            with self.subTest(browser=browser[1].__name__):
-                driver().get(url)
-                selenium.quit(driver)
-                self.assertIsNone(driver._driver)
-                driver.quit()
+class TestSeleniumAlertActions(TestSelenium):
 
     def test_SeleniumHandleAlertAccept(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
