@@ -77,7 +77,7 @@ class TestPageReader(unittest.TestCase):
     def test_addPage(self):
         self.assertFalse(PageReader().is_empty())
         PageReader().add_page('test', self.page)
-        self.assertTrue(PageReader().pages_loaded('custom'))
+        self.assertTrue("custom" in PageReader()._page_dict)
 
     def test_getPageId(self):
         PageReader().add_page('test', self.page)
