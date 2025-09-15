@@ -176,3 +176,4 @@ class SupportedBrowsers(Enum):
     CHROME = ChromeDriverWrapper
     FIREFOX = FirefoxDriverWrapper
     EDGE = EdgeDriverWrapper
+    SAFARI = SafariDriverWrapper
