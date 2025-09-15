@@ -4,7 +4,7 @@ import time
 
 import tass.core.actions.selenium_chain as chain
 import selenium.webdriver.support.expected_conditions as EC
-
+from .test_selenium import TestSelenium
 from tass.core.drivers.driverconfig import new_driver
 from tass.core.drivers.custombrowserdrivers import (
     ChromeDriver as CDriver,
@@ -13,75 +13,7 @@ from tass.core.drivers.custombrowserdrivers import (
 )
 
 
-class TestSeleniumChain(unittest.TestCase):
-
-    config = [
-        {
-            "browser_name": "chrome",
-            "uuid": "chromeTEST",
-            "configs": {
-                "driver": {
-                    "implicit_wait": "5",
-                    "explicit_wait": "20"
-                },
-                "browser": {
-                    "arguments": [
-                        "--start-maximized",
-                        "--headless"
-                    ],
-                    "preferences": {}
-                }
-            }
-        },
-        {
-            "browser_name": "firefox",
-            "uuid": "firefoxTEST",
-            "configs": {
-                "driver": {
-                    "implicit_wait": "5",
-                    "explicit_wait": "20"
-                },
-                "browser": {
-                    "arguments": [
-                        "--start-maximized",
-                        "--headless"
-                    ],
-                    "preferences": {}
-                }
-            }
-        },
-        {
-            "browser_name": "edge",
-            "uuid": "edgeTEST",
-            "configs": {
-                "driver": {
-                    "implicit_wait": "5",
-                    "explicit_wait": "20"
-                },
-                "browser": {
-                    "arguments": [
-                        "--start-maximized",
-                        "--headless"
-                    ],
-                    "preferences": {}
-                }
-            }
-        }
-    ]
-
-    test_page_url = (
-        str(pathlib.Path(__file__).parents[1].resolve())
-        + '/pages/page1.html'
-        )
-
-    def setUp(self):
-        print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-        print("Beginning new test TestCase %s" % self._testMethodName)
-        print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-
-        self.drivers = [(self.config[0], CDriver),
-                        (self.config[1], FDriver),
-                        (self.config[2], EDriver)]
+class TestSeleniumChain(TestSelenium):
 
     def test_seleniumChainClickElement(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()

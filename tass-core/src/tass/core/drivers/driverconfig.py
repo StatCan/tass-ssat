@@ -3,14 +3,16 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver import (
     ChromeOptions,
     FirefoxOptions,
-    EdgeOptions
+    EdgeOptions,
+    SafariOptions
 )
 from ..log.logging import getLogger
 from .custombrowserdrivers import TassDriverWait
 from .custombrowserdrivers import (
     ChromeDriver,
     EdgeDriver,
-    FirefoxDriver
+    FirefoxDriver,
+    SafariDriver
 )
 
 
@@ -121,6 +123,15 @@ class BaseDriverWrapper():
         self._waits = {}
         self._chain = None
         self._driver = None
+
+
+class SafariDriverWrapper(BaseDriverWrapper):
+    def __init__(self, uuid, configs,
+                 *args, **kwargs):
+        super().__init__(uuid, configs, *args, **kwargs)
+
+    def __call__(self, *args, **kwargs):
+        return super().__call__(SafariOptions, SafariDriver, *args, **kwargs)
 
 
 class ChromeDriverWrapper(BaseDriverWrapper):

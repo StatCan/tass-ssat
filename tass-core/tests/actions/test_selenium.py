@@ -1,5 +1,6 @@
 import unittest
 import pathlib
+from sys import platform
 
 import tass.core.actions.selenium as selenium
 from tass.core.tools.page_reader import PageReader
@@ -15,7 +16,8 @@ from tass.core.drivers.driverconfig import new_driver
 from tass.core.drivers.custombrowserdrivers import (
     ChromeDriver as CDriver,
     EdgeDriver as EDriver,
-    FirefoxDriver as FDriver
+    FirefoxDriver as FDriver,
+    SafariDriver as SDriver
 )
 
 
@@ -72,6 +74,22 @@ class TestSelenium(unittest.TestCase):
                     "preferences": {}
                 }
             }
+        },
+        {
+            "browser_name": "safari",
+            "uuid": "safariTEST",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "5",
+                    "explicit_wait": "20"
+                },
+                "browser": {
+                    "arguments": [
+                        "--start-maximized"
+                        ],
+                    "preferences": {}
+                }
+            }
         }
     ]
 
@@ -88,6 +106,8 @@ class TestSelenium(unittest.TestCase):
         self.drivers = [(self.config[0], CDriver),
                         (self.config[1], FDriver),
                         (self.config[2], EDriver)]
+        if platform == "darwin":
+            self.drivers.append((self.config[3], SDriver))
 
 
 class TestSeleniumStartupActions(TestSelenium):
