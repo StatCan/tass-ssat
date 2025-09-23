@@ -31,7 +31,10 @@ class SafariDriver(webdriver.Safari):
     def toJson(self):
         caps = self.capabilities
         return {
-            "TODO": "Fill this in"
+            'name': caps['browserName'],
+            'version': caps['browserVersion'],
+            'driver-version': caps['chrome']['chromedriverVersion'],
+            'platform': caps['platformName']
         }
 
 

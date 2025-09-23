@@ -131,7 +131,18 @@ class SafariDriverWrapper(BaseDriverWrapper):
         super().__init__(uuid, configs, *args, **kwargs)
 
     def __call__(self, *args, **kwargs):
-        return super().__call__(SafariOptions, SafariDriver, *args, **kwargs)
+        # Safari driver does not support --start-maximized natively
+        # call function is overwritten to support --start-maximized argument
+        if not self._driver:
+            options = self.set_options(SafariOptions)
+            driver = SafariDriver(options=options, *args, **kwargs)
+
+            # set driver settings
+            driver .implicitly_wait(self._conf['driver'].get('implicit_wait'))
+            if '--start-maximized' in self._conf['browser']['arguments']:
+                driver.maximize_window()
+            self._driver = driver
+        return self._driver
 
 
 class ChromeDriverWrapper(BaseDriverWrapper):
