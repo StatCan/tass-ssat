@@ -110,6 +110,12 @@ class TestSelenium(unittest.TestCase):
         if platform == "darwin":
             self.drivers.append((self.config[3], SDriver))
 
+    def start_driver(self, browser):
+        print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+        print("Starting driver for: %s" % browser[1].__name__)
+        print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+        return new_driver(**browser[0])
+
 
 class TestSeleniumStartupActions(TestSelenium):
 
@@ -118,7 +124,7 @@ class TestSeleniumStartupActions(TestSelenium):
             with self.subTest(browser=browser[1].__name__):
                 driver = None
                 try:
-                    driver = new_driver(**browser[0])
+                    driver = self.start_driver(browser)
                     self.assertIsInstance(driver(), browser[1])
                 finally:
                     if driver:
@@ -129,7 +135,7 @@ class TestSeleniumStartupActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                         selenium.load_url(driver, url)
                         self.assertEqual(driver().title, "Google")
@@ -141,7 +147,7 @@ class TestSeleniumStartupActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                         selenium.load_file(driver, self.test_page_url)
                         self.assertEqual(driver().title, "Page One")
@@ -181,7 +187,7 @@ class TestSeleniumStartupActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                         PageReader().add_page('test', page)
                         selenium.load_page(driver,
@@ -208,7 +214,7 @@ class TestSeleniumStartupActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                         PageReader().add_page('test', page)
                         selenium.load_page(driver, ('custom', 'test'))
@@ -275,7 +281,7 @@ class TestSeleniumBasicActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                         driver().get(url)
                         driver().switch_to.new_window('tab')
@@ -293,7 +299,7 @@ class TestSeleniumBasicActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                         driver().get(url)
                         selenium.quit(driver)
@@ -308,7 +314,7 @@ class TestSeleniumBasicActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                         driver().get(url)
                         selenium.click(driver,
@@ -326,7 +332,7 @@ class TestSeleniumBasicActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                         driver().get(url)
                         text = 'Selenium Test Type'
@@ -346,7 +352,7 @@ class TestSeleniumBasicActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                         driver().get(url)
                         text = 'Selenium Test Type'
@@ -374,7 +380,7 @@ class TestSeleniumReadOnlyActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                         driver().get(url)
                         self.assertEqual(selenium.read_attribute(
@@ -389,7 +395,7 @@ class TestSeleniumReadOnlyActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                         driver().get(url)
                         self.assertEqual(selenium.read_css(
@@ -407,7 +413,7 @@ class TestSeleniumWindowControlActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     
                         driver().get(url)
@@ -424,7 +430,7 @@ class TestSeleniumWindowControlActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     selenium.switch_frame(driver, frame={
@@ -445,7 +451,7 @@ class TestSeleniumWindowControlActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                         driver().get(url_1)
                         driver().switch_to.new_window('tab')
@@ -463,7 +469,7 @@ class TestSeleniumWindowControlActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url_0)
                     driver().switch_to.new_window('tab')
@@ -486,7 +492,7 @@ class TestSeleniumWindowControlActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url_1)
                     driver().switch_to.new_window('tab')
@@ -544,7 +550,7 @@ class TestSeleniumWindowControlActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(google['url'])
                     driver().switch_to.new_window('tab')
@@ -572,7 +578,7 @@ class TestSeleniumDropdownActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     selenium.select_dropdown(driver, 'AA', 'text',
@@ -590,7 +596,7 @@ class TestSeleniumDropdownActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     selenium.select_dropdown(driver, 'last', 'value',
@@ -608,7 +614,7 @@ class TestSeleniumDropdownActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     selenium.select_dropdown(driver, 3, 'index',
@@ -630,7 +636,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
@@ -650,7 +656,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
@@ -670,7 +676,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
@@ -688,7 +694,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
@@ -706,7 +712,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
@@ -727,7 +733,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
@@ -746,7 +752,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
@@ -764,7 +770,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
@@ -782,7 +788,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
@@ -799,7 +805,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
@@ -817,7 +823,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
@@ -834,10 +840,11 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
+                        breakpoint()
                         selenium.assert_not_displayed(
                             driver,
                             locator={"by": "id", "value": "btn-x"})
@@ -852,7 +859,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
@@ -869,7 +876,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
@@ -887,7 +894,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
@@ -903,7 +910,7 @@ class TestSeleniumAssertActions(TestSelenium):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
@@ -921,7 +928,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
@@ -939,7 +946,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
@@ -962,7 +969,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
@@ -981,7 +988,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
@@ -1001,7 +1008,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
@@ -1025,7 +1032,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
@@ -1043,7 +1050,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
@@ -1061,7 +1068,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
@@ -1083,7 +1090,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
@@ -1102,7 +1109,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
@@ -1122,7 +1129,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
@@ -1148,7 +1155,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
@@ -1171,7 +1178,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
@@ -1193,7 +1200,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
@@ -1214,7 +1221,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
@@ -1234,7 +1241,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
@@ -1257,7 +1264,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
@@ -1279,7 +1286,7 @@ class TestSeleniumAssertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
@@ -1302,7 +1309,7 @@ class SeleniumScreenshotActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
@@ -1326,7 +1333,7 @@ class SeleniumScreenshotActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
@@ -1352,7 +1359,7 @@ class TestSeleniumAlertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
@@ -1368,7 +1375,7 @@ class TestSeleniumAlertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
@@ -1384,7 +1391,7 @@ class TestSeleniumAlertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
@@ -1400,7 +1407,7 @@ class TestSeleniumAlertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
@@ -1416,7 +1423,7 @@ class TestSeleniumAlertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
@@ -1432,7 +1439,7 @@ class TestSeleniumAlertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
@@ -1448,7 +1455,7 @@ class TestSeleniumAlertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     alertScript = "window.confirm('testing')"
@@ -1464,7 +1471,7 @@ class TestSeleniumAlertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     alertScript = "window.confirm('testing')"
@@ -1480,7 +1487,7 @@ class TestSeleniumAlertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     alertScript = "window.promptResponse = prompt('testing')"
@@ -1499,7 +1506,7 @@ class TestSeleniumAlertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     alertScript = "window.promptResponse = prompt('testing')"
@@ -1520,7 +1527,7 @@ class TestSeleniumAlertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
@@ -1535,7 +1542,7 @@ class TestSeleniumAlertActions(TestSelenium):
         for browser in self.drivers:
             driver = None
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
