@@ -68,8 +68,7 @@ class TestSelenium(unittest.TestCase):
                 },
                 "browser": {
                     "arguments": [
-                        "--start-maximized",
-                        "--headless"
+                        "--start-maximized"
                     ],
                     "preferences": {}
                 }
