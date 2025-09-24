@@ -138,8 +138,7 @@ class TestSeleniumChain(TestSelenium):
                         driver.chain().w3c_actions.devices[2].actions))
                     chain.perform(driver)
                     time.sleep(2)
-                    breakpoint()
-                    # Script finds element, checks within bounds of viewport.
+                    # Script finds element, checks if within bounds of viewport.
                     script = (
                         "var elem = arguments[0],                 " 
                         "  box = elem.getBoundingClientRect(),    " 

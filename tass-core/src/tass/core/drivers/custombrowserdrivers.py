@@ -33,7 +33,7 @@ class SafariDriver(webdriver.Safari):
         return {
             'name': caps['browserName'],
             'version': caps['browserVersion'],
-            'driver-version': caps['chrome']['chromedriverVersion'],
+            'platformVersion': caps['safari:platformVersion'],
             'platform': caps['platformName']
         }
 
