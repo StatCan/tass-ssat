@@ -844,7 +844,6 @@ class TestSeleniumAssertActions(TestSelenium):
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     try:
-                        breakpoint()
                         selenium.assert_not_displayed(
                             driver,
                             locator={"by": "id", "value": "btn-x"})
