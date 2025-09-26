@@ -18,7 +18,7 @@ class TestSeleniumWait(TestSelenium):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     driver() \
@@ -45,7 +45,7 @@ class TestSeleniumWait(TestSelenium):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     driver() \

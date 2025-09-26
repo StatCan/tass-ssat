@@ -18,7 +18,7 @@ class TestSeleniumChain(TestSelenium):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     locator = {"by": "id", "value": "btnColor"}
@@ -40,7 +40,7 @@ class TestSeleniumChain(TestSelenium):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     locator = {"by": "id", "value": "btnColor"}
@@ -63,7 +63,7 @@ class TestSeleniumChain(TestSelenium):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     locator = {"by": "id", "value": "btnColor"}
@@ -82,7 +82,7 @@ class TestSeleniumChain(TestSelenium):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     locator = {"by": "id", "value": "btn1"}
@@ -104,7 +104,7 @@ class TestSeleniumChain(TestSelenium):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     driver().set_window_size(400, 300)
@@ -125,7 +125,7 @@ class TestSeleniumChain(TestSelenium):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     if browser[1] == FDriver or browser[1] == SDriver:
                         self.skipTest(f"Not supported by {browser[1].__name__}")
@@ -162,7 +162,7 @@ class TestSeleniumChain(TestSelenium):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
             try:
-                driver = new_driver(**browser[0])
+                driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     if browser[1] == FDriver or browser[1] == SDriver:
                         self.skipTest(f"Not supported by {browser[1].__name__}")
