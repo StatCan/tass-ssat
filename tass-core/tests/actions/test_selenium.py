@@ -459,7 +459,7 @@ class TestSeleniumWindowControlActions(TestSelenium):
                         self.assertEqual(driver().title, 'Page One')
                         selenium.switch_window(driver)
                         self.assertEqual(driver().title, 'Google')
-            except:
+            finally:
                 if driver:
                     driver.quit()
 
