@@ -111,7 +111,7 @@ class TestSelenium(unittest.TestCase):
             self.drivers.append((self.config[3], SDriver))
 
     def start_driver(self, browser):
-        print("Starting driver for: %s" % browser[1].__name__)
+        print("\nStarting driver for: %s" % browser[1].__name__)
         return new_driver(**browser[0])
 
 
