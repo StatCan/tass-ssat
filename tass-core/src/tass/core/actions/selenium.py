@@ -978,7 +978,7 @@ def assert_attribute_contains_value(driver, attribute, value,
             requires: locator.
     
     """
-    actual_value = actual_value = read_attribute(driver, attribute, find, **kwargs)
+    actual_value = read_attribute(driver, attribute, find, **kwargs)
     logger.info("Element contains attribute: %s", actual_value)
     value = str(value)
     try:
