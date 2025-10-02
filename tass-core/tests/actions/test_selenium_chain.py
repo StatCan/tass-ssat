@@ -4,91 +4,22 @@ import time
 
 import tass.core.actions.selenium_chain as chain
 import selenium.webdriver.support.expected_conditions as EC
-
+from .test_selenium import TestSelenium
 from tass.core.drivers.driverconfig import new_driver
 from tass.core.drivers.custombrowserdrivers import (
-    ChromeDriver as CDriver,
-    EdgeDriver as EDriver,
-    FirefoxDriver as FDriver
+    FirefoxDriver as FDriver,
+    SafariDriver as SDriver
 )
 
 
-class TestSeleniumChain(unittest.TestCase):
-
-    config = [
-        {
-            "browser_name": "chrome",
-            "uuid": "chromeTEST",
-            "configs": {
-                "driver": {
-                    "implicit_wait": "5",
-                    "explicit_wait": "20"
-                },
-                "browser": {
-                    "arguments": [
-                        "--start-maximized",
-                        "--headless"
-                    ],
-                    "preferences": {}
-                }
-            }
-        },
-        {
-            "browser_name": "firefox",
-            "uuid": "firefoxTEST",
-            "configs": {
-                "driver": {
-                    "implicit_wait": "5",
-                    "explicit_wait": "20"
-                },
-                "browser": {
-                    "arguments": [
-                        "--start-maximized",
-                        "--headless"
-                    ],
-                    "preferences": {}
-                }
-            }
-        },
-        {
-            "browser_name": "edge",
-            "uuid": "edgeTEST",
-            "configs": {
-                "driver": {
-                    "implicit_wait": "5",
-                    "explicit_wait": "20"
-                },
-                "browser": {
-                    "arguments": [
-                        "--start-maximized",
-                        "--headless"
-                    ],
-                    "preferences": {}
-                }
-            }
-        }
-    ]
-
-    test_page_url = (
-        str(pathlib.Path(__file__).parents[1].resolve())
-        + '/pages/page1.html'
-        )
-
-    def setUp(self):
-        print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-        print("Beginning new test TestCase %s" % self._testMethodName)
-        print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-
-        self.drivers = [(self.config[0], CDriver),
-                        (self.config[1], FDriver),
-                        (self.config[2], EDriver)]
+class TestSeleniumChain(TestSelenium):
 
     def test_seleniumChainClickElement(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = new_driver(**browser[0])
-            with self.subTest(browser=browser[1].__name__):
-                try:
+            try:
+                driver = self.start_driver(browser)
+                with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     locator = {"by": "id", "value": "btnColor"}
                     chain.click(driver, locator=locator)
@@ -101,15 +32,16 @@ class TestSeleniumChain(unittest.TestCase):
                             "xpath",
                             "//button[contains(@style, 'salmon')]"
                             )))
-                finally:
+            finally:
+                if driver:
                     driver.quit()
 
     def test_seleniumChainClick(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = new_driver(**browser[0])
-            with self.subTest(browser=browser[1].__name__):
-                try:
+            try:
+                driver = self.start_driver(browser)
+                with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     locator = {"by": "id", "value": "btnColor"}
                     chain.move_mouse(driver, locator=locator)
@@ -123,15 +55,16 @@ class TestSeleniumChain(unittest.TestCase):
                             "xpath",
                             "//button[contains(@style, 'salmon')]"
                             )))
-                finally:
+            finally:
+                if driver:
                     driver.quit()
 
     def test_seleniumChainReset(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = new_driver(**browser[0])
-            with self.subTest(browser=browser[1].__name__):
-                try:
+            try:
+                driver = self.start_driver(browser)
+                with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     locator = {"by": "id", "value": "btnColor"}
                     chain.move_mouse(driver, locator=locator)
@@ -141,15 +74,16 @@ class TestSeleniumChain(unittest.TestCase):
                     chain.reset(driver)
                     self.assertFalse(bool(
                         driver.chain().w3c_actions.devices[0].actions))
-                finally:
+            finally:
+                if driver:
                     driver.quit()
 
     def test_seleniumChainMoveTo(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = new_driver(**browser[0])
-            with self.subTest(browser=browser[1].__name__):
-                try:
+            try:
+                driver = self.start_driver(browser)
+                with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     locator = {"by": "id", "value": "btn1"}
                     chain.move_mouse(driver, locator=locator)
@@ -163,15 +97,15 @@ class TestSeleniumChain(unittest.TestCase):
                         "0, 0, 255",
                         ele.value_of_css_property("background-color"))
 
-                finally:
+            finally:
                     driver.quit()
 
     def test_seleniumChainScrollByAmount(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = new_driver(**browser[0])
-            with self.subTest(browser=browser[1].__name__):
-                try:
+            try:
+                driver = self.start_driver(browser)
+                with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     driver().set_window_size(400, 300)
                     time.sleep(2)
@@ -183,17 +117,18 @@ class TestSeleniumChain(unittest.TestCase):
                     scrolled = driver() \
                         .execute_script("return window.pageYOffset")
                     self.assertGreater(scrolled, 0)
-                finally:
+            finally:
+                if driver:
                     driver.quit()
 
     def test_seleniumChainScrollToElement(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = new_driver(**browser[0])
-            with self.subTest(browser=browser[1].__name__):
-                try:
-                    if browser[1] == FDriver:
-                        self.skipTest("Not supported by Firefox")
+            try:
+                driver = self.start_driver(browser)
+                with self.subTest(browser=browser[1].__name__):
+                    if browser[1] == FDriver or browser[1] == SDriver:
+                        self.skipTest(f"Not supported by {browser[1].__name__}")
                     driver().get(url)
                     driver().set_window_size(400, 300)
                     time.sleep(2)
@@ -203,20 +138,34 @@ class TestSeleniumChain(unittest.TestCase):
                         driver.chain().w3c_actions.devices[2].actions))
                     chain.perform(driver)
                     time.sleep(2)
-                    scrolled = driver() \
-                        .execute_script("return window.pageYOffset")
-                    self.assertAlmostEqual(scrolled, 414, delta=30)
-                finally:
+                    # Script finds element, checks if within bounds of viewport.
+                    script = (
+                        "var elem = arguments[0],                 " 
+                        "  box = elem.getBoundingClientRect(),    " 
+                        "  cx = box.left + box.width / 2,         " 
+                        "  cy = box.top + box.height / 2,         " 
+                        "  e = document.elementFromPoint(cx, cy); " 
+                        "for (; e; e = e.parentElement) {         " 
+                        "  if (e === elem)                        " 
+                        "    return true;                         " 
+                        "}                                        " 
+                        "return false;"
+                        )
+                    inView = driver() \
+                        .execute_script(script, driver().find_element(**locator))
+                    self.assertTrue(inView)
+            finally:
+                if driver:
                     driver.quit()
 
     def test_seleniumChainScrollFromOrigin(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
-            driver = new_driver(**browser[0])
-            with self.subTest(browser=browser[1].__name__):
-                try:
-                    if browser[1] == FDriver:
-                        self.skipTest("Not supported by Firefox")
+            try:
+                driver = self.start_driver(browser)
+                with self.subTest(browser=browser[1].__name__):
+                    if browser[1] == FDriver or browser[1] == SDriver:
+                        self.skipTest(f"Not supported by {browser[1].__name__}")
                     driver().get(url)
                     driver().set_window_size(400, 300)
                     time.sleep(2)
@@ -244,5 +193,6 @@ class TestSeleniumChain(unittest.TestCase):
                     scrolled2 = driver() \
                         .execute_script("return window.pageYOffset")
                     self.assertEqual(scrolled2, 0)
-                finally:
+            finally:
+                if driver:
                     driver.quit()

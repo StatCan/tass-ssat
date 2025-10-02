@@ -16,6 +16,38 @@ class TassDriverWait(WebDriverWait):
                           )
 
 
+class SafariDriver(webdriver.Safari):
+    """ Custom SafariDriver for selenium interactions."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.logger = getLogger(__name__, self.name)
+
+    def find_element(self, by, value):
+        element = super().find_element(by, value)
+        if element.is_displayed():
+            rect = element.rect
+        else:
+            rect = {
+                "height": 0,
+                "width": 0,
+                "x": 0,
+                "y": 0
+            }
+
+        self.logger.debug("Safari found element >>> tag: %s, location: %s",
+                          element.tag_name, rect)
+        return element
+
+    def toJson(self):
+        caps = self.capabilities
+        return {
+            'name': caps['browserName'],
+            'version': caps['browserVersion'],
+            'platformVersion': caps['safari:platformVersion'],
+            'platform': caps['platformName']
+        }
+
+
 class ChromeDriver(webdriver.Chrome):
     """ Custom ChromeDriver for selenium interactions."""
     def __init__(self, *args, **kwargs):
