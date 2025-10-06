@@ -55,6 +55,13 @@ def _is_displayed(driver, find=_find_element, **kwargs):
         logger.debug("Attempt 2 >> Found element, displayed=%s", display)
         return display
 
+def _switch_to_alert(driver):
+    try:
+        return driver().switch_to.alert
+    except NoAlertPresentException as e:
+        logger.warning("No alert present to switch to.")
+        raise e
+
 
 def click(driver, find=_find_element, **kwargs):
     """Click an element in the DOM
@@ -619,14 +626,14 @@ def handle_alert(driver, handle=True, text=None):
         logger.debug("Handle alert using Alert.dismiss()")
 
     try:
-        alert = driver().switch_to.alert
+        alert = _switch_to_alert(driver)
         if text and isinstance(text, str):
             logger.info("Sending text to alert prompt: %s", text)
             alert.send_keys(text)
         do_alert(alert)
     except WebDriverException as e:
         logger.warning("Something went wrong, %s -- Trying again", e)
-        alert = driver().switch_to.alert
+        alert = _switch_to_alert(driver)
         if text and isinstance(text, str):
             logger.info("Sending text to alert prompt: %s", text)
             alert.send_keys(text)
@@ -686,6 +693,52 @@ def _fail(soft, message, exception=None, *args):
         raise TassHardAssertionError(
                 "Hard Assertion failed: " + message,
                 exception, *args)
+
+def assert_alert_displayed(driver, text=None, soft=False):
+    """ Assert that an alert is currently displayed in the browser.
+
+    Using the Selenium Alert class, assert that an alert is currently
+    displayed in the browser. If no alert is present a
+    TassSoftAssertionError or TassHardAssertionError is raised
+    depending on the value of soft.
+
+    Args:
+        driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+        soft:
+            Boolean flag that indicates if a failed assertion
+            should end execution. If True execution for the
+            current test stops upon returning. If false, error is
+            recorded and execution can continue. The default is False.
+    """
+    def _check_alert(driver):
+        _ = None
+        try:
+            _ = _switch_to_alert(driver)
+            logger.debug("Alert with text: '%s' is displayed.", _.text)
+        except WebDriverException as e:
+            logger.warning("Something went wrong, %s -- Trying again", e)
+            _ = _switch_to_alert(driver)
+            logger.debug("Alert with text: '%s' is displayed.", _.text)
+        return _
+
+    try:
+        alert = _check_alert(driver)
+        logger.debug("Alert found.")
+        if text and isinstance(text, str):
+            text_ok = text in alert.text
+            if not text_ok:
+                _fail(soft,
+                      f"Alert text does not contain expected text: {text}")
+            else:
+                logger.debug("Alert text contains expected text: %s", text)
+
+
+    except WebDriverException as e:
+        _fail(soft, 'WebDriver exception raised', exception=e)
+
+
 
 
 def assert_page_is_open(driver, page=None, find=_find_element,
@@ -967,15 +1020,15 @@ def assert_attribute_contains_value(driver, attribute, value,
         exact:
             Flag to determine if an exact match is needed. Useful for
             checking for a partial string value. If exact is True
-            the actual value must match exactly, and if exact is 
-            False the actual and expected and compared using the 
+            the actual value must match exactly, and if exact is
+            False the actual and expected and compared using the
             "in" keyword. The default is False.
         **kwargs:
             Dictionary containing additional parameters. Contents
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
             requires: locator.
-    
+
     """
     actual_value = read_attribute(driver, attribute, find, **kwargs)
     logger.info("Element contains attribute: %s", actual_value)
