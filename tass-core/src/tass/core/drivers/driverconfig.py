@@ -3,14 +3,16 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver import (
     ChromeOptions,
     FirefoxOptions,
-    EdgeOptions
+    EdgeOptions,
+    SafariOptions
 )
 from ..log.logging import getLogger
 from .custombrowserdrivers import TassDriverWait
 from .custombrowserdrivers import (
     ChromeDriver,
     EdgeDriver,
-    FirefoxDriver
+    FirefoxDriver,
+    SafariDriver
 )
 
 
@@ -123,6 +125,26 @@ class BaseDriverWrapper():
         self._driver = None
 
 
+class SafariDriverWrapper(BaseDriverWrapper):
+    def __init__(self, uuid, configs,
+                 *args, **kwargs):
+        super().__init__(uuid, configs, *args, **kwargs)
+
+    def __call__(self, *args, **kwargs):
+        # Safari driver does not support --start-maximized natively
+        # call function is overwritten to support --start-maximized argument
+        if not self._driver:
+            options = self.set_options(SafariOptions)
+            driver = SafariDriver(options=options, *args, **kwargs)
+
+            # set driver settings
+            driver .implicitly_wait(self._conf['driver'].get('implicit_wait'))
+            if '--start-maximized' in self._conf['browser']['arguments']:
+                driver.maximize_window()
+            self._driver = driver
+        return self._driver
+
+
 class ChromeDriverWrapper(BaseDriverWrapper):
     def __init__(self, uuid, configs,
                  *args, **kwargs):
@@ -165,3 +187,4 @@ class SupportedBrowsers(Enum):
     CHROME = ChromeDriverWrapper
     FIREFOX = FirefoxDriverWrapper
     EDGE = EdgeDriverWrapper
+    SAFARI = SafariDriverWrapper
