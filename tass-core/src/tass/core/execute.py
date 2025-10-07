@@ -24,6 +24,7 @@ class TassEncoder(json.JSONEncoder):
                 "Unserializable object {} of type {}".format(obj, type(obj))
                 )
 
+
 def execute(file_path, no_validate):
     log.info("\n\n <<<<<< TASS Starting >>>>>> \n\n")
 
