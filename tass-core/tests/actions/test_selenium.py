@@ -1362,7 +1362,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver, soft=False)
+                    selenium.handle_alert(driver)
                     self.assertIsNotNone(driver().title)
             finally:
                 if driver:
@@ -1378,7 +1378,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver, handle=1, soft=False)
+                    selenium.handle_alert(driver, handle=1)
                     self.assertIsNotNone(driver().title)
             finally:
                 if driver:
@@ -1394,7 +1394,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver, handle='accept', soft=False)
+                    selenium.handle_alert(driver, handle='accept')
                     self.assertIsNotNone(driver().title)
             finally:
                 if driver:
@@ -1410,7 +1410,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver, handle=False, soft=False)
+                    selenium.handle_alert(driver, handle=False)
                     self.assertIsNotNone(driver().title)
             finally:
                 if driver:
@@ -1426,7 +1426,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver, handle=0, soft=False)
+                    selenium.handle_alert(driver, handle=0)
                     self.assertIsNotNone(driver().title)
             finally:
                 if driver:
@@ -1442,7 +1442,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver, handle='dismiss', soft=False)
+                    selenium.handle_alert(driver, handle='dismiss')
                     self.assertIsNotNone(driver().title)
             finally:
                 if driver:
@@ -1458,7 +1458,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.confirm('testing')"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver, soft=False)
+                    selenium.handle_alert(driver)
                     self.assertIsNotNone(driver().title)
             finally:
                 if driver:
@@ -1474,7 +1474,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.confirm('testing')"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver, handle='dismiss', soft=False)
+                    selenium.handle_alert(driver, handle='dismiss')
                     self.assertIsNotNone(driver().title)
             finally:
                 if driver:
@@ -1491,7 +1491,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     alertScript = "window.promptResponse = prompt('testing')"
                     promptScript = "return window.promptResponse"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver, text="abc", soft=False)
+                    selenium.handle_alert(driver, text="abc")
                     self.assertIsNotNone(driver().title)
                     response = driver().execute_script(promptScript)
                     self.assertEqual(response, "abc")
@@ -1511,8 +1511,8 @@ class TestSeleniumAlertActions(TestSelenium):
                     promptScript = "return window.promptResponse"
                     driver().execute_script(alertScript)
                     selenium.handle_alert(driver,
-                                          handle='dismiss',
-                                          text="abc", soft=False)
+                                        handle='dismiss',
+                                        text="abc")
                     self.assertIsNotNone(driver().title)
                     response = driver().execute_script(promptScript)
                     self.assertIsNone(response)
@@ -1520,7 +1520,7 @@ class TestSeleniumAlertActions(TestSelenium):
                 if driver:
                     driver.quit()
 
-    def test_SeleniumHandleAlertSoftFailure(self):
+    def test_SeleniumAssertAlertDisplayedSoftFailure(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
             driver = None
@@ -1529,12 +1529,12 @@ class TestSeleniumAlertActions(TestSelenium):
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
-                        selenium.handle_alert(driver, handle=False, soft=True)
+                        selenium.assert_alert_displayed(driver,soft=True)
             finally:
                 if driver:
                     driver.quit()
 
-    def test_SeleniumHandleAlertHardFailure(self):
+    def test_SeleniumAssertAlertDisplayedHardFailure(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
             driver = None
@@ -1543,7 +1543,69 @@ class TestSeleniumAlertActions(TestSelenium):
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
-                        selenium.handle_alert(driver, handle=False, soft=False)
+                        selenium.assert_alert_displayed(driver, soft=False)
+            finally:
+                if driver:
+                    driver.quit()
+
+    def test_SeleniumAssertAlertTextDisplayedSuccess(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = None
+            try:
+                driver = new_driver(**browser[0])
+                with self.subTest(browser=browser[1].__name__):
+                    driver().get(url)
+                    alertScript = "window.alert('testing')"
+                    driver().execute_script(alertScript)
+                    selenium.assert_alert_displayed(driver, text="testing")
+            finally:
+                if driver:
+                    driver.quit()
+
+    def test_SeleniumAssertAlertPartialTextDisplayedSuccess(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = None
+            try:
+                driver = new_driver(**browser[0])
+                with self.subTest(browser=browser[1].__name__):
+                    driver().get(url)
+                    alertScript = "window.alert('testing')"
+                    driver().execute_script(alertScript)
+                    selenium.assert_alert_displayed(driver, text="test")
+            finally:
+                if driver:
+                    driver.quit()
+
+    def test_SeleniumAssertAlertTextDisplayedFailureSoft(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = None
+            try:
+                driver = new_driver(**browser[0])
+                with self.subTest(browser=browser[1].__name__):
+                    driver().get(url)
+                    alertScript = "window.alert('testing')"
+                    driver().execute_script(alertScript)
+                    with self.assertRaises(TassSoftAssertionError):
+                        selenium.assert_alert_displayed(driver, text="FAIL", soft=True)
+            finally:
+                if driver:
+                    driver.quit()
+
+    def test_SeleniumAssertAlertTextDisplayedFailure(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            driver = None
+            try:
+                driver = new_driver(**browser[0])
+                with self.subTest(browser=browser[1].__name__):
+                    driver().get(url)
+                    alertScript = "window.alert('testing')"
+                    driver().execute_script(alertScript)
+                    with self.assertRaises(TassHardAssertionError):
+                        selenium.assert_alert_displayed(driver, text="FAIL")
             finally:
                 if driver:
                     driver.quit()

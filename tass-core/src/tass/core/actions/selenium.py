@@ -55,6 +55,13 @@ def _is_displayed(driver, find=_find_element, **kwargs):
         logger.debug("Attempt 2 >> Found element, displayed=%s", display)
         return display
 
+def _switch_to_alert(driver):
+    try:
+        return driver().switch_to.alert
+    except NoAlertPresentException as e:
+        logger.warning("No alert present to switch to.")
+        raise e
+
 
 def click(driver, find=_find_element, **kwargs):
     """Click an element in the DOM
@@ -580,7 +587,7 @@ def quit(driver):
         logger.info("Driver exited browser session.")
 
 
-def handle_alert(driver, handle=True, text=None, soft=True):
+def handle_alert(driver, handle=True, text=None):
     """ Handle an expected browser alert.
 
     Utilizing the Selenium Alert class, handle an expected
@@ -619,24 +626,18 @@ def handle_alert(driver, handle=True, text=None, soft=True):
         logger.debug("Handle alert using Alert.dismiss()")
 
     try:
-        alert = driver().switch_to.alert
+        alert = _switch_to_alert(driver)
         if text and isinstance(text, str):
             logger.info("Sending text to alert prompt: %s", text)
             alert.send_keys(text)
         do_alert(alert)
-    except NoAlertPresentException as na:
-        if not soft:
-            raise TassHardAssertionError(
-                "No Alert was present. Ending Execution.", na
-                )
-        else:
-            raise TassSoftAssertionError(
-                "No Alert was present. Continuing execution.", na
-                )
     except WebDriverException as e:
-        logger.error("Something went wrong, %s", e)
-        raise e
-
+        logger.warning("Something went wrong, %s -- Trying again", e)
+        alert = _switch_to_alert(driver)
+        if text and isinstance(text, str):
+            logger.info("Sending text to alert prompt: %s", text)
+            alert.send_keys(text)
+        do_alert(alert)
 
 def screenshot(driver,
                name="screenshot",
@@ -692,6 +693,52 @@ def _fail(soft, message, exception=None, *args):
         raise TassHardAssertionError(
                 "Hard Assertion failed: " + message,
                 exception, *args)
+
+def assert_alert_displayed(driver, text=None, soft=False):
+    """ Assert that an alert is currently displayed in the browser.
+
+    Using the Selenium Alert class, assert that an alert is currently
+    displayed in the browser. If no alert is present a
+    TassSoftAssertionError or TassHardAssertionError is raised
+    depending on the value of soft.
+
+    Args:
+        driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+        soft:
+            Boolean flag that indicates if a failed assertion
+            should end execution. If True execution for the
+            current test stops upon returning. If false, error is
+            recorded and execution can continue. The default is False.
+    """
+    def _check_alert(driver):
+        _ = None
+        try:
+            _ = _switch_to_alert(driver)
+            logger.debug("Alert with text: '%s' is displayed.", _.text)
+        except WebDriverException as e:
+            logger.warning("Something went wrong, %s -- Trying again", e)
+            _ = _switch_to_alert(driver)
+            logger.debug("Alert with text: '%s' is displayed.", _.text)
+        return _
+
+    try:
+        alert = _check_alert(driver)
+        logger.debug("Alert found.")
+        if text and isinstance(text, str):
+            text_ok = text in alert.text
+            if not text_ok:
+                _fail(soft,
+                      f"Alert text does not contain expected text: {text}")
+            else:
+                logger.debug("Alert text contains expected text: %s", text)
+
+
+    except WebDriverException as e:
+        _fail(soft, 'WebDriver exception raised', exception=e)
+
+
 
 
 def assert_page_is_open(driver, page=None, find=_find_element,
@@ -842,13 +889,11 @@ def assert_contains_text(driver, text, find=_find_element,
         logger.debug("Driver reporting error. %r", kwargs)
         if (soft):
             raise TassSoftAssertionError(
-                '''Soft Assertion failed: assert_contains_text
-                -> Element does not contain given text.''',
+                '''Soft Assertion failed: WebDriver Exception''',
                 e, *kwargs)
         else:
             raise TassHardAssertionError(
-                '''Hard Assertion failed: assert_contains_text
-                ->  Element does not contain given text.''',
+                '''Hard Assertion failed: WebDriver Exception''',
                 e, *kwargs)
 
 
@@ -857,8 +902,6 @@ def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
 
     Execute the selenium is_displayed function against the locator
     provided. Then return true if it is displayed.
-    If a WebDriverException occurs the action is attempted a
-    second time before allowing the exception to be raised to the next level.
 
     Args:
         driver:
@@ -889,13 +932,11 @@ def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
         logger.debug("Driver reporting error. %r", kwargs)
         if (soft):
             raise TassSoftAssertionError(
-                '''Soft Assertion failed: assert_displayed
-                -> Element is not displayed.''',
+                '''Soft Assertion failed: WebDriver Exception''',
                 e, *kwargs)
         else:
             raise TassHardAssertionError(
-                '''Hard Assertion failed: assert_displayed
-                ->  Element is not displayed.''',
+                '''Hard Assertion failed: WebDriver Exception''',
                 e, *kwargs)
 
 
@@ -904,8 +945,6 @@ def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
 
     Execute the selenium is_displayed function against the locator
     provided. Then return true if it is not displayed.
-    If a WebDriverException occurs the action is attempted a
-    second time before allowing the exception to be raised to the next level.
 
     Args:
         driver:
@@ -941,27 +980,60 @@ def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
                 ->  Element is displayed.''',
                 *kwargs)
     except WebDriverException as e:
+        logger.debug("Driver reporting error. %r", kwargs)
         if (soft):
-            logger.debug("Driver reporting error. %r", kwargs)
             raise TassSoftAssertionError(
-                '''Soft Assertion failed: assert_not_displayed
-                ->  Element is displayed.''',
+                '''Soft Assertion failed: WebDriver Exception''',
                 e, *kwargs)
         else:
             raise TassHardAssertionError(
-                '''Hard Assertion failed: assert_not_displayed
-                ->  Element is displayed.''',
+                '''Hard Assertion failed: WebDriver Exception''',
                 e, *kwargs)
 
 
 def assert_attribute_contains_value(driver, attribute, value,
                                     find=_find_element, soft=False,
                                     exact=False, **kwargs):
-    actual_value = None
+    """ Assert that the given element contains the specified
+    value for the given attribute.
+
+    Execute the Selenium read_attribute function and compare the
+    actual value taken from the DOM to the given value.
+
+    Args:
+        driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+        attribute:
+            The name of the atribute to check within the DOM.
+        value:
+            The expected value of the above attribute within the DOM.
+        find:
+            The function to be called when attempting to locate
+            an element. Must use either a explicit wait function
+            or the default _find_element fuinction.
+        soft:
+            Boolean flag that indicates if a failed assertion
+            should end execution. If True execution for the
+            current test stops upon returning. If false, error is
+            recorded and execution can continue. The default is False.
+        exact:
+            Flag to determine if an exact match is needed. Useful for
+            checking for a partial string value. If exact is True
+            the actual value must match exactly, and if exact is
+            False the actual and expected and compared using the
+            "in" keyword. The default is False.
+        **kwargs:
+            Dictionary containing additional parameters. Contents
+            of the dictionary will vary based on the find function used.
+            By default, _find_element is used and thus kwargs
+            requires: locator.
+
+    """
+    actual_value = read_attribute(driver, attribute, find, **kwargs)
+    logger.info("Element contains attribute: %s", actual_value)
     value = str(value)
     try:
-        actual_value = read_attribute(driver, attribute, find, **kwargs)
-        logger.info("Element contains attribute: %s", actual_value)
         if exact and value != actual_value:
             _fail(soft,
                   ("assert_attribute_contains, "
@@ -979,11 +1051,9 @@ def assert_attribute_contains_value(driver, attribute, value,
         logger.debug("Driver reporting error. %r", kwargs)
         if (soft):
             raise TassSoftAssertionError(
-                '''Soft Assertion failed: assert_attribute_contains_value
-                -> Element attribute does not contain given value.''',
+                '''Soft Assertion failed: WebDriver Exception''',
                 e, *kwargs)
         else:
             raise TassHardAssertionError(
-                '''Hard Assertion failed: assert_attribute_contains_value
-                ->  Element attribute does not contain given value.''',
+                '''Hard Assertion failed: WebDriver Exception''',
                 e, *kwargs)
