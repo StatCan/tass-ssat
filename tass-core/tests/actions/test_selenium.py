@@ -415,11 +415,12 @@ class TestSeleniumWindowControlActions(TestSelenium):
             try:
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
-                    driver().get(url)
-                    selenium.switch_frame(driver, frame='FrameA')
-                    btnName = driver().find_element(
-                        *('id', 'btnColor')).get_attribute('name')
-                    self.assertEqual(btnName, 'buttonAlpha')
+
+                        driver().get(url)
+                        selenium.switch_frame(driver, frame='FrameA')
+                        btnName = driver().find_element(
+                            *('id', 'btnColor')).get_attribute('name')
+                        self.assertEqual(btnName, 'buttonAlpha')
             finally:
                 if driver:
                     driver.quit()
