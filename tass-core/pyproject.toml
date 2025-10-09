@@ -9,7 +9,7 @@ version = "1.0.0"
 
 authors = [
     {name = "Dominic Parent", email="dominic.parent@statcan.gc.ca"},
-    {name = "Tyler Desjardins", email="josephgillestyler.desjardins@statcan.gc.ca"},
+    {name = "Tyler Desjardins", email="josephgillestyler.desjardins@statcan.gc.ca"}
 ]
 requires-python = ">=3.10"
 dependencies = [
