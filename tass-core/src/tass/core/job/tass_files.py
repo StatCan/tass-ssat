@@ -16,6 +16,7 @@ class TassJob(TassFile):
         self._completed_cases = []
         self._test_cases = []
         self._has_error = False
+        self._status = "untested"
         if _meta:
             _meta.setdefault("results-path", "./results")
             _meta.setdefault("pages-path", "./pages")
@@ -60,14 +61,16 @@ class TassJob(TassFile):
         return {
             "name": self.title,
             "uuid": self.uuid,
+            "parent": self.parent,
+            "status": self._status,
             "test_start": self._start_time,
             "test_cases": [c.toJson() for c in self._completed_cases]
         }
 
     def collect(self):
-
         self._start_time = datetime.now().strftime("%d-%m-%Y--%H_%M_%S")
         self.logger.debug("Start time (%s): %s", self.uuid, self._start_time)
+        self._status = "incomplete"
         for case in self._test_cases:
 
             self.logger.debug("Collected: %r", case)
@@ -75,3 +78,7 @@ class TassJob(TassFile):
 
             self._completed_cases.append(case)
             self.logger.debug("Added to completed cases: %s", case.uuid)
+        if self.has_error:
+            self._status = "failed"
+        else:
+            self._status = "passed"

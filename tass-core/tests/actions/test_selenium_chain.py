@@ -1,11 +1,8 @@
-import unittest
 import pathlib
 import time
-
 import tass.core.actions.selenium_chain as chain
 import selenium.webdriver.support.expected_conditions as EC
 from .test_selenium import TestSelenium
-from tass.core.drivers.driverconfig import new_driver
 from tass.core.drivers.custombrowserdrivers import (
     FirefoxDriver as FDriver,
     SafariDriver as SDriver
@@ -98,6 +95,7 @@ class TestSeleniumChain(TestSelenium):
                         ele.value_of_css_property("background-color"))
 
             finally:
+                if driver:
                     driver.quit()
 
     def test_seleniumChainScrollByAmount(self):
@@ -128,7 +126,9 @@ class TestSeleniumChain(TestSelenium):
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     if browser[1] == FDriver or browser[1] == SDriver:
-                        self.skipTest(f"Not supported by {browser[1].__name__}")
+                        self.skipTest(
+                            f"Not supported by {browser[1].__name__}"
+                            )
                     driver().get(url)
                     driver().set_window_size(400, 300)
                     time.sleep(2)
@@ -138,21 +138,24 @@ class TestSeleniumChain(TestSelenium):
                         driver.chain().w3c_actions.devices[2].actions))
                     chain.perform(driver)
                     time.sleep(2)
-                    # Script finds element, checks if within bounds of viewport.
+                    # Script finds element
+                    # checks if within bounds of viewport.
                     script = (
-                        "var elem = arguments[0],                 " 
-                        "  box = elem.getBoundingClientRect(),    " 
-                        "  cx = box.left + box.width / 2,         " 
-                        "  cy = box.top + box.height / 2,         " 
-                        "  e = document.elementFromPoint(cx, cy); " 
-                        "for (; e; e = e.parentElement) {         " 
-                        "  if (e === elem)                        " 
-                        "    return true;                         " 
-                        "}                                        " 
+                        "var elem = arguments[0],"
+                        "  box = elem.getBoundingClientRect(),"
+                        "  cx = box.left + box.width / 2,"
+                        "  cy = box.top + box.height / 2,"
+                        "  e = document.elementFromPoint(cx, cy);"
+                        "for (; e; e = e.parentElement) {"
+                        "  if (e === elem)"
+                        "    return true;"
+                        "}"
                         "return false;"
                         )
                     inView = driver() \
-                        .execute_script(script, driver().find_element(**locator))
+                        .execute_script(
+                            script,
+                            driver().find_element(**locator))
                     self.assertTrue(inView)
             finally:
                 if driver:
@@ -165,7 +168,9 @@ class TestSeleniumChain(TestSelenium):
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     if browser[1] == FDriver or browser[1] == SDriver:
-                        self.skipTest(f"Not supported by {browser[1].__name__}")
+                        self.skipTest(
+                            f"Not supported by {browser[1].__name__}"
+                            )
                     driver().get(url)
                     driver().set_window_size(400, 300)
                     time.sleep(2)
