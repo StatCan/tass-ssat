@@ -1,15 +1,7 @@
-import unittest
 import pathlib
-
 import tass.core.actions.selenium_wait as selwait
 import selenium.webdriver.support.expected_conditions as EC
 from .test_selenium import TestSelenium
-from tass.core.drivers.driverconfig import new_driver
-from tass.core.drivers.custombrowserdrivers import (
-    ChromeDriver as CDriver,
-    EdgeDriver as EDriver,
-    FirefoxDriver as FDriver
-)
 
 
 class TestSeleniumWait(TestSelenium):
@@ -32,11 +24,13 @@ class TestSeleniumWait(TestSelenium):
                                                     "btn-z"
                                                 },
                                                 action=['selenium', 'click'])
+                    locator = (
+                        "xpath",
+                        "//button[@id='btn-z' \
+                        and contains(@style, 'salmon')]")
                     self.assertIsNotNone(driver.wait_until(
                             until_func=EC.presence_of_element_located,
-                            locator=("xpath",
-                                    "//button[@id='btn-z' \
-                                    and contains(@style, 'salmon')]")))
+                            locator=locator))
             finally:
                 if driver:
                     driver.quit()
@@ -51,19 +45,16 @@ class TestSeleniumWait(TestSelenium):
                     driver() \
                         .find_element(*['id', 'btn-a']) \
                         .click()
+                    locator = {"by": "id",
+                               "value": "btn-b"}
                     selwait \
-                        .wait_element_visible(driver,
-                                            {
-                                                "by": "id",
-                                                "value":
-                                                "btn-b"
-                                            },
-                                            action=['selenium', 'click'])
+                        .wait_element_visible(driver, locator,
+                                              action=['selenium', 'click'])
                     self.assertIsNotNone(driver.wait_until(
                             until_func=EC.presence_of_element_located,
                             locator=("xpath",
-                                    "//button[@id='btn-b' \
-                                    and contains(@style, 'salmon')]")))
+                                     "//button[@id='btn-b' \
+                                      and contains(@style, 'salmon')]")))
             finally:
                 if driver:
                     driver.quit()

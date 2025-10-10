@@ -135,8 +135,8 @@ class TestSeleniumStartupActions(TestSelenium):
             try:
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
-                        selenium.load_url(driver, url)
-                        self.assertEqual(driver().title, "Google")
+                    selenium.load_url(driver, url)
+                    self.assertEqual(driver().title, "Google")
             finally:
                 if driver:
                     driver.quit()
@@ -147,8 +147,8 @@ class TestSeleniumStartupActions(TestSelenium):
             try:
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
-                        selenium.load_file(driver, self.test_page_url)
-                        self.assertEqual(driver().title, "Page One")
+                    selenium.load_file(driver, self.test_page_url)
+                    self.assertEqual(driver().title, "Page One")
             finally:
                 if driver:
                     driver.quit()
@@ -187,11 +187,11 @@ class TestSeleniumStartupActions(TestSelenium):
             try:
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
-                        PageReader().add_page('test', page)
-                        selenium.load_page(driver,
-                                            ('custom', 'test'),
-                                            use_local=True)
-                        self.assertEqual(driver().title, "Page One")
+                    PageReader().add_page('test', page)
+                    selenium.load_page(driver,
+                                       ('custom', 'test'),
+                                       use_local=True)
+                    self.assertEqual(driver().title, "Page One")
             finally:
                 if driver:
                     driver.quit()
@@ -214,9 +214,9 @@ class TestSeleniumStartupActions(TestSelenium):
             try:
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
-                        PageReader().add_page('test', page)
-                        selenium.load_page(driver, ('custom', 'test'))
-                        self.assertEqual(driver().title, "Google")
+                    PageReader().add_page('test', page)
+                    selenium.load_page(driver, ('custom', 'test'))
+                    self.assertEqual(driver().title, "Google")
             finally:
                 if driver:
                     driver.quit()
@@ -281,13 +281,13 @@ class TestSeleniumBasicActions(TestSelenium):
             try:
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
-                        driver().get(url)
-                        driver().switch_to.new_window('tab')
-                        before = len(driver().window_handles)
-                        selenium.close(driver)
-                        after = len(driver().window_handles)
-                        self.assertEqual(before, 2)
-                        self.assertEqual(after, 1)
+                    driver().get(url)
+                    driver().switch_to.new_window('tab')
+                    before = len(driver().window_handles)
+                    selenium.close(driver)
+                    after = len(driver().window_handles)
+                    self.assertEqual(before, 2)
+                    self.assertEqual(after, 1)
             finally:
                 if driver:
                     driver.quit()
@@ -299,13 +299,12 @@ class TestSeleniumBasicActions(TestSelenium):
             try:
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
-                        driver().get(url)
-                        selenium.quit(driver)
-                        self.assertIsNone(driver._driver)
+                    driver().get(url)
+                    selenium.quit(driver)
+                    self.assertIsNone(driver._driver)
             finally:
                 if driver:
                     driver.quit()
-
 
     def test_SeleniumClick(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
@@ -314,13 +313,16 @@ class TestSeleniumBasicActions(TestSelenium):
             try:
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
-                        driver().get(url)
-                        selenium.click(driver,
-                                    locator={"by": "id", "value": "btnColor"})
-                        self.assertIsNotNone(driver.wait_until(
-                                until_func=EC.presence_of_element_located,
-                                locator=("xpath",
-                                        "//button[contains(@style, 'salmon')]")))
+                    driver().get(url)
+                    selenium.click(driver,
+                                   locator={"by": "id", "value": "btnColor"})
+                    until = EC.presence_of_element_located
+                    wait = driver.wait_until
+                    locator = ("xpath", "//button[contains(@style, 'salmon')]")
+                    self.assertIsNotNone(wait(
+                                         until_func=until,
+                                         locator=locator
+                                         ))
             finally:
                 if driver:
                     driver.quit()
@@ -332,15 +334,15 @@ class TestSeleniumBasicActions(TestSelenium):
             try:
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
-                        driver().get(url)
-                        text = 'Selenium Test Type'
-                        selenium.write(
-                            driver, text=text,
-                            locator={"by": "id", "value": "nameField"})
-                        self.assertEqual(
-                            driver()
-                            .find_element('id', 'nameField')
-                            .get_attribute('value'), text)
+                    driver().get(url)
+                    text = 'Selenium Test Type'
+                    selenium.write(
+                        driver, text=text,
+                        locator={"by": "id", "value": "nameField"})
+                    self.assertEqual(
+                        driver()
+                        .find_element('id', 'nameField')
+                        .get_attribute('value'), text)
             finally:
                 if driver:
                     driver.quit()
@@ -352,20 +354,20 @@ class TestSeleniumBasicActions(TestSelenium):
             try:
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
-                        driver().get(url)
-                        text = 'Selenium Test Type'
-                        driver().find_element('id', 'nameField').send_keys(text)
-                        self.assertEqual(
-                            driver()
-                            .find_element('id', 'nameField')
-                            .get_attribute('value'), text)
-                        selenium.clear(
-                            driver,
-                            locator={"by": "id", "value": "nameField"})
-                        self.assertEqual(
-                            driver()
-                            .find_element('id', 'nameField')
-                            .get_attribute('value'), '')
+                    driver().get(url)
+                    text = 'Selenium Test Type'
+                    driver().find_element('id', 'nameField').send_keys(text)
+                    self.assertEqual(
+                        driver()
+                        .find_element('id', 'nameField')
+                        .get_attribute('value'), text)
+                    selenium.clear(
+                        driver,
+                        locator={"by": "id", "value": "nameField"})
+                    self.assertEqual(
+                        driver()
+                        .find_element('id', 'nameField')
+                        .get_attribute('value'), '')
             finally:
                 if driver:
                     driver.quit()
@@ -380,10 +382,10 @@ class TestSeleniumReadOnlyActions(TestSelenium):
             try:
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
-                        driver().get(url)
-                        self.assertEqual(selenium.read_attribute(
-                                driver, attribute='name',
-                                locator={"by": "id", "value": "btn2"}), 'button2')
+                    driver().get(url)
+                    self.assertEqual(selenium.read_attribute(
+                            driver, attribute='name',
+                            locator={"by": "id", "value": "btn2"}), 'button2')
             finally:
                 if driver:
                     driver.quit()
@@ -395,10 +397,10 @@ class TestSeleniumReadOnlyActions(TestSelenium):
             try:
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
-                        driver().get(url)
-                        self.assertEqual(selenium.read_css(
-                                driver, attribute='width',
-                                locator={"by": "id", "value": "btn1"}), '300px')
+                    driver().get(url)
+                    self.assertEqual(selenium.read_css(
+                            driver, attribute='width',
+                            locator={"by": "id", "value": "btn1"}), '300px')
             finally:
                 if driver:
                     driver.quit()
@@ -431,11 +433,13 @@ class TestSeleniumWindowControlActions(TestSelenium):
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
+                    locator = {
+                        'by': 'xpath',
+                        'value': '//iframe[@title="Iframe 2"]'
+                        }
                     selenium.switch_frame(driver, frame={
-                                        'locator': {
-                                            'by': 'xpath',
-                                            'value': '//iframe[@title="Iframe 2"]'
-                                        }})
+                                        'locator': locator
+                                        })
                     btnName = driver().find_element(
                         *('id', 'btnColor')).get_attribute('name')
                     self.assertEqual(btnName, 'buttonAlpha')
@@ -451,12 +455,12 @@ class TestSeleniumWindowControlActions(TestSelenium):
             try:
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
-                        driver().get(url_1)
-                        driver().switch_to.new_window('tab')
-                        driver().get(url_0)
-                        self.assertEqual(driver().title, 'Page One')
-                        selenium.switch_window(driver)
-                        self.assertEqual(driver().title, 'Google')
+                    driver().get(url_1)
+                    driver().switch_to.new_window('tab')
+                    driver().get(url_0)
+                    self.assertEqual(driver().title, 'Page One')
+                    selenium.switch_window(driver)
+                    self.assertEqual(driver().title, 'Google')
             finally:
                 if driver:
                     driver.quit()
@@ -579,10 +583,9 @@ class TestSeleniumDropdownActions(TestSelenium):
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
+                    locator = {'by': 'id', 'value': 'dropdown'}
                     selenium.select_dropdown(driver, 'AA', 'text',
-                                            locator={
-                                                'by': 'id', 'value': 'dropdown'
-                                                })
+                                             locator=locator)
                     sel = Select(driver().find_element('id', 'dropdown'))
                     self.assertEqual(sel.first_selected_option.text, 'AA')
             finally:
@@ -597,10 +600,9 @@ class TestSeleniumDropdownActions(TestSelenium):
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
+                    locator = {'by': 'id', 'value': 'dropdown'}
                     selenium.select_dropdown(driver, 'last', 'value',
-                                            locator={
-                                                'by': 'id', 'value': 'dropdown'
-                                                })
+                                             locator=locator)
                     sel = Select(driver().find_element('id', 'dropdown'))
                     self.assertEqual(sel.first_selected_option.text, 'AA')
             finally:
@@ -615,10 +617,9 @@ class TestSeleniumDropdownActions(TestSelenium):
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
+                    locator = {'by': 'id', 'value': 'dropdown'}
                     selenium.select_dropdown(driver, 3, 'index',
-                                            locator={
-                                                'by': 'id', 'value': 'dropdown'
-                                                })
+                                             locator=locator)
                     sel = Select(driver().find_element('id', 'dropdown'))
                     self.assertEqual(sel.first_selected_option.text, 'AA')
             finally:
@@ -910,11 +911,11 @@ class TestSeleniumAssertActions(TestSelenium):
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
+                    page = {'identifier': 'Page One1',
+                            'method': 'title'}
                     with self.assertRaises(TassSoftAssertionError):
                         selenium.assert_page_is_open(
-                            driver, soft=True, page_id={
-                                                        'identifier': 'Page One1',
-                                                        'method': 'title'})
+                            driver, soft=True, page_id=page)
 
             finally:
                 if driver:
@@ -928,11 +929,11 @@ class TestSeleniumAssertActions(TestSelenium):
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
+                    page = {'identifier': 'not the url',
+                            'method': 'url'}
                     with self.assertRaises(TassSoftAssertionError):
                         selenium.assert_page_is_open(
-                            driver, soft=True, page_id={
-                                                    'identifier': 'not the url',
-                                                    'method': 'url'})
+                            driver, soft=True, page_id=page)
 
             finally:
                 if driver:
@@ -946,15 +947,16 @@ class TestSeleniumAssertActions(TestSelenium):
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
+                    page = {
+                        'identifier': {
+                            'by': 'id',
+                            'value': 'noElement'
+                            },
+                        'method': 'element'
+                        }
                     with self.assertRaises(TassSoftAssertionError):
                         selenium.assert_page_is_open(
-                            driver, page_id={
-                                        'identifier': {
-                                            'by': 'id',
-                                            'value': 'noElement'
-                                            },
-                                        'method': 'element'
-                                        },
+                            driver, page_id=page,
                             soft=True)
 
             finally:
@@ -969,11 +971,11 @@ class TestSeleniumAssertActions(TestSelenium):
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
+                    page = {'identifier': 'Page One',
+                            'method': 'title'}
                     try:
                         selenium.assert_page_is_open(
-                            driver, soft=True, page_id={
-                                                        'identifier': 'Page One',
-                                                        'method': 'title'})
+                            driver, soft=True, page_id=page)
                     except TassAssertionError as e:
                         self.fail(e.message)
             finally:
@@ -1050,11 +1052,11 @@ class TestSeleniumAssertActions(TestSelenium):
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
+                    page = {'identifier': 'not the url',
+                            'method': 'url'}
                     with self.assertRaises(TassHardAssertionError):
                         selenium.assert_page_is_open(
-                            driver, page_id={
-                                                    'identifier': 'not the url',
-                                                    'method': 'url'})
+                            driver, page_id=page)
 
             finally:
                 if driver:
