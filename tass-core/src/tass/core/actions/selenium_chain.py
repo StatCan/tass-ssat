@@ -71,6 +71,41 @@ def click(driver, locator=None, **kwargs):
     driver.chain().click(ele)
 
 
+def write(driver, locator=None, text=None, **kwargs):
+    """Add a send_keys action to the action queue.
+
+    Add a send_keys action to the action queue. If a locator is
+    provided, the send_keys_to_element will be used 
+    instead.
+
+    Args:
+        driver:
+            The RemoteWebDriver object that is connected
+            to the open browser.
+        locator:
+            The element key to find, or the by,value pair
+            to locate the WebElement in question.
+        text:
+            The text to send to the given element
+        kwargs:
+            Additional values to be used when locating a web element.
+
+    """
+    ele = None
+    if locator:
+        try:
+            ele = sel._find_element(driver, locator, **kwargs)
+        except WebDriverException as e:
+            logger.warning("Something went wrong: %s -- Trying again", e)
+            ele = sel._find_element(driver, locator, **kwargs)
+    if ele:
+        logger.info("Sending '%s' to element: %s added to Action Chain", text, locator)
+        driver.chain().send_keys_to_element(ele, text)
+    else:
+        logger.info("Sending text: %s added to Action Chain", text)
+        driver.chain().send_keys(text)
+
+
 def move_mouse(driver, locator=None,
                xoffset=0,
                yoffset=0,
