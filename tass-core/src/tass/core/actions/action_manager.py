@@ -10,6 +10,8 @@ modules = {
     "core":
         'tass.core.actions.core_action_manager',
     "selwait":
+        'tass.core.actions.selenium_action_manager',
+    "selchain":
         'tass.core.actions.selenium_action_manager'
 }
 
