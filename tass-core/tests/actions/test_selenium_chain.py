@@ -3,7 +3,7 @@ import time
 import tass.core.actions.selenium_chain as chain
 import selenium.webdriver.support.expected_conditions as EC
 from .test_selenium import TestSelenium
-from tass.core.drivers.custombrowserdrivers import (
+from tass.core.drivers.browser.customdrivers import (
     FirefoxDriver as FDriver,
     SafariDriver as SDriver
 )
