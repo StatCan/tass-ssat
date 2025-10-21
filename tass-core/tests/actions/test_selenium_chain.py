@@ -33,6 +33,25 @@ class TestSeleniumChain(TestSelenium):
                 if driver:
                     driver.quit()
 
+    def test_seleniumChainWriteElement(self):
+        url = pathlib.Path(self.test_page_url).resolve().as_uri()
+        for browser in self.drivers:
+            try:
+                driver = self.start_driver(browser)
+                with self.subTest(browser=browser[1].__name__):
+                    driver().get(url)
+                    text = "testing"
+                    locator = {"by": "id", "value": "nameField"}
+                    chain.write(driver, locator=locator, text=text)
+                    self.assertTrue(bool(
+                        driver.chain().w3c_actions.devices[0].actions))
+                    chain.perform(driver)
+                    actual = driver().find_element(**locator).get_attribute("value")
+                    self.assertEqual(actual, text)
+            finally:
+                if driver:
+                    driver.quit()
+
     def test_seleniumChainClick(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
