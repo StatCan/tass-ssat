@@ -2,7 +2,7 @@ import unittest
 import pathlib
 from sys import platform
 
-import tass.core.actions.selenium as selenium
+import tass.core.actions.browser.selenium as selenium
 from tass.core.tools.page_reader import PageReader
 from tass.core.exceptions.assertion_errors import (
     TassAssertionError,

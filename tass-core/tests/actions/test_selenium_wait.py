@@ -1,5 +1,5 @@
 import pathlib
-import tass.core.actions.selenium_wait as selwait
+import tass.core.actions.browser.selenium_wait as selwait
 import selenium.webdriver.support.expected_conditions as EC
 from .test_selenium import TestSelenium
 

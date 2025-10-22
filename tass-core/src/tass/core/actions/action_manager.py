@@ -6,13 +6,13 @@ log = getLogger(__name__)
 
 modules = {
     "selenium":
-        'tass.core.actions.selenium_action_manager',
+        'tass.core.actions.browser.selenium_action_manager',
     "core":
         'tass.core.actions.core_action_manager',
     "selwait":
-        'tass.core.actions.selenium_action_manager',
+        'tass.core.actions.browser.selenium_action_manager',
     "selchain":
-        'tass.core.actions.selenium_action_manager'
+        'tass.core.actions.browser.selenium_action_manager'
 }
 
 

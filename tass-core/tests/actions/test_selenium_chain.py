@@ -1,6 +1,6 @@
 import pathlib
 import time
-import tass.core.actions.selenium_chain as chain
+import tass.core.actions.browser.selenium_chain as chain
 import selenium.webdriver.support.expected_conditions as EC
 from .test_selenium import TestSelenium
 from tass.core.drivers.custombrowserdrivers import (

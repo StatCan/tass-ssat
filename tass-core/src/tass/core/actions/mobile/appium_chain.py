@@ -1,7 +1,6 @@
-from ..log.logging import getLogger
-from . import selenium as sel
-from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
-from selenium.common.exceptions import WebDriverException
+from ...log.logging import getLogger
+from ..browser import selenium_chain as selchain
+
 
 #  For additional documentation, see selenium docs:
 #  https://www.selenium.dev/selenium/docs/api/py/webdriver/selenium.webdriver.common.action_chains.html
@@ -21,8 +20,7 @@ def perform(driver, **kwargs):
             The RemoteWebDriver object that is connected
             to the open browser.
     """
-    logger.info("Performing chained steps.")
-    driver.chain().perform()
+    selchain.perform(driver, **kwargs)
 
 
 def reset(driver, **kwargs):
@@ -37,8 +35,7 @@ def reset(driver, **kwargs):
             to the open browser.
 
     """
-    driver.chain().reset_actions()
-    logger.info("Chained steps reset.")
+    selchain.perform(driver, **kwargs)
 
 
 def click(driver, locator=None, **kwargs):
@@ -60,16 +57,7 @@ def click(driver, locator=None, **kwargs):
             Additional values to be used when locating a web element.
 
     """
-    ele = None
-    if locator:
-        try:
-            ele = sel._find_element(driver, locator, **kwargs)
-        except WebDriverException as e:
-            logger.warning("Something went wrong: %s -- Trying again", e)
-            ele = sel._find_element(driver, locator, **kwargs)
-    logger.info("Click on element: %s added to Action Chain", locator)
-    driver.chain().click(ele)
-
+    selchain.click(driver, locator=locator, **kwargs)
 
 def write(driver, locator=None, text=None, **kwargs):
     """Add a send_keys action to the action queue.
@@ -91,19 +79,8 @@ def write(driver, locator=None, text=None, **kwargs):
             Additional values to be used when locating a web element.
 
     """
-    ele = None
-    if locator:
-        try:
-            ele = sel._find_element(driver, locator, **kwargs)
-        except WebDriverException as e:
-            logger.warning("Something went wrong: %s -- Trying again", e)
-            ele = sel._find_element(driver, locator, **kwargs)
-    if ele:
-        logger.info("Sending '%s' to element: %s added to Action Chain", text, locator)
-        driver.chain().send_keys_to_element(ele, text)
-    else:
-        logger.info("Sending text: %s added to Action Chain", text)
-        driver.chain().send_keys(text)
+    selchain.write(driver, locator=locator,
+                   text=text, **kwargs)
 
 
 def move_mouse(driver, locator=None,
@@ -134,34 +111,10 @@ def move_mouse(driver, locator=None,
             Additional values to be used when locating a web element.
     """
 
-    ele = None
-    if locator:
-        try:
-            ele = sel._find_element(driver, locator, **kwargs)
-        except WebDriverException as e:
-            logger.warning("Something went wrong: %s -- Trying again", e)
-            ele = sel._find_element(driver, locator, **kwargs)
-
-    if (xoffset or yoffset) and ele:
-        # Offset and element have been provided
-        # Move pointer to offset from element origin
-        logger.info(
-            ("Moving mouse pointer to element:"
-             "%s with offset: %s,%s added to Action Chain."),
-            locator, xoffset, yoffset)
-        driver.chain().move_to_element_with_offset(ele, xoffset, yoffset)
-    elif ele:
-        # No offset is provided
-        # Move pointer to element
-        logger.info(
-            "Moving mouse pointer to element: %s added to Action Chain",
-            locator)
-        driver.chain().move_to_element(ele)
-    else:
-        # No target element provided
-        # Move pointer by offset.
-        logger.info("Moving mouse pointer by offset: %s,%s", xoffset, yoffset)
-        driver.chain().move_by_offset(xoffset, yoffset)
+    selchain.move_mouse(driver, locator=locator,
+                        xoffset=xoffset,
+                        yoffset=yoffset,
+                        **kwargs)
 
 
 def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
@@ -193,29 +146,10 @@ def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
             Additional values to be used when locating a web element.
     """
 
-    try:
-        source = sel._find_element(driver, locator, **kwargs)
-    except WebDriverException as e:
-        logger.warning("Something went wrong: %s -- Trying again", e)
-        source = sel._find_element(driver, locator, **kwargs)
-
-    if not target:
-        # No target element provided
-        # Drag and Drop using offset
-        logger.info("Drag: %s and drop by offset: %s,%s added to Action Chain",
-                    source, xoffset, yoffset)
-        driver.chain().drag_and_drop_by_offset(locator, xoffset, yoffset)
-    else:
-        # Target element has been provided
-        # Drag and drop on target element
-        try:
-            ele = sel._find_element(driver, target, **kwargs)
-        except WebDriverException as e:
-            logger.warning("Something went wrong: %s -- Trying again", e)
-            ele = sel._find_element(driver, target, **kwargs)
-        logger.info(
-            "Drag: %s and drop at: %s added to Action Chain", locator, target)
-        driver.chain().drag_and_drop(source, ele)
+    selchain.drag_and_drop(driver, locator, target=target,
+                           xoffset=xoffset,
+                           yoffset=yoffset,
+                           **kwargs)
 
 
 def scroll(driver, locator=None, deltax=0, deltay=0,
@@ -258,46 +192,6 @@ def scroll(driver, locator=None, deltax=0, deltay=0,
 
     """
 
-    origin = None
-    ele = None
-
-    if locator:
-        try:
-            ele = sel._find_element(driver, locator, **kwargs)
-        except WebDriverException as e:
-            logger.warning("Something went wrong: %s -- Trying again", e)
-            ele = sel._find_element(driver, locator, **kwargs)
-
-    # Set origin point, if there is one.
-    # Determined by the presence of an offset.
-    if (xoffset is not None or yoffset is not None
-       or deltax or deltay) and ele:
-        # Both an element and offset is provided
-        # Scroll by delta amount from element offset origin
-        logger.info("Element: %s with offset: %s,%s set as origin",
-                    locator, xoffset, yoffset)
-        xoffset = xoffset or 0  # Ensure the value is not None
-        yoffset = yoffset or 0
-        origin = ScrollOrigin.from_element(ele, xoffset, yoffset)
-    elif xoffset is not None or yoffset is not None:
-        # Only an offset is provided
-        # Origin is assumed to be viewport
-        xoffset = xoffset or 0  # Ensure the value is not None
-        yoffset = yoffset or 0
-        logger.info(
-            "Top of page with offset: %s,%s set as origin", xoffset, yoffset)
-        origin = ScrollOrigin.from_viewport(xoffset, yoffset)
-
-    if origin:
-        logger.info(
-            "Scroll from origin by: %s,%s added to Action Chain",
-            deltax, deltay)
-        driver.chain().scroll_from_origin(origin, deltax, deltay)
-    elif ele:
-        logger.info(
-            "Scroll element: %s into view added to Action Chain", locator)
-        driver.chain().scroll_to_element(ele)
-    else:
-        logger.info(
-            "Scroll page by: %s,%s added to Action Chain", deltax, deltay)
-        driver.chain().scroll_by_amount(deltax, deltay)
+    selchain.scroll(driver, locator=locator,
+                    deltax=deltax, deltay=deltay,
+                    xoffset=xoffset, yoffset=yoffset, **kwargs)
