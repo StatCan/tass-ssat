@@ -75,7 +75,7 @@ def convert_cases(cases, wb):
                 isinstance(row[1].value, str),
                 row[2].value is not None,
                 isinstance(row[2].value, str),
-                "," in row[2].value]
+                "," in str(row[2].value)]
             )
 
             if not valid:
