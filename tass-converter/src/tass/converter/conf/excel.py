@@ -71,15 +71,15 @@ def convert_cases(cases, wb):
             valid = all(
                 [row[0].value,
                 isinstance(row[0].value, str),
-                row[1].value is not None,
+                row[1].value,
                 isinstance(row[1].value, str),
-                row[2].value is not None,
+                row[2].value,
                 isinstance(row[2].value, str),
                 "," in str(row[2].value)]
             )
 
             if not valid:
-                print(f"Row: {row_num} Step is missing mandatory fields UUID, TITLE, or ACTION.")
+                print(f"Case: {tc["uuid"]} Row: {row_num} Step is missing mandatory fields UUID, TITLE, or ACTION.")
                 continue
             steps["uuid"] = row[0].value
             steps["title"] = row[1].value
