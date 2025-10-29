@@ -79,7 +79,7 @@ def convert_cases(cases, wb):
             )
 
             if not valid:
-                print(f"Case: {tc["uuid"]} Row: {row_num} Step is missing mandatory fields UUID, TITLE, or ACTION.")
+                print(f"Case: {tc['uuid']} Row: {row_num} Step is missing mandatory fields UUID, TITLE, or ACTION.")
                 continue
             steps["uuid"] = row[0].value
             steps["title"] = row[1].value
