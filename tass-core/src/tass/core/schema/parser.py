@@ -71,12 +71,15 @@ class Tass1Parser(Parser):
 
         def browser(uuid):
             _browser = self._parse_browser(uuid, job)
-            configuration['browser'] = _browser
+            configuration['driver'] = _browser
+        def mobile(uuid):
+            _mobile = self._parse_mobile(uuid, job)
+            configuration['driver'] = _mobile
 
         registered_configuration_parsers = {
-            "browser": browser
+            "browser": browser,
+            "mobile": mobile
         }
-
         for conf in config:
             k, v = conf['type'], conf['uuid']
             if k in registered_configuration_parsers:
@@ -118,10 +121,26 @@ class Tass1Parser(Parser):
 
         return deepcopy(found[0])
 
+
+    def _parse_mobile(self, mobile, job):
+        self.log.debug("Using browsers: %s", mobile)
+        found = list(filter(lambda b: b['uuid'] in mobile, job["Mobiles"]))
+        if len(found) > 1:
+            self.log.warning(
+                "Ambiguous mobile configuration. Attempting to resolve.")
+            if not all(step == found[0] for step in found[1:]):
+                self.log.warning("Unable to resolve ambiguous uuids.")
+                raise TassAmbiguousUUID(mobile)
+        elif len(found) == 0:
+            self.log.warning("No matching mobile configuration found.")
+            raise TassUUIDNotFound(mobile)
+
+        return deepcopy(found[0])
+
     def _parse_managers(self, c, job):
 
         def sel_managers(_manager, _c):
-            browser_configs = _c['browser']
+            browser_configs = _c['driver']
             manager = get_manager(_manager, browser_configs)
             return manager
 
