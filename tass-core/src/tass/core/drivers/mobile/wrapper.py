@@ -1,19 +1,12 @@
 from enum import Enum
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver import (
-    ChromeOptions,
-    FirefoxOptions,
-    EdgeOptions,
-    SafariOptions
-)
-from ..log.logging import getLogger
-from .custombrowserdrivers import TassDriverWait
-from .custombrowserdrivers import (
-    ChromeDriver,
-    EdgeDriver,
-    FirefoxDriver,
-    SafariDriver
-)
+from appium.options.common import AppiumOptions
+from ...log.logging import getLogger
+from .customdrivers import TassMobileDriverWait
+from .customdrivers import (
+    AndroidDriver,
+    IOSDriver
+    )
 
 
 log = getLogger(__name__)
@@ -30,7 +23,7 @@ def new_driver(uuid, browser_name, configs):
     return wrapper(uuid, configs)
 
 
-class BaseDriverWrapper():
+class BaseMobileDriverWrapper():
     def __init__(self, uuid, configs):
         self._waits = {}
         self._conf = self._set_defaults(configs)
@@ -38,9 +31,9 @@ class BaseDriverWrapper():
         self._uuid = uuid
         self._chain = None
 
-    def __call__(self, browser_options, driver_init, *args, **kwargs):
+    def __call__(self, driver_options, driver_init, *args, **kwargs):
         if not self._driver:
-            options = self.set_options(browser_options)
+            options = self.set_options(driver_options)
             self._driver = driver_init(options=options, *args, **kwargs)
 
             # set driver settings
@@ -50,15 +43,21 @@ class BaseDriverWrapper():
         return self._driver
 
     @property
-    def name(self):
+    def browser(self):
         if (self._driver):
-            return self._driver.capabilities["browserName"]
+            return self._driver.capabilities.get("browserName", None)
         return None
 
     @property
-    def version(self):
+    def name(self):
         if (self._driver):
-            return self._driver.capabilities["browserVersion"]
+            return self._driver.capabilities.get("automationName", None)
+        return None
+
+    @property
+    def browser_version(self):
+        if (self._driver):
+            return self._driver.capabilities.get("browserVersion", None)
         return None
 
     @property
@@ -78,10 +77,16 @@ class BaseDriverWrapper():
         configs['browser'].setdefault('preferences', [])
         configs['browser'].setdefault('arguments', [])
 
+        configs.setdefault('appium', self.DEFAULT_CAPS)
+
         return configs
 
     def set_options(self, browser_options):
         options = browser_options()
+        caps = {}
+        caps.update(self.DEFAULT_CAPS)
+        caps.update(self._conf["appium"])
+        options.load_capabilities(caps)
         conf = self._conf['browser']
 
         # get browser preferences
@@ -104,7 +109,7 @@ class BaseDriverWrapper():
                    ignored_exceptions=None,
                    **kwargs):
         def new_wait(time):
-            wait_ = TassDriverWait(self(), time,
+            wait_ = TassMobileDriverWait(self(), time,
                                    poll_frequency,
                                    ignored_exceptions)
             self._waits[time] = wait_
@@ -125,66 +130,27 @@ class BaseDriverWrapper():
         self._driver = None
 
 
-class SafariDriverWrapper(BaseDriverWrapper):
+class AndroidDriverWrapper(BaseMobileDriverWrapper):
+    DEFAULT_CAPS = {
+        "platformName": "Android",
+        "automationName": "UiAutomator2",
+    }
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
 
     def __call__(self, *args, **kwargs):
-        # Safari driver does not support --start-maximized natively
-        # call function is overwritten to support --start-maximized argument
-        if not self._driver:
-            options = self.set_options(SafariOptions)
-            driver = SafariDriver(options=options, *args, **kwargs)
-
-            # set driver settings
-            driver .implicitly_wait(self._conf['driver'].get('implicit_wait'))
-            if '--start-maximized' in self._conf['browser']['arguments']:
-                driver.maximize_window()
-            self._driver = driver
-        return self._driver
+        return super().__call__(AppiumOptions, AndroidDriver, *args, **kwargs)
 
 
-class ChromeDriverWrapper(BaseDriverWrapper):
+class IOSDriverWrapper(BaseMobileDriverWrapper):
+    DEFAULT_CAPS = {
+        "platformName": "ios",
+        "automationName": "xcuitest",
+    }
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
 
     def __call__(self, *args, **kwargs):
-        return super().__call__(ChromeOptions, ChromeDriver, *args, **kwargs)
-
-
-class FirefoxDriverWrapper(BaseDriverWrapper):
-    def __init__(self, uuid, configs,
-                 *args, **kwargs):
-        super().__init__(uuid, configs, *args, **kwargs)
-
-    def __call__(self, *args, **kwargs):
-        # Firefox driver does not support --start-maximized natively
-        # call function is overwritten to support --start-maximized argument
-        if not self._driver:
-            options = self.set_options(FirefoxOptions)
-            driver = FirefoxDriver(options=options, *args, **kwargs)
-
-            # set driver settings
-            driver .implicitly_wait(self._conf['driver'].get('implicit_wait'))
-            if '--start-maximized' in self._conf['browser']['arguments']:
-                driver.maximize_window()
-            self._driver = driver
-        return self._driver
-
-
-class EdgeDriverWrapper(BaseDriverWrapper):
-    def __init__(self, uuid, configs,
-                 *args, **kwargs):
-        super().__init__(uuid, configs, *args, **kwargs)
-
-    def __call__(self, *args, **kwargs):
-        return super().__call__(EdgeOptions, EdgeDriver, *args, **kwargs)
-
-
-class SupportedBrowsers(Enum):
-    CHROME = ChromeDriverWrapper
-    FIREFOX = FirefoxDriverWrapper
-    EDGE = EdgeDriverWrapper
-    SAFARI = SafariDriverWrapper
+        return super().__call__(AppiumOptions, IOSDriver, *args, **kwargs)
