@@ -38,8 +38,7 @@
                 "q5",
                 "q6",
                 "q7",
-                "q8",
-                "q9"
+                "q8"
             ]
         }
     ],
@@ -183,26 +182,6 @@
                 ],
                 "soft": "true"
             }
-        },
-        {
-            "uuid": "q9",
-            "title": "Click and drag",
-            "action": [
-                "selchain",
-                "drag_and_drop"
-            ],
-            "parameters": {
-                "locator": "btnX",
-                "page": [
-                    "sample",
-                    "page1"
-                ],
-                "target": {"by": "id", "value": "btnX"},
-                "xoffset": 10,
-                "yoffset": 20,
-                "deltax": 100,
-                "deltay": 90
-            }
         }
     ],
     "Browsers": [
@@ -237,7 +216,39 @@
             }
         }
     ],
+    "Mobiles": [
+        {
+            "platform_name": "android",
+            "uuid": "android001",
+            "configs": {
+                "driver": {
+                    "implicit_wait": "15",
+                    "explicit_wait": "30"
+                },
+                "browser": {
+                    "arguments": [
+                        "--start-maximized"
+                    ],
+                    "preferences": {}
+                },
+                "appium": {
+                    "--testing1": true,
+                    "--testing": "more"
+                }
+            }
+        }
+    ],
     "Tests": [
+        {
+            "uuid": "tr1--Uuid-tc-02--android001",
+            "case": "Uuid-tc-02",
+            "configurations": [
+                {
+                    "type": "mobile",
+                    "uuid": "android001"
+                }
+            ]
+        },
         {
             "uuid": "tr1--Uuid-tc-02--chrome001",
             "case": "Uuid-tc-02",
@@ -255,6 +266,16 @@
                 {
                     "type": "browser",
                     "uuid": "ffox002"
+                }
+            ]
+        },
+        {
+            "uuid": "tr1--uuid-tc-01--android001",
+            "case": "uuid-tc-01",
+            "configurations": [
+                {
+                    "type": "mobile",
+                    "uuid": "android001"
                 }
             ]
         },
@@ -278,8 +299,5 @@
                 }
             ]
         }
-    ],
-    "testrail": {
-        "project_id": "321"
-    }
+    ]
 }
