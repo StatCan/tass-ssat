@@ -20,6 +20,9 @@ def validate(job, validate_on):
     if version >= Version('0.0.0'):
         log.info("Validating schema against schema version: 1.0.0")
         schema = validator.Tass1Validator()
+    elif version >= Version('1.1.0'):
+        log.info("Validating schema against schema version: 1.0.0")
+        schema = validator.Tass1_1Validator()
     else:
         schema = DEFAULT()
 
