@@ -1,3 +1,4 @@
+import warnings
 from copy import deepcopy
 from tass.core.exceptions.tass_errors import (
     TassUUIDNotFound,
@@ -15,6 +16,7 @@ class Parser():
         raise NotImplementedError("Parse is not implemented.")
 
 
+@warnings.deprecated
 class Tass1Parser(Parser):
     def __init__(self):
         super().__init__()
@@ -223,13 +225,19 @@ class Tass1_1Parser(Parser):
 
         def browser(uuid):
             _browser = self._parse_browser(uuid, job)
-            _browser["type"] = "browser"
-            configurations.append(_browser)
+            conf = {
+                "module_name": "browser",
+                "browser_config": _browser
+            }
+            configurations.append(conf)
 
         def mobile(uuid):
-            _mobile = self._parse_browser(uuid, job)
-            _mobile["type"] = "mobile"
-            configurations.append(_mobile)
+            _mobile = self._parse_mobile(uuid, job)
+            conf = {
+                "module_name": "browser",
+                "mobile_configs": _mobile
+            }
+            configurations.append(conf)
 
         registered_configuration_parsers = {
             "browser": browser,
@@ -238,9 +246,11 @@ class Tass1_1Parser(Parser):
 
         for conf in config:
             k, v = conf['type'], conf['uuid']
-            if k in registered_configuration_parsers:
-                parser = registered_configuration_parsers[k]
-                parser(v)
+            if k not in registered_configuration_parsers:
+                self.log.warning(f"Unknown configuration type: {k}")
+                continue
+            parser = registered_configuration_parsers[k]
+            parser(v)
 
         return {"configs": configurations}
 
@@ -293,32 +303,14 @@ class Tass1_1Parser(Parser):
         return deepcopy(found[0])
 
     def _parse_managers(self, c, job):
-
-        def browser_manager(_manager, _c):
-            browser_configs = _c['browser']
-            manager = get_manager(_manager, browser_configs)
-            return manager
-
-        def mobile_manager(_manager, _c):
-            manager = get_manager(_manager)
-            return manager
-
-        def core_manager(_manager, _c):
-            manager = get_manager(_manager)
-            return manager
-
-        parsers = {
-            "browser": browser_manager,
-            "mobile": mobile_manager,
-            "core": core_manager
-        }
-
-        manager_configs = set(c["configs"])
+        manager_configs = c["configs"]
+        modules_added = []
         managers = {}
         for manager in manager_configs:
-            if (manager["type"] in parsers
-               and manager["type"] not in managers):
-
-                m = parsers[manager](manager, c)
+            if (manager["module_name"] not in modules_added):
+                m = get_manager(**manager)
                 managers.update(m)
+                modules_added.append(manager["module_name"])
+        self.log.info(f"Found managers for {c['uuid']}")
+        self.log.info(managers.keys())
         return {"managers": managers}
