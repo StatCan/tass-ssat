@@ -44,7 +44,7 @@ def convert(path):
     # Extract all jobs to executed as a list.
     runs = convert_runs(s_runs, cases, steps, browsers, mobiles, wb)
     # TODO: define and print reporters.
-    reporters = convert_reporters(s_reporters, wb)
+    # reporters = convert_reporters(s_reporters, wb)
 
     return runs
 
@@ -97,8 +97,6 @@ def convert_cases(cases, wb):
 
                 if (header == '//end//'):  # e.o.f indicator for TASS
                     break
-
-                header = header.lower()
 
                 header = header.lower()
 
