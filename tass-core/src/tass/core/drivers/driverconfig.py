@@ -1,3 +1,5 @@
+import time
+import random
 from enum import Enum
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver import (
@@ -38,6 +40,20 @@ class BaseDriverWrapper():
         self._uuid = uuid
         self._chain = None
 
+    def _with_delay(self, driver):
+        delayMin = abs(float(self._conf['driver'].get('delay', 0)))
+        delayMax = abs(float(self._conf['driver'].get('delayMax', delayMin)))
+        if delayMax == delayMin or delayMax < delayMin:
+            delay = delayMax
+        elif delayMax != delayMin:
+            delay = round(
+                random.uniform(delayMin, delayMax), 2
+                )
+        if delay > 0:
+            log.debug("Delaying for %s seconds.", delay)
+            time.sleep(delay)
+        return driver
+
     def __call__(self, browser_options, driver_init, *args, **kwargs):
         if not self._driver:
             options = self.set_options(browser_options)
@@ -47,7 +63,8 @@ class BaseDriverWrapper():
             self._driver.implicitly_wait(
                 self._conf['driver'].get('implicit_wait', 5)
                 )
-        return self._driver
+        log.debug("Driver %s initialized.", self._uuid)
+        return self._with_delay(self._driver)
 
     @property
     def name(self):
@@ -142,7 +159,7 @@ class SafariDriverWrapper(BaseDriverWrapper):
             if '--start-maximized' in self._conf['browser']['arguments']:
                 driver.maximize_window()
             self._driver = driver
-        return self._driver
+        return self._with_delay(self._driver)
 
 
 class ChromeDriverWrapper(BaseDriverWrapper):
@@ -171,7 +188,7 @@ class FirefoxDriverWrapper(BaseDriverWrapper):
             if '--start-maximized' in self._conf['browser']['arguments']:
                 driver.maximize_window()
             self._driver = driver
-        return self._driver
+        return self._with_delay(self._driver)
 
 
 class EdgeDriverWrapper(BaseDriverWrapper):
