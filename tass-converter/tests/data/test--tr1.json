@@ -252,10 +252,11 @@
                     ],
                     "preferences": {}
                 },
-                "appium": {
+                "appium:server": {
                     "--testing1": true,
                     "--testing": "more"
-                }
+                },
+                "appium:driver": {}
             }
         }
     ],

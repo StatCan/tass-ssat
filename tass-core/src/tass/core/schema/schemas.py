@@ -6,7 +6,7 @@ SCHEMA_1_0_0 = {
     "properties": {
         "schema-version": {
             "type": "string",
-            "pattern": "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
+            "pattern": "^1\\.(\\d+\\.)?(\\*|\\d+)$"
         },
         "Job": {
             "description": "Description of the job. Sets default values for undefined test case values.",
@@ -55,6 +55,11 @@ SCHEMA_1_0_0 = {
         },
         "Browsers": {
             "description": "Browser configurations to be used in this test run.",
+            "type": "array",
+            "items": {"$ref": "#/$defs/browser"}
+        },
+        "Mobiles": {
+            "description": "Mobile configurations to be used in this test run.",
             "type": "array",
             "items": {"$ref": "#/$defs/browser"}
         },
@@ -188,6 +193,51 @@ SCHEMA_1_0_0 = {
                 }
             },
             "required": ["uuid", "browser_name", "configs"]
+        },
+        "mobile": {
+            "type": "object",
+            "description": "Configuration for a mobile.",
+            "properties": {
+                "uuid": {"$ref": "#/$defs/uuid"},
+                "platform_name": {
+                    "enum": ["android", "ios"],
+                    "description": "The name of the mobile platform to be used."
+                },
+                "configs": {
+                    "type": "object",
+                    "properties": {
+                        "driver": {
+                            "type": "object",
+                            "description": "Configuration values for the automated driver."
+                        },
+                        "browser": {
+                            "type": "object",
+                            "description": "Configurations for browser preferences.",
+                            "properties": {
+                                "arguments": {
+                                    "type": "array",
+                                    "items": { "type": "string" },
+                                    "description": "Flags to be passed to the browser instance"
+                                },
+                                "preferences": {
+                                    "type": "object",
+                                    "description": "Key value pairs to set preferences of a browser."
+                                }
+                            }
+                        },
+                        "appium:server": {
+                            "type": "object",
+                            "description": "Configurations for appium server/driver"
+                        },
+                        "appium:driver": {
+                            "type": "object",
+                            "description": "Capabilities for the appium driver."
+                        }
+
+                    }
+                }
+            },
+            "required": ["uuid", "platform_name", "configs", "appium:server", "appium:driver"]
         }
     }
 }

@@ -238,9 +238,10 @@ def convert_mobiles(mobiles, wb):
         b_args = set()  # Browser arguments (flags)
         b_pref = {}  # Browser preferences (key/value)
         d_config = {}  # Driver configurations
-        a_config = {} # Appium configurations
+        a_server = {} # Appium server configurations
+        a_driver = {} # Appium driver configurations
 
-        for row in s.iter_rows(min_row=3, min_col=2, max_col=8):
+        for row in s.iter_rows(min_row=3, min_col=2, max_col=10):
             if row[0].value:
                 k, v = row[0].value.split(',', maxsplit=1)
                 d_config[k] = v
@@ -256,7 +257,15 @@ def convert_mobiles(mobiles, wb):
                 else:
                     k = _[0]
                     v = True
-                a_config[k] = v
+                a_server[k] = v
+            if row[8].value:
+                _ = row[8].value.split(',', maxsplit=1)
+                if len(_) == 2:
+                    k, v = _
+                else:
+                    k = _[0]
+                    v = True
+                a_driver[k] = v
 
         config = {
             'driver': d_config,
@@ -264,8 +273,9 @@ def convert_mobiles(mobiles, wb):
                 'arguments': sorted(list(b_args)),
                 'preferences': b_pref
                 },
-            'appium': a_config
-            }
+            'appium:server': a_server,
+            'appium:driver': a_driver
+        }
 
         m["platform_name"] = platform_name
         m["uuid"] = uuid
