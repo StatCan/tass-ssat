@@ -3,28 +3,40 @@ from ...drivers.driverconfig import new_driver
 from . import appium as app
 from . import appium_wait as appwait
 from . import appium_chain as appchain
+from ..browser import selenium as sel
+from ..browser import selenium_wait as selwait
+from ..browser import selenium_chain as selchain
 
 all_managers = {}
 
 
-def get_manager(driver_config, *args, **kwargs):
+def get_manager(appium_conf, *args, **kwargs):
     # TODO: configure settings for drivers.
-    if driver_config['uuid'] in all_managers:
-        return all_managers[driver_config['uuid']]
+    if appium_conf['uuid'] in all_managers:
+        return all_managers[appium_conf['uuid']]
     managers = {}
     manager = {
-            'config': driver_config,
+            'config': appium_conf,
             'driver': None
             }
     appium = AppiumActionManager(manager)
     waiter = AppiumActionManager(manager, module=appwait)
     chain = AppiumActionManager(manager, module=appchain)
 
+    selenium = AppiumActionManager(manager, module=sel)
+    s_waiter = AppiumActionManager(manager, module=selwait)
+    s_chain = AppiumActionManager(manager, module=selchain)
+
     managers['appium'] = appium
     managers['appwait'] = waiter
     managers['appchain'] = chain
 
-    all_managers[driver_config['uuid']] = managers
+    managers['selenium'] = selenium
+    managers['selwait'] = s_waiter
+    managers['selchain'] = s_chain
+
+
+    all_managers[appium_conf['uuid']] = managers
 
     return managers
 
