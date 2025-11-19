@@ -61,7 +61,7 @@ SCHEMA_1_0_0 = {
         "Mobiles": {
             "description": "Mobile configurations to be used in this test run.",
             "type": "array",
-            "items": {"$ref": "#/$defs/browser"}
+            "items": {"$ref": "#/$defs/mobile"}
         },
         "Meta": {
             "description": "Additional information about this test run that does not affect the test.",
@@ -164,7 +164,7 @@ SCHEMA_1_0_0 = {
             "properties": {
                 "uuid": {"$ref": "#/$defs/uuid"},
                 "browser_name": {
-                    "enum": ["chrome", "firefox", "edge"],
+                    "enum": ["chrome", "firefox", "edge", "safari"],
                     "description": "The name of the browser to be used."
                 },
                 "configs": {
