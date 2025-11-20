@@ -237,6 +237,7 @@
             }
         }
     ],
+    "Mobiles": [],
     "Tests": [
         {
             "uuid": "tr2--Uuid-tc-02--chrome002",
@@ -278,8 +279,5 @@
                 }
             ]
         }
-    ],
-    "testrail": {
-        "project_id": "321"
-    }
+    ]
 }
