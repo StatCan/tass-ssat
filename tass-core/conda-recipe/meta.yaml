@@ -1,6 +1,6 @@
 package:
   name: tass-core
-  version: 0.9.0
+  version: 1.0.0
 
 source:
   path: ../
@@ -20,3 +20,10 @@ requirements:
     - openpyxl
     - packaging
     - jsonschema
+
+  extra:
+    authors:
+      - name: Dominic Parent
+        email: dominic.parent@statcan.gc.ca
+      - name: Tyler Desjardins
+        email: josephgillestyler.desjardins@statcan.gc.ca
