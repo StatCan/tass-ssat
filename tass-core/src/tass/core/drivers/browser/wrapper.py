@@ -169,14 +169,3 @@ class EdgeDriverWrapper(BaseDriverWrapper):
 
     def __call__(self, *args, **kwargs):
         return super().__call__(EdgeOptions, EdgeDriver, *args, **kwargs)
-
-
-def new_driver(uuid, browser_name, configs):
-    log.info("Creating driver for: %s", browser_name)
-    try:
-        wrapper = SupportedDrivers[browser_name.upper()].value
-    except KeyError:
-        log.warning("%s browser not supported.", browser_name)
-        return None
-
-    return wrapper(uuid, configs)

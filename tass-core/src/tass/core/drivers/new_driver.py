@@ -5,15 +5,15 @@ from .mobile import wrapper as mobile_wrapper
 
 log = getLogger(__name__)
 
-def new_driver(uuid, browser_name, configs):
-    log.info("Creating driver for: %s", browser_name)
+def new_driver(uuid, driver_name, **kwargs):
+    log.info("Creating driver for: %s", driver_name)
     try:
-        wrapper = SupportedDrivers[browser_name.upper()].value
+        wrapper = SupportedDrivers[driver_name.upper()].value
     except KeyError:
-        log.warning("%s browser not supported.", browser_name)
+        log.warning("%s browser not supported.", driver_name)
         return None
 
-    return wrapper(uuid, configs)
+    return wrapper(uuid, **kwargs)
 
 
 class SupportedDrivers(Enum):

@@ -2,6 +2,7 @@ from enum import Enum
 from selenium.webdriver.common.action_chains import ActionChains
 from appium.options.common import AppiumOptions
 from ...log.logging import getLogger
+from .appium_service import TASSAppiumService
 from .customdrivers import TassMobileDriverWait
 from .customdrivers import (
     AndroidDriver,
@@ -10,17 +11,6 @@ from .customdrivers import (
 
 
 log = getLogger(__name__)
-
-
-def new_driver(uuid, browser_name, configs):
-    log.info("Creating driver for: %s", browser_name)
-    try:
-        wrapper = SupportedBrowsers[browser_name.upper()].value
-    except KeyError:
-        log.warning("%s browser not supported.", browser_name)
-        return None
-
-    return wrapper(uuid, configs)
 
 
 class BaseMobileDriverWrapper():
@@ -40,6 +30,10 @@ class BaseMobileDriverWrapper():
             self._driver.implicitly_wait(
                 self._conf['driver'].get('implicit_wait', 5)
                 )
+            self._service = TASSAppiumService.service(self._driver,
+                                                      self._conf["appium:server"]
+            )
+            TASSAppiumService.start(self._service)
         return self._driver
 
     @property
@@ -77,7 +71,10 @@ class BaseMobileDriverWrapper():
         configs['browser'].setdefault('preferences', [])
         configs['browser'].setdefault('arguments', [])
 
-        configs.setdefault('appium', self.DEFAULT_CAPS)
+        configs.setdefault('appium:driver', {})
+        for k, v in self.DEFAULT_CAPS.items():
+            configs['appium:driver'].setdefault(k, v)
+        configs.setdefault('appium:server', {})
 
         return configs
 
@@ -85,7 +82,7 @@ class BaseMobileDriverWrapper():
         options = browser_options()
         caps = {}
         caps.update(self.DEFAULT_CAPS)
-        caps.update(self._conf["appium"])
+        caps.update(self._conf["appium:driver"])
         options.load_capabilities(caps)
         conf = self._conf['browser']
 
@@ -125,9 +122,12 @@ class BaseMobileDriverWrapper():
             self._chain.reset_actions()
         if self._driver:
             self._driver.quit()
+        if self._service:
+            TASSAppiumService.stop(self._service)
         self._waits = {}
         self._chain = None
         self._driver = None
+        self._service = None
 
 
 class AndroidDriverWrapper(BaseMobileDriverWrapper):
