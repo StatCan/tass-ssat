@@ -37,7 +37,7 @@ class TASSAppiumService(AppiumService):
         return service
 
     @classmethod
-    def start(cls, service):
+    def start_service(cls, service):
         if service and service.is_running:
             cls.logger.debug("Appium Server is currently running: %s>%s", service.uuid, service)
             return None
@@ -47,7 +47,7 @@ class TASSAppiumService(AppiumService):
         return _
 
     @classmethod
-    def stop(cls, service):
+    def stop_service(cls, service):
         if service and service.is_running:
             cls.logger.debug("Stopping Appium Server %s: %s", service.uuid, service)
             return service.stop()

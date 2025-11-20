@@ -192,14 +192,17 @@ SCHEMA_1_0_0 = {
                     }
                 }
             },
-            "required": ["uuid", "browser_name", "configs"]
+            "oneOf": [
+                {"required": ["uuid", "browser_name", "configs"]},
+                {"required": ["uuid", "driver_name", "configs"]}
+            ]
         },
         "mobile": {
             "type": "object",
             "description": "Configuration for a mobile.",
             "properties": {
                 "uuid": {"$ref": "#/$defs/uuid"},
-                "platform_name": {
+                "driver_name": {
                     "enum": ["android", "ios"],
                     "description": "The name of the mobile platform to be used."
                 },
@@ -234,10 +237,11 @@ SCHEMA_1_0_0 = {
                             "description": "Capabilities for the appium driver."
                         }
 
-                    }
+                    },
+                    "required": ["appium:driver", "appium:server"]
                 }
             },
-            "required": ["uuid", "platform_name", "configs", "appium:server", "appium:driver"]
+            "required": ["uuid", "driver_name", "configs"]
         }
     }
 }

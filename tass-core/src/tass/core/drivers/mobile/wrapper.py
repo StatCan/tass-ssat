@@ -20,21 +20,30 @@ class BaseMobileDriverWrapper():
         self._driver = None
         self._uuid = uuid
         self._chain = None
+        self._service = None
 
     def __call__(self, driver_options, driver_init, *args, **kwargs):
+        breakpoint()
         if not self._driver:
             options = self.set_options(driver_options)
+            # Start Appium Service
+            self._service = TASSAppiumService.service(self,
+                                                      self._conf["appium:server"]
+            )
+            TASSAppiumService.start_service(self._service)
+            # initialize driver
             self._driver = driver_init(options=options, *args, **kwargs)
 
             # set driver settings
             self._driver.implicitly_wait(
                 self._conf['driver'].get('implicit_wait', 5)
                 )
-            self._service = TASSAppiumService.service(self._driver,
-                                                      self._conf["appium:server"]
-            )
-            TASSAppiumService.start(self._service)
+
         return self._driver
+
+    @property
+    def uuid(self):
+        return self._uuid
 
     @property
     def browser(self):
@@ -123,7 +132,7 @@ class BaseMobileDriverWrapper():
         if self._driver:
             self._driver.quit()
         if self._service:
-            TASSAppiumService.stop(self._service)
+            TASSAppiumService.stop_service(self._service)
         self._waits = {}
         self._chain = None
         self._driver = None

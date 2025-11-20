@@ -1,5 +1,5 @@
 from ..action_manager import ActionManager
-from ...drivers.driverconfig import new_driver
+from ...drivers.new_driver import new_driver
 from . import appium as app
 from . import appium_wait as appwait
 from . import appium_chain as appchain
@@ -10,13 +10,14 @@ from ..browser import selenium_chain as selchain
 all_managers = {}
 
 
-def get_manager(appium_conf, *args, **kwargs):
+def get_manager(mobile_configs, *args, **kwargs):
+    breakpoint()
     # TODO: configure settings for drivers.
-    if appium_conf['uuid'] in all_managers:
-        return all_managers[appium_conf['uuid']]
+    if mobile_configs['uuid'] in all_managers:
+        return all_managers[mobile_configs['uuid']]
     managers = {}
     manager = {
-            'config': appium_conf,
+            'config': mobile_configs,
             'driver': None
             }
     appium = AppiumActionManager(manager)
@@ -36,7 +37,7 @@ def get_manager(appium_conf, *args, **kwargs):
     managers['selchain'] = s_chain
 
 
-    all_managers[appium_conf['uuid']] = managers
+    all_managers[mobile_configs['uuid']] = managers
 
     return managers
 

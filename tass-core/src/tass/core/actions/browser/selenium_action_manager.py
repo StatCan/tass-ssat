@@ -10,6 +10,8 @@ all_managers = {}
 def get_manager(browser_config, *args, **kwargs):
     if browser_config['uuid'] in all_managers:
         return all_managers[browser_config['uuid']]
+    if "driver_name" not in browser_config:
+        browser_config["driver_name"] = browser_config["browser_name"] # Backwards compatible with old config naming
     managers = {}
     manager = {
             'config': browser_config,

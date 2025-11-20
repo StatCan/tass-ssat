@@ -14,7 +14,9 @@ modules = {
     "selchain": # For Backwards Compatibility
         'tass.core.actions.browser.selenium_action_manager',
     "browser":
-        'tass.core.actions.browser.selenium_action_manager'
+        'tass.core.actions.browser.selenium_action_manager',
+    "mobile":
+        'tass.core.actions.mobile.appium_action_manager'
 }
 
 
