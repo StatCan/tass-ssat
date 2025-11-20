@@ -1,5 +1,5 @@
 from .action_manager import ActionManager
-from ..drivers.driverconfig import new_driver
+from ..drivers.new_driver import new_driver
 from . import selenium as sel
 from . import selenium_wait as selwait
 from . import selenium_chain as selchain

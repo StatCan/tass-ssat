@@ -1,6 +1,5 @@
 import time
 import random
-from enum import Enum
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver import (
     ChromeOptions,
@@ -8,9 +7,9 @@ from selenium.webdriver import (
     EdgeOptions,
     SafariOptions
 )
-from ..log.logging import getLogger
-from .custombrowserdrivers import TassDriverWait
-from .custombrowserdrivers import (
+from ...log.logging import getLogger
+from .customdrivers import TassDriverWait
+from .customdrivers import (
     ChromeDriver,
     EdgeDriver,
     FirefoxDriver,
@@ -21,19 +20,8 @@ from .custombrowserdrivers import (
 log = getLogger(__name__)
 
 
-def new_driver(uuid, browser_name, configs):
-    log.info("Creating driver for: %s", browser_name)
-    try:
-        wrapper = SupportedBrowsers[browser_name.upper()].value
-    except KeyError:
-        log.warning("%s browser not supported.", browser_name)
-        return None
-
-    return wrapper(uuid, configs)
-
-
 class BaseDriverWrapper():
-    def __init__(self, uuid, configs):
+    def __init__(self, uuid, configs, *args, **kwargs):
         self._waits = {}
         self._conf = self._set_defaults(configs)
         self._driver = None
@@ -67,13 +55,13 @@ class BaseDriverWrapper():
         return self._with_delay(self._driver)
 
     @property
-    def name(self):
+    def browser(self):
         if (self._driver):
             return self._driver.capabilities["browserName"]
         return None
 
     @property
-    def version(self):
+    def browser_version(self):
         if (self._driver):
             return self._driver.capabilities["browserVersion"]
         return None
@@ -198,10 +186,3 @@ class EdgeDriverWrapper(BaseDriverWrapper):
 
     def __call__(self, *args, **kwargs):
         return super().__call__(EdgeOptions, EdgeDriver, *args, **kwargs)
-
-
-class SupportedBrowsers(Enum):
-    CHROME = ChromeDriverWrapper
-    FIREFOX = FirefoxDriverWrapper
-    EDGE = EdgeDriverWrapper
-    SAFARI = SafariDriverWrapper
