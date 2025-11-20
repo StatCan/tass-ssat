@@ -21,7 +21,7 @@ log = getLogger(__name__)
 
 
 class BaseDriverWrapper():
-    def __init__(self, uuid, configs):
+    def __init__(self, uuid, configs, *args, **kwargs):
         self._waits = {}
         self._conf = self._set_defaults(configs)
         self._driver = None

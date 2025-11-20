@@ -646,7 +646,7 @@ def screenshot(driver,
                **kwargs):
     screenshotsfldr = pathlib.Path("screenshots").resolve()
     # Sort png by browser config
-    driverfldr = [driver.os, driver.name, driver.version]
+    driverfldr = [driver.os, driver.browser, driver.browser_version]
     screenshotsfldr = screenshotsfldr.joinpath(*driverfldr).resolve()
     screenshotsfldr.mkdir(exist_ok=True, parents=True)
     date_tag = datetime.now().strftime("%d-%m-%y--%H-%M-%S")

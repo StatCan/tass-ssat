@@ -25,7 +25,7 @@ class TestSelenium(unittest.TestCase):
 
     config = [
         {
-            "browser_name": "chrome",
+            "driver_name": "chrome",
             "uuid": "chromeTEST",
             "configs": {
                 "driver": {
@@ -42,7 +42,7 @@ class TestSelenium(unittest.TestCase):
             }
         },
         {
-            "browser_name": "firefox",
+            "driver_name": "firefox",
             "uuid": "firefoxTEST",
             "configs": {
                 "driver": {
@@ -59,7 +59,7 @@ class TestSelenium(unittest.TestCase):
             }
         },
         {
-            "browser_name": "edge",
+            "driver_name": "edge",
             "uuid": "edgeTEST",
             "configs": {
                 "driver": {
@@ -76,7 +76,7 @@ class TestSelenium(unittest.TestCase):
             }
         },
         {
-            "browser_name": "safari",
+            "driver_name": "safari",
             "uuid": "safariTEST",
             "configs": {
                 "driver": {
