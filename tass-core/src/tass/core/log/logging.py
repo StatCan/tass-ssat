@@ -44,6 +44,7 @@ def _DEFAULT_CONFIG(log_fldr, log_name):
                 "()": CustomTassFileLogger,
                 "delay": True,
                 "filename": f"{log}",
+                "encoding": "utf-8",
                 "backupCount": 3,
                 "level": "INFO",
                 "formatter": "simple"
@@ -52,6 +53,7 @@ def _DEFAULT_CONFIG(log_fldr, log_name):
                 "()": CustomTassFileLogger,
                 "delay": True,
                 "filename": f"{debug}",
+                "encoding": "utf-8",
                 "backupCount": 3,
                 "level": "DEBUG",
                 "formatter": "detailed"
