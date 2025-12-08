@@ -50,24 +50,36 @@ class MobileDriver(webdriver.Remote):
         return self.capabilities
     
     def find_webview_context(self):
+        self.logger.debug("Searching for available Webview contexts...")
         for _ in range(5):
             for ctx in self.contexts:
                 if "WEBVIEW" in ctx:
+                    self.logger.info("%s context is available.")
                     return ctx
+            self.logger.debug("Webview not ready...")
             time.sleep(0.5)
+
+        self.logger.warning("No webview contexts available.")
+        return None
         # TODO: handle edgecase where no Webview context present
 
     def switch_to_context(self, context):
         found = False
+        self.logger.debug("Switching to %s context...", context)
         for _ in range(5):
             if context in self.contexts:
+                self.logger.debug("Context is ready.")
                 found = True
                 break
             else:
+                self.logger.debug("Context not ready...")
                 time.sleep(0.5)
         # TODO: handle edgecase where context not present
         if found:
             self.switch_to.context(context)
+            self.logger.info("%s context is now active", context)
+        else:
+            self.logger.warning("%s context is not found.", context)
 
 class AndroidDriver(MobileDriver):
 
