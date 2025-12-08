@@ -16,7 +16,7 @@ class Parser():
         raise NotImplementedError("Parse is not implemented.")
 
 
-@warnings.deprecated
+@warnings.deprecated("Use of Tass parser 1.1 is preferred.")
 class Tass1Parser(Parser):
     def __init__(self):
         super().__init__()
@@ -234,7 +234,7 @@ class Tass1_1Parser(Parser):
         def mobile(uuid):
             _mobile = self._parse_mobile(uuid, job)
             conf = {
-                "module_name": "browser",
+                "module_name": "mobile",
                 "mobile_configs": _mobile
             }
             configurations.append(conf)

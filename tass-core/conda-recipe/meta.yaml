@@ -21,9 +21,9 @@ requirements:
     - packaging
     - jsonschema
 
-  extra:
-    authors:
-      - name: Dominic Parent
-        email: dominic.parent@statcan.gc.ca
-      - name: Tyler Desjardins
-        email: josephgillestyler.desjardins@statcan.gc.ca
+extra:
+  authors:
+    - name: Dominic Parent
+      email: dominic.parent@statcan.gc.ca
+    - name: Tyler Desjardins
+      email: josephgillestyler.desjardins@statcan.gc.ca
