@@ -1,5 +1,4 @@
 import time
-import enum
 from appium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from ...log.logging import getLogger
