@@ -20,6 +20,10 @@ class TassMobileDriverWait(WebDriverWait):
 
 class MobileDriver(webdriver.Remote):
     """ Custom SafariDriver for selenium interactions."""
+
+    NATIVE = "NATIVE_APP"
+    CHROME = "WEBVIEW_chrome"
+
     def __init__(self, options,
                  url_base="http://localhost",
                  port=4723,
@@ -44,11 +48,28 @@ class MobileDriver(webdriver.Remote):
 
     def toJson(self):
         return self.capabilities
+    
+    def find_webview_context(self):
+        for _ in range(5):
+            for ctx in self.contexts:
+                if "WEBVIEW" in ctx:
+                    return ctx
+            time.sleep(0.5)
+        # TODO: handle edgecase where no Webview context present
+
+    def switch_to_context(self, context):
+        found = False
+        for _ in range(5):
+            if context in self.contexts:
+                found = True
+                break
+            else:
+                time.sleep(0.5)
+        # TODO: handle edgecase where context not present
+        if found:
+            self.switch_to.context(context)
 
 class AndroidDriver(MobileDriver):
-
-    NATIVE = "NATIVE_APP"
-    CHROME = "WEBVIEW_chrome"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -104,28 +125,7 @@ class AndroidDriver(MobileDriver):
         else:
             self.logger.info("Virtual keyboard close")
             return True
-         
 
-
-    def find_webview_context(self):
-        for _ in range(5):
-            for ctx in self.contexts:
-                if "WEBVIEW" in ctx:
-                    return ctx
-            time.sleep(0.5)
-        # TODO: handle edgecase where no Webview context present
-
-    def switch_to_context(self, context):
-        found = False
-        for _ in range(5):
-            if context in self.contexts:
-                found = True
-                break
-            else:
-                time.sleep(0.5)
-        # TODO: handle edgecase where context not present
-        if found:
-            self.switch_to.context(context)
 
 class IOSDriver(MobileDriver):
 
