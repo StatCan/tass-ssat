@@ -21,7 +21,7 @@ class MobileDriver(webdriver.Remote):
     """ Custom SafariDriver for selenium interactions."""
 
     NATIVE = "NATIVE_APP"
-    CHROME = "WEBVIEW_chrome"
+    WEBVIEW = "WEBVIEW"
 
     def __init__(self, options,
                  url_base="http://localhost",
@@ -58,7 +58,7 @@ class MobileDriver(webdriver.Remote):
         self.logger.debug("Searching for available Webview contexts...")
         for _ in range(5):
             for ctx in self.contexts:
-                if "WEBVIEW" in ctx:
+                if self.WEBVIEW in ctx:
                     self.logger.debug("%s context is available.", ctx)
                     return ctx
             self.logger.debug("Webview not ready...")
@@ -101,7 +101,7 @@ class AndroidDriver(MobileDriver):
         self.logger.info("Navigating to URL: %s", url)
         super().get(url)
         # Ensure context is active for Webview interactions
-        if "WEBVIEW" not in self.current_context:
+        if self.WEBVIEW not in self.current_context:
             webview = self.find_webview_context()
             # Single webview is assumed
             if webview:
