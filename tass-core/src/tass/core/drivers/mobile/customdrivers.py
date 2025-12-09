@@ -47,13 +47,19 @@ class MobileDriver(webdriver.Remote):
 
     def toJson(self):
         return self.capabilities
-    
+
+    @property
+    def name(self):
+        if "browserName" in self.capabilities:
+            return self.capabilities["browserName"]
+        return self.capabilities.get("automationName", None)
+
     def find_webview_context(self):
         self.logger.debug("Searching for available Webview contexts...")
         for _ in range(5):
             for ctx in self.contexts:
                 if "WEBVIEW" in ctx:
-                    self.logger.info("%s context is available.")
+                    self.logger.debug("%s context is available.", ctx)
                     return ctx
             self.logger.debug("Webview not ready...")
             time.sleep(0.5)
@@ -91,6 +97,16 @@ class AndroidDriver(MobileDriver):
                           element.tag_name, rect)
         return element
 
+    def get(self, url):
+        self.logger.info("Navigating to URL: %s", url)
+        super().get(url)
+        # Ensure context is active for Webview interactions
+        if "WEBVIEW" not in self.current_context:
+            webview = self.find_webview_context()
+            # Single webview is assumed
+            if webview:
+                self.switch_to_context(webview)
+
     def hide_keyboard(self, strategy="back", *args, **kwargs):
         def back(*args, **kwargs):
             # Hiding the keyboard by tapping the android back button
@@ -105,7 +121,7 @@ class AndroidDriver(MobileDriver):
                 # Switch to NATIVE context to interact with android back button
                 self.logger.debug("Switching to %s context", self.NATIVE)
                 self.switch_to_context(self.NATIVE)
-            
+
             self.logger.info("Closing virtual keyboard with back button")
             self.back()
 
@@ -113,7 +129,7 @@ class AndroidDriver(MobileDriver):
                 # Return to the original context for ease of use.
                 self.logger.debug("Switching back to %s context", curr)
                 self.switch_to_context(curr)
-        
+
         def default(*args, **kwargs):
             # Use the default android hide_keyboard strategy.
             super().hide_keyboard()
