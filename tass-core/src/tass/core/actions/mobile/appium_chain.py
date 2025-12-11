@@ -1,6 +1,6 @@
 from ...log.logging import getLogger
 from ..browser import selenium_chain as selchain
-from . import appium_chain as appchain
+from . import appium as app
 
 
 #  For additional documentation, see selenium docs:
@@ -39,7 +39,7 @@ def reset(driver, **kwargs):
     selchain.reset(driver, **kwargs)
 
 
-def click(driver, locator=None, find=appchain._find_element_hide_keyboard, **kwargs):
+def click(driver, locator=None, find=app._find_element_hide_keyboard, **kwargs):
     """Add a click action to the action queue.
 
     Add a click action to the action queue. If a locator is
@@ -60,7 +60,7 @@ def click(driver, locator=None, find=appchain._find_element_hide_keyboard, **kwa
     """
     selchain.click(driver, locator=locator, find=find, **kwargs)
 
-def write(driver, locator=None, text=None, find=appchain._find_element_hide_keyboard, **kwargs):
+def write(driver, locator=None, text=None, find=app._find_element_hide_keyboard, **kwargs):
     """Add a send_keys action to the action queue.
 
     Add a send_keys action to the action queue. If a locator is
@@ -88,7 +88,7 @@ def write(driver, locator=None, text=None, find=appchain._find_element_hide_keyb
 def move_mouse(driver, locator=None,
                xoffset=0,
                yoffset=0,
-               find=appchain._find_element_hide_keyboard,
+               find=app._find_element_hide_keyboard,
                **kwargs):
     """Move the mouse pointer to the designated location.
 
@@ -122,7 +122,7 @@ def move_mouse(driver, locator=None,
 
 
 def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
-                  find=appchain._find_element_hide_keyboard, **kwargs):
+                  find=app._find_element_hide_keyboard, **kwargs):
     """Drag element and drop.
 
     Add a drag and drop action to the Action Chains queue.
@@ -159,7 +159,7 @@ def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
 
 def scroll(driver, locator=None, deltax=0, deltay=0,
            xoffset=None, yoffset=None,
-           find=appchain._find_element_hide_keyboard,
+           find=app._find_element_hide_keyboard,
            **kwargs):
     """Scroll the open page.
 
