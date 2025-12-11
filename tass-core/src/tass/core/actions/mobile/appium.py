@@ -1,6 +1,7 @@
 from ..browser import selenium as sel
 from ...tools.page_reader import PageReader
 from ...log.logging import getLogger
+from selenium.common.exceptions import WebDriverException
 
 #  For additional documentation, see selenium docs:
 #  https://www.selenium.dev/selenium/docs/api/py/webdriver_remote/selenium.webdriver.remote.webelement.html
@@ -33,14 +34,6 @@ def locate(page, locator, locator_args):
         logger.debug("Filling in blanks in locator using: %s", locator_args)
         # scenario converter should convert locator args to a list by default
         _loc['value'] = _loc['value'].format(*locator_args)
-    if _loc["by"].lower() == "id" or _loc["by"].lower() == "name":
-        # Convert ID and Name locator methods to xpath for compatibility.
-        logger.warning("Locator By methods: ID and NAME may not be supported. Consider updating.")
-        by = _loc["by"]
-        val = _loc["value"]
-        _loc["by"] = "xpath"
-        _loc["value"] = f"//*[@{by}='{val}']"
-        logger.warning("Converting to simple xpath. %s", _loc["value"])
 
     logger.debug("Using locator: %s", _loc)
     return _loc
@@ -68,7 +61,20 @@ def click(driver, find=_find_element_hide_keyboard, **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    sel.click(driver, find, **kwargs)
+    # JavaScript used to trigger a click event on the element
+    # Bypasses issues clicking edge case elements that may give wrong
+    # coordinates with default click.
+    script = "arguments[0].dispatchEvent(new MouseEvent('click', {'bubbles': true}))"
+    try:
+        ele = find(driver, **kwargs)
+        
+        driver().execute_script(script, ele)
+        logger.debug("Element clicked")
+    except WebDriverException as e:
+        logger.warning("Something went wrong, %s -- Trying again", e)
+        ele = find(driver, **kwargs)
+        driver().execute_script(script, ele)
+        logger.debug("Element clicked")
 
 
 def write(driver, find=_find_element_hide_keyboard, text='', **kwargs):
