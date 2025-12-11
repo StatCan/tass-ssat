@@ -39,7 +39,7 @@ def locate(page, locator, locator_args):
     return _loc
 
 
-def click(driver, find=_find_element_hide_keyboard, **kwargs):
+def click(driver, pointer_type=None, find=_find_element_hide_keyboard, **kwargs):
     """Click an element in the DOM
 
     Execute the selenium click function against the locator
@@ -51,6 +51,10 @@ def click(driver, find=_find_element_hide_keyboard, **kwargs):
         driver:
             The RemoteWebDriver object that is connected
             to the open browser.
+        pointer_type:
+            String value for the JavaScript PointerType.
+            Valid entries are: [touch, mouse, pen]
+            Defaults to touch for Appium actions.
         find:
             The function to be called when attempting to locate
             an element. Must use either a explicit wait function
@@ -61,10 +65,20 @@ def click(driver, find=_find_element_hide_keyboard, **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    # JavaScript used to trigger a click event on the element
+    # JavaScript used to trigger a click (tap) event on the element
     # Bypasses issues clicking edge case elements that may give wrong
     # coordinates with default click.
-    script = "arguments[0].dispatchEvent(new MouseEvent('click', {'bubbles': true}))"
+    _valid_pointers = ['pen', 'touch', 'mouse']
+    _pointer = pointer_type if pointer_type in _valid_pointers else 'touch'
+    options = (
+        "{'bubbles': true, 'pointerType': '"
+        f"{_pointer}"
+        "'}"
+    )
+    script = (
+        "arguments[0].scrollIntoView({'block': 'center'});" # Scroll element to center of view
+        f"arguments[0].dispatchEvent(new PointerEvent('click', {options}))" # Fire click event
+    )
     try:
         ele = find(driver, **kwargs)
         
