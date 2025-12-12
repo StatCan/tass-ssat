@@ -63,7 +63,7 @@ def click(driver, locator=None, find=sel._find_element, **kwargs):
     ele = None
     if locator:
         try:
-            ele = find(driver, locator, find=sel._find_element, **kwargs)
+            ele = find(driver, locator, **kwargs)
         except WebDriverException as e:
             logger.warning("Something went wrong: %s -- Trying again", e)
             ele = find(driver, locator, **kwargs)
@@ -71,7 +71,7 @@ def click(driver, locator=None, find=sel._find_element, **kwargs):
     driver.chain().click(ele)
 
 
-def write(driver, locator=None, text=None, **kwargs):
+def write(driver, locator=None, find=sel._find_element, text=None, **kwargs):
     """Add a send_keys action to the action queue.
 
     Add a send_keys action to the action queue. If a locator is
