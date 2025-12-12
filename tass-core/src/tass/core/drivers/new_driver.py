@@ -23,8 +23,7 @@ class SupportedDrivers(Enum):
     EDGE = wrapper.EdgeDriverWrapper
     SAFARI = wrapper.SafariDriverWrapper
     # Mobile drivers
-    if "appium" not in sys.modules and importlib.util.find_spec("appium"):
+    if importlib.util.find_spec("appium"):
         from .mobile import wrapper as mobile_wrapper
-    if "mobile.wrapper" in sys.modules:
         ANDROID = mobile_wrapper.AndroidDriverWrapper
         IOS = mobile_wrapper.IOSDriverWrapper
