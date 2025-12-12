@@ -127,8 +127,6 @@ class BaseMobileDriverWrapper():
         return wait_.until(until_func(**kwargs))
 
     def quit(self):
-        if self._chain:
-            self._chain.reset_actions()
         if self._driver:
             self._driver.quit()
         if self._service:
@@ -150,6 +148,13 @@ class AndroidDriverWrapper(BaseMobileDriverWrapper):
 
     def __call__(self, *args, **kwargs):
         return super().__call__(AppiumOptions, AndroidDriver, *args, **kwargs)
+
+    def quit(self):
+        if self._driver:
+            self._driver.quit()
+            self._driver.terminate_app("com.android.chrome")
+            self._driver = None
+        super().quit()
 
 
 class IOSDriverWrapper(BaseMobileDriverWrapper):

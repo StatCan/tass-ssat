@@ -1,5 +1,6 @@
 from ...log.logging import getLogger
 from ..browser import selenium_chain as selchain
+from . import appium as app
 
 
 #  For additional documentation, see selenium docs:
@@ -35,10 +36,10 @@ def reset(driver, **kwargs):
             to the open browser.
 
     """
-    selchain.perform(driver, **kwargs)
+    selchain.reset(driver, **kwargs)
 
 
-def click(driver, locator=None, **kwargs):
+def click(driver, locator=None, find=app._find_element_hide_keyboard, **kwargs):
     """Add a click action to the action queue.
 
     Add a click action to the action queue. If a locator is
@@ -57,9 +58,9 @@ def click(driver, locator=None, **kwargs):
             Additional values to be used when locating a web element.
 
     """
-    selchain.click(driver, locator=locator, **kwargs)
+    selchain.click(driver, locator=locator, find=find, **kwargs)
 
-def write(driver, locator=None, text=None, **kwargs):
+def write(driver, locator=None, text=None, find=app._find_element_hide_keyboard, **kwargs):
     """Add a send_keys action to the action queue.
 
     Add a send_keys action to the action queue. If a locator is
@@ -80,12 +81,14 @@ def write(driver, locator=None, text=None, **kwargs):
 
     """
     selchain.write(driver, locator=locator,
-                   text=text, **kwargs)
+                   text=text, find=find,
+                   **kwargs)
 
 
 def move_mouse(driver, locator=None,
                xoffset=0,
                yoffset=0,
+               find=app._find_element_hide_keyboard,
                **kwargs):
     """Move the mouse pointer to the designated location.
 
@@ -114,11 +117,12 @@ def move_mouse(driver, locator=None,
     selchain.move_mouse(driver, locator=locator,
                         xoffset=xoffset,
                         yoffset=yoffset,
+                        find=find,
                         **kwargs)
 
 
 def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
-                  **kwargs):
+                  find=app._find_element_hide_keyboard, **kwargs):
     """Drag element and drop.
 
     Add a drag and drop action to the Action Chains queue.
@@ -149,11 +153,14 @@ def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
     selchain.drag_and_drop(driver, locator, target=target,
                            xoffset=xoffset,
                            yoffset=yoffset,
+                           find=find,
                            **kwargs)
 
 
 def scroll(driver, locator=None, deltax=0, deltay=0,
-           xoffset=None, yoffset=None, **kwargs):
+           xoffset=None, yoffset=None,
+           find=app._find_element_hide_keyboard,
+           **kwargs):
     """Scroll the open page.
 
     Add a scroll page action to the Action Chains queue.
@@ -194,4 +201,6 @@ def scroll(driver, locator=None, deltax=0, deltay=0,
 
     selchain.scroll(driver, locator=locator,
                     deltax=deltax, deltay=deltay,
-                    xoffset=xoffset, yoffset=yoffset, **kwargs)
+                    xoffset=xoffset, yoffset=yoffset,
+                    find=find
+                    **kwargs)

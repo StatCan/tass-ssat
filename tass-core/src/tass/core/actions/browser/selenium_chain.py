@@ -41,7 +41,7 @@ def reset(driver, **kwargs):
     logger.info("Chained steps reset.")
 
 
-def click(driver, locator=None, **kwargs):
+def click(driver, locator=None, find=sel._find_element, **kwargs):
     """Add a click action to the action queue.
 
     Add a click action to the action queue. If a locator is
@@ -63,15 +63,15 @@ def click(driver, locator=None, **kwargs):
     ele = None
     if locator:
         try:
-            ele = sel._find_element(driver, locator, **kwargs)
+            ele = find(driver, locator, **kwargs)
         except WebDriverException as e:
             logger.warning("Something went wrong: %s -- Trying again", e)
-            ele = sel._find_element(driver, locator, **kwargs)
+            ele = find(driver, locator, **kwargs)
     logger.info("Click on element: %s added to Action Chain", locator)
     driver.chain().click(ele)
 
 
-def write(driver, locator=None, text=None, **kwargs):
+def write(driver, locator=None, find=sel._find_element, text=None, **kwargs):
     """Add a send_keys action to the action queue.
 
     Add a send_keys action to the action queue. If a locator is
@@ -94,10 +94,10 @@ def write(driver, locator=None, text=None, **kwargs):
     ele = None
     if locator:
         try:
-            ele = sel._find_element(driver, locator, **kwargs)
+            ele = find(driver, locator, **kwargs)
         except WebDriverException as e:
             logger.warning("Something went wrong: %s -- Trying again", e)
-            ele = sel._find_element(driver, locator, **kwargs)
+            ele = find(driver, locator, **kwargs)
     if ele:
         logger.info("Sending '%s' to element: %s added to Action Chain", text, locator)
         driver.chain().send_keys_to_element(ele, text)
@@ -109,7 +109,7 @@ def write(driver, locator=None, text=None, **kwargs):
 def move_mouse(driver, locator=None,
                xoffset=0,
                yoffset=0,
-               **kwargs):
+               find=sel._find_element, **kwargs):
     """Move the mouse pointer to the designated location.
 
     Add a move_mouse action to the Action Chain queue. Providing an
@@ -137,10 +137,10 @@ def move_mouse(driver, locator=None,
     ele = None
     if locator:
         try:
-            ele = sel._find_element(driver, locator, **kwargs)
+            ele = find(driver, locator, **kwargs)
         except WebDriverException as e:
             logger.warning("Something went wrong: %s -- Trying again", e)
-            ele = sel._find_element(driver, locator, **kwargs)
+            ele = find(driver, locator, **kwargs)
 
     if (xoffset or yoffset) and ele:
         # Offset and element have been provided
@@ -165,7 +165,7 @@ def move_mouse(driver, locator=None,
 
 
 def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
-                  **kwargs):
+                  find=sel._find_element, **kwargs):
     """Drag element and drop.
 
     Add a drag and drop action to the Action Chains queue.
@@ -194,10 +194,10 @@ def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
     """
 
     try:
-        source = sel._find_element(driver, locator, **kwargs)
+        source = find(driver, locator, **kwargs)
     except WebDriverException as e:
         logger.warning("Something went wrong: %s -- Trying again", e)
-        source = sel._find_element(driver, locator, **kwargs)
+        source = find(driver, locator, **kwargs)
 
     if not target:
         # No target element provided
@@ -209,17 +209,17 @@ def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
         # Target element has been provided
         # Drag and drop on target element
         try:
-            ele = sel._find_element(driver, target, **kwargs)
+            ele = find(driver, target, **kwargs)
         except WebDriverException as e:
             logger.warning("Something went wrong: %s -- Trying again", e)
-            ele = sel._find_element(driver, target, **kwargs)
+            ele = find(driver, target, **kwargs)
         logger.info(
             "Drag: %s and drop at: %s added to Action Chain", locator, target)
         driver.chain().drag_and_drop(source, ele)
 
 
 def scroll(driver, locator=None, deltax=0, deltay=0,
-           xoffset=None, yoffset=None, **kwargs):
+           xoffset=None, yoffset=None, find=sel._find_element, **kwargs):
     """Scroll the open page.
 
     Add a scroll page action to the Action Chains queue.
@@ -263,10 +263,10 @@ def scroll(driver, locator=None, deltax=0, deltay=0,
 
     if locator:
         try:
-            ele = sel._find_element(driver, locator, **kwargs)
+            ele = find(driver, locator, **kwargs)
         except WebDriverException as e:
             logger.warning("Something went wrong: %s -- Trying again", e)
-            ele = sel._find_element(driver, locator, **kwargs)
+            ele = find(driver, locator, **kwargs)
 
     # Set origin point, if there is one.
     # Determined by the presence of an offset.
