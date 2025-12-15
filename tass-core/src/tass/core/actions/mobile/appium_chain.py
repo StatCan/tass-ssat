@@ -60,7 +60,7 @@ def click(driver, locator=None, find=app._find_element_hide_keyboard, **kwargs):
     """
     selchain.click(driver, locator=locator, find=find, **kwargs)
 
-def write(driver, locator=None, text=None, find=app._find_element_hide_keyboard, **kwargs):
+def write(driver, locator=None, text='', find=app._find_element_hide_keyboard, **kwargs):
     """Add a send_keys action to the action queue.
 
     Add a send_keys action to the action queue. If a locator is
