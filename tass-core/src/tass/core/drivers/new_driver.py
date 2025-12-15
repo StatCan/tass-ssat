@@ -1,4 +1,4 @@
-import sys, importlib
+import importlib
 from enum import Enum
 from ..log.logging import getLogger
 from .browser import wrapper
