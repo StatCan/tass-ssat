@@ -19,9 +19,9 @@ docs/best_practices.md. Also, create your conda environment via
 `conda env create -f environment.yaml`.
 
 The conda environment will contain all the of the dependencies at the
-correct versions. To run tests, make sure you have an editable install
-with `pip install -e <module>` from the root directory. Where `<module>`
-is replaced with the desired component of TASS:
+correct versions with the exception of Appium. To run tests, make sure you have 
+an editable install with `pip install -e <module>` from the root directory. 
+Where `<module>` is replaced with the desired component of TASS:
 
 - tass-core
 - tass-converter
@@ -55,7 +55,7 @@ release and then running the install command.
 #### pip
 
 Download the .whl file for the desired release version. Using the CLI
-with pip and python >=3.10 enter the command `pip install <path/to/wheel/file>`
+with pip and python >=3.13 enter the command `pip install <path/to/wheel/file>`
 
 #### conda
 
