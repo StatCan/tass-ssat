@@ -1,4 +1,4 @@
-# Testing and Automated Services Suite – Suite et service d’automatisation et de testing
+# Testing and Automation Software Suite – Suite et service d’automatisation et de testing
 
 The TASS application assists users in creating and running reproducible
 test cases for web applications. TASS uses json configuration files to
@@ -19,7 +19,8 @@ docs/best_practices.md. Also, create your conda environment via
 `conda env create -f environment.yaml`.
 
 The conda environment will contain all the of the dependencies at the
-correct versions with the exception of Appium. To run tests, make sure you have 
+correct versions with the exception of Appium. You can install Appium inside the
+conda environment by typing `npm -g install appium`. To run tests, make sure you have 
 an editable install with `pip install -e <module>` from the root directory. 
 Where `<module>` is replaced with the desired component of TASS:
 
