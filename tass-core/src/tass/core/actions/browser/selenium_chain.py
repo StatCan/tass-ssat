@@ -71,7 +71,7 @@ def click(driver, locator=None, find=sel._find_element, **kwargs):
     driver.chain().click(ele)
 
 
-def write(driver, locator=None, find=sel._find_element, text=None, **kwargs):
+def write(driver, locator=None, find=sel._find_element, text='', **kwargs):
     """Add a send_keys action to the action queue.
 
     Add a send_keys action to the action queue. If a locator is
