@@ -32,17 +32,7 @@ class MobileDriver(webdriver.Remote):
         self.logger = getLogger(__name__, self.name)
 
     def find_element(self, by, value):
-        if by.lower() == "id" or by.lower() == "name":
-            # Convert ID and Name locator methods to xpath for compatibility.
-            logger.warning("Locator By methods: ID and NAME may not be supported. Consider updating.")
-            _value = f"//*[@{by}='{value}']"
-            _by = "xpath"
-            logger.warning("Converting to simple xpath. %s", _value)
-        else:
-            _value = value
-            _by = by
-
-        element = super().find_element(_by, _value)
+        element = super().find_element(by, value)
         if element.is_displayed():
             rect = element.rect
         else:
