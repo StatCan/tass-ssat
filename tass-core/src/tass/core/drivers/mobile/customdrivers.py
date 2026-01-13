@@ -86,6 +86,16 @@ class MobileDriver(webdriver.Remote):
         else:
             self.logger.warning("%s context is not found.", context)
 
+    def get(self, url):
+        self.logger.info("Navigating to URL: %s", url)
+        super().get(url)
+        # Ensure context is active for Webview interactions
+        if self.WEBVIEW not in self.current_context:
+            webview = self.find_webview_context()
+            # Single webview is assumed
+            if webview:
+                self.switch_to_context(webview)
+
 class AndroidDriver(MobileDriver):
 
     def __init__(self, *args, **kwargs):
@@ -96,16 +106,6 @@ class AndroidDriver(MobileDriver):
         self.logger.debug("Android driver found element >>> tag: %s, location: %s",
                           element.tag_name, rect)
         return element
-
-    def get(self, url):
-        self.logger.info("Navigating to URL: %s", url)
-        super().get(url)
-        # Ensure context is active for Webview interactions
-        if self.WEBVIEW not in self.current_context:
-            webview = self.find_webview_context()
-            # Single webview is assumed
-            if webview:
-                self.switch_to_context(webview)
 
     def hide_keyboard(self, strategy="back", *args, **kwargs):
         def back(*args, **kwargs):
