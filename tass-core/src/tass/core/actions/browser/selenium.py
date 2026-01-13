@@ -5,10 +5,10 @@ from selenium.common.exceptions import (WebDriverException,
                                         NoAlertPresentException)
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.alert import Alert
-from ..tools.page_reader import PageReader
-from ..exceptions.assertion_errors import TassHardAssertionError
-from ..exceptions.assertion_errors import TassSoftAssertionError
-from ..log.logging import getLogger
+from ...tools.page_reader import PageReader
+from ...exceptions.assertion_errors import TassHardAssertionError
+from ...exceptions.assertion_errors import TassSoftAssertionError
+from ...log.logging import getLogger
 
 #  For additional documentation, see selenium docs:
 #  https://www.selenium.dev/selenium/docs/api/py/webdriver_remote/selenium.webdriver.remote.webelement.html
@@ -156,7 +156,7 @@ def write_stored_value(driver, find=_find_element, text_key='', **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    from . import core
+    from .. import core
     text = core.read_value(text_key)
     write(driver, find=find, text=text, **kwargs)
 
@@ -646,7 +646,7 @@ def screenshot(driver,
                **kwargs):
     screenshotsfldr = pathlib.Path("screenshots").resolve()
     # Sort png by browser config
-    driverfldr = [driver.os, driver.name, driver.version]
+    driverfldr = [driver.os, driver.browser, driver.browser_version]
     screenshotsfldr = screenshotsfldr.joinpath(*driverfldr).resolve()
     screenshotsfldr.mkdir(exist_ok=True, parents=True)
     date_tag = datetime.now().strftime("%d-%m-%y--%H-%M-%S")

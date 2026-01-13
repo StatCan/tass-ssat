@@ -15,6 +15,7 @@ def convert(path):
     s_cases = []  # Holds all test_case worksheet names.
     s_reporters = []  # Holds all reporter worksheet names.
     s_browsers = []  # Holds all the browser worksheet names.
+    s_mobiles = [] # Holds all the mobile worksheet names.
 
     # Get all worksheet names per type.
     for sheet in wb.sheetnames:
@@ -28,27 +29,29 @@ def convert(path):
             s_reporters.append(sheet)
         elif test_type == 'br_uuid:':
             s_browsers.append(sheet)
+        elif test_type == 'mb_uuid:':
+            s_mobiles.append(sheet)
         else:
             print('Not a tass Excel template.')
 
     # Extract configurations from sheets using sheet names
-    if s_cases:
-        # Extract cases and steps from sheets
-        cases, steps = convert_cases(s_cases, wb)
-    if s_browsers:
-        # Extract browser configs from sheets
-        browsers = convert_browsers(s_browsers, wb)
-    if s_runs:
-        # Extract all jobs to executed as a list.
-        runs = convert_runs(s_runs, cases, steps, browsers, wb)
-    if s_reporters:
-        # TODO: define and print reporters.
-        reporters = convert_reporters(s_reporters, wb)
+    # Extract cases and steps from sheets
+    cases, steps = convert_cases(s_cases, wb)
+    # Extract browser configs from sheets
+    browsers = convert_browsers(s_browsers, wb)
+    # Extract mobile configs from sheets
+    mobiles = convert_mobiles(s_mobiles, wb)
+    # Extract all jobs to executed as a list.
+    runs = convert_runs(s_runs, cases, steps, browsers, mobiles, wb)
+    # TODO: define and print reporters.
+    # reporters = convert_reporters(s_reporters, wb)
 
     return runs
 
 
 def convert_cases(cases, wb):
+    if not cases:
+        return {}, {}
     _cases = {}  # Dict of all test cases. Ensures unique case ids.
     _steps = {}  # Dict of all test steps. Ensures unique step ids.
 
@@ -104,7 +107,23 @@ def convert_cases(cases, wb):
                     # ',' is reserved character.
                     if header in k_V_PARAMS:
                         param = str(col[0].value).split(',', maxsplit=1)
+                    if header in k_V_PARAMS:
+                        param = str(col[0].value).split(',', maxsplit=1)
 
+                        if header == 'locator' or header == 'target':
+                            if (len(param) == 2):
+                                parameters[header] = {
+                                    'by': param[0],
+                                    'value': param[1]
+                                }
+                            else:
+                                parameters[header] = param[0]
+                        elif header == 'offset':
+                            parameters['xoffset'] = int(param[0])
+                            parameters['yoffset'] = int(param[1])
+                        elif header == 'delta':
+                            parameters['deltax'] = int(param[0])
+                            parameters['deltay'] = int(param[1])
                         if header == 'locator' or header == 'target':
                             if (len(param) == 2):
                                 parameters[header] = {
@@ -164,6 +183,8 @@ def convert_cases(cases, wb):
 
 
 def convert_browsers(browsers, wb):
+    if not browsers:
+        return {}
     conf = {}
     for browser in browsers:
         b = {}  # Browser definition dict
@@ -203,7 +224,69 @@ def convert_browsers(browsers, wb):
     return conf
 
 
-def convert_runs(runs, cases, steps, browsers, wb):
+def convert_mobiles(mobiles, wb):
+    if not mobiles:
+        return {}
+    conf = {}
+    for mobile in mobiles:
+        m = {}
+        s = wb[mobile]  # Mobile definition worksheet
+
+        platform_name = s['D1'].value
+        uuid = s['B1'].value
+
+        b_args = set()  # Browser arguments (flags)
+        b_pref = {}  # Browser preferences (key/value)
+        d_config = {}  # Driver configurations
+        a_server = {} # Appium server configurations
+        a_driver = {} # Appium driver configurations
+
+        for row in s.iter_rows(min_row=3, min_col=2, max_col=10):
+            if row[0].value:
+                k, v = row[0].value.split(',', maxsplit=1)
+                d_config[k] = v
+            if row[2].value:
+                b_args.add(row[2].value)
+            if row[4].value:
+                k, v = row[4].value.split(',', maxsplit=1)
+                b_pref[k] = v
+            if row[6].value:
+                _ = row[6].value.split(',', maxsplit=1)
+                if len(_) == 2:
+                    k, v = _
+                else:
+                    k = _[0]
+                    v = True
+                a_server[k] = v
+            if row[8].value:
+                _ = row[8].value.split(',', maxsplit=1)
+                if len(_) == 2:
+                    k, v = _
+                else:
+                    k = _[0]
+                    v = True
+                a_driver[k] = v
+
+        config = {
+            'driver': d_config,
+            'browser': {
+                'arguments': sorted(list(b_args)),
+                'preferences': b_pref
+                },
+            'appium:server': a_server,
+            'appium:driver': a_driver
+        }
+
+        m["platform_name"] = platform_name
+        m["uuid"] = uuid
+        m["configs"] = config
+
+        conf[uuid] = m
+    return conf
+
+def convert_runs(runs, cases, steps, browsers, mobiles, wb):
+    if not runs:
+        return []
     execs = []  # Holds all ready-to-run test runs as dict
 
     for run in runs:
@@ -233,7 +316,7 @@ def convert_runs(runs, cases, steps, browsers, wb):
         # \\\\\
 
         caseset = set()
-        browserset = set()
+        driverset = set()
         stepset = set()
         for row in wb[run].iter_rows(min_row=3, min_col=2, max_col=8):
             # Add cases ids
@@ -241,7 +324,7 @@ def convert_runs(runs, cases, steps, browsers, wb):
                 caseset.add(row[2].value)
             # Add browsers ids
             if row[6].value:
-                browserset.add(row[6].value)
+                driverset.add(row[6].value)
 
         for case in caseset:
             # Add step ids
@@ -255,22 +338,25 @@ def convert_runs(runs, cases, steps, browsers, wb):
         # Extract steps for this job
         tr["Steps"] = sorted([steps[s] for s in stepset],
                              key=lambda x: x['uuid'])
-        # Extract browsers for this job
-        tr["Browsers"] = sorted([browsers[b] for b in browserset],
+        # Extract browsers and mobiles for this job
+        tr["Browsers"] = sorted([browsers[b] for b in driverset if b in browsers],
+                                key=lambda x: x['uuid'])
+
+        tr["Mobiles"] = sorted([mobiles[b] for b in driverset if b in mobiles],
                                 key=lambda x: x['uuid'])
 
         tests = []
         # "Explode" test cases + configurations
-        for browser in browserset:
+        for driver in driverset:
             for c in caseset:
-                uuid = "--".join([job['uuid'], c, browser])  # Hybrid uuid
+                uuid = "--".join([job['uuid'], c, driver])  # Hybrid uuid
                 test = {
                     "uuid": uuid,
                     "case": c,
                     "configurations": [
                         {
-                            "type": "browser",
-                            "uuid": browser
+                            "type": "browser" if driver in browsers else "mobile",
+                            "uuid": driver
                         }
                     ]
                 }
@@ -301,4 +387,6 @@ def convert_runs(runs, cases, steps, browsers, wb):
 
 def convert_reporters(reporters, wb):
     # TODO: define reporters
+    if not reporters:
+        return {}
     pass

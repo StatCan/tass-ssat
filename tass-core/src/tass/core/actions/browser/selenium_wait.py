@@ -1,5 +1,5 @@
 import selenium.webdriver.support.expected_conditions as EC
-from ..log.logging import getLogger
+from ...log.logging import getLogger
 from . import selenium as sel
 
 logger = getLogger(__name__)

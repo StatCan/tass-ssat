@@ -2,7 +2,7 @@ import unittest
 import pathlib
 from sys import platform
 
-import tass.core.actions.selenium as selenium
+import tass.core.actions.browser.selenium as selenium
 from tass.core.tools.page_reader import PageReader
 from tass.core.exceptions.assertion_errors import (
     TassAssertionError,
@@ -12,8 +12,8 @@ from tass.core.exceptions.assertion_errors import (
 
 import selenium.webdriver.support.expected_conditions as EC
 from selenium.webdriver.support.select import Select
-from tass.core.drivers.driverconfig import new_driver
-from tass.core.drivers.custombrowserdrivers import (
+from tass.core.drivers.new_driver import new_driver
+from tass.core.drivers.browser.customdrivers import (
     ChromeDriver as CDriver,
     EdgeDriver as EDriver,
     FirefoxDriver as FDriver,
@@ -25,7 +25,7 @@ class TestSelenium(unittest.TestCase):
 
     config = [
         {
-            "browser_name": "chrome",
+            "driver_name": "chrome",
             "uuid": "chromeTEST",
             "configs": {
                 "driver": {
@@ -42,7 +42,7 @@ class TestSelenium(unittest.TestCase):
             }
         },
         {
-            "browser_name": "firefox",
+            "driver_name": "firefox",
             "uuid": "firefoxTEST",
             "configs": {
                 "driver": {
@@ -59,7 +59,7 @@ class TestSelenium(unittest.TestCase):
             }
         },
         {
-            "browser_name": "edge",
+            "driver_name": "edge",
             "uuid": "edgeTEST",
             "configs": {
                 "driver": {
@@ -76,7 +76,7 @@ class TestSelenium(unittest.TestCase):
             }
         },
         {
-            "browser_name": "safari",
+            "driver_name": "safari",
             "uuid": "safariTEST",
             "configs": {
                 "driver": {
