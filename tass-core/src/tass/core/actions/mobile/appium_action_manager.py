@@ -11,7 +11,6 @@ all_managers = {}
 
 
 def get_manager(mobile_configs, *args, **kwargs):
-    breakpoint()
     # TODO: configure settings for drivers.
     if mobile_configs['uuid'] in all_managers:
         return all_managers[mobile_configs['uuid']]
@@ -49,7 +48,6 @@ class AppiumActionManager(ActionManager):
 
     def action(self, command, *args, **kwargs):
         if not self._manager['driver']:
-            # TODO: Implement appium new driver function
             self._manager['driver'] = new_driver(**self._manager['config'])
         driver = self._manager['driver']
         super().action(command, driver=driver, *args, **kwargs)

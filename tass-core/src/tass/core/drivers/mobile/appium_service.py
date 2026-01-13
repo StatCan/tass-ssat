@@ -22,7 +22,7 @@ class TASSAppiumService(AppiumService):
     @classmethod
     def service(cls, driver, appium=None):
         DEFAULT = {
-            "--log": "./logs/appium.log"
+            "--log": "./log/appium.log"
         }
         args = []
         if appium is not None:

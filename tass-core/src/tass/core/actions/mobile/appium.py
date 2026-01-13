@@ -1,5 +1,7 @@
 from ..browser import selenium as sel
+from ...tools.page_reader import PageReader
 from ...log.logging import getLogger
+from selenium.common.exceptions import WebDriverException
 
 #  For additional documentation, see selenium docs:
 #  https://www.selenium.dev/selenium/docs/api/py/webdriver_remote/selenium.webdriver.remote.webelement.html
@@ -8,7 +10,36 @@ from ...log.logging import getLogger
 logger = getLogger(__name__)
 
 
-def click(driver, find=sel._find_element, **kwargs):
+def _find_element_hide_keyboard(driver, locator, locator_args=None, page=None, hide_keyboard=True, *args, **kwargs):
+    # Hide keyboard before locating element if True. Set to False to keep keyboard open.
+    if hide_keyboard and driver().is_keyboard_shown:
+        driver().hide_keyboard(*args, **kwargs)
+    return driver().find_element(**locate(page, locator, locator_args))
+
+
+def locate(page, locator, locator_args):
+    logger.debug("Locator: %s -- Args: %s", locator, locator_args)
+    if (isinstance(locator, str)):
+        logger.debug("Getting locator (%s) from POM: %s", locator, page)
+        _loc = PageReader().get_element(*page, locator)
+    elif isinstance(locator, dict):
+        logger.debug("Locator provided directly...")
+        _loc = locator
+    else:
+        msg = f"Locator type not supported. Type: {type(locator)}"
+        logger.error(msg)
+        raise TypeError(msg)
+
+    if locator_args:
+        logger.debug("Filling in blanks in locator using: %s", locator_args)
+        # scenario converter should convert locator args to a list by default
+        _loc['value'] = _loc['value'].format(*locator_args)
+
+    logger.debug("Using locator: %s", _loc)
+    return _loc
+
+
+def click(driver, pointer_type=None, find=_find_element_hide_keyboard, **kwargs):
     """Click an element in the DOM
 
     Execute the selenium click function against the locator
@@ -20,20 +51,47 @@ def click(driver, find=sel._find_element, **kwargs):
         driver:
             The RemoteWebDriver object that is connected
             to the open browser.
+        pointer_type:
+            String value for the JavaScript PointerType.
+            Valid entries are: [touch, mouse, pen]
+            Defaults to touch for Appium actions.
         find:
             The function to be called when attempting to locate
             an element. Must use either a explicit wait function
-            or the default _find_element fuinction.
+            or the default _find_element function.
         **kwargs:
             Dictionary containing additional parameters. Contents
             of the dictionary will vary based on the find function used.
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    sel.click(driver, find, **kwargs)
+    # JavaScript used to trigger a click (tap) event on the element
+    # Bypasses issues clicking edge case elements that may give wrong
+    # coordinates with default click.
+    _valid_pointers = ['pen', 'touch', 'mouse']
+    _pointer = pointer_type if pointer_type in _valid_pointers else 'touch'
+    options = (
+        "{'bubbles': true, 'pointerType': '"
+        f"{_pointer}"
+        "'}"
+    )
+    script = (
+        "arguments[0].scrollIntoView({'block': 'center'});" # Scroll element to center of view
+        f"arguments[0].dispatchEvent(new PointerEvent('click', {options}))" # Fire click event
+    )
+    try:
+        ele = find(driver, **kwargs)
+
+        driver().execute_script(script, ele)
+        logger.debug("Element clicked")
+    except WebDriverException as e:
+        logger.warning("Something went wrong, %s -- Trying again", e)
+        ele = find(driver, **kwargs)
+        driver().execute_script(script, ele)
+        logger.debug("Element clicked")
 
 
-def write(driver, find=sel._find_element, text='', **kwargs):
+def write(driver, find=_find_element_hide_keyboard, text='', **kwargs):
     """Send a string to an element in the DOM
 
     Execute the selenium send_keys(str) function against the locator
@@ -48,7 +106,7 @@ def write(driver, find=sel._find_element, text='', **kwargs):
         find:
             The function to be called when attempting to locate
             an element. Must use either a explicit wait function
-            or the default _find_element fuinction.
+            or the default _find_element function.
         text:
             The str text that is to be sent to the element. Behaviour of
             this function is determined by the properties of the
@@ -65,7 +123,7 @@ def write(driver, find=sel._find_element, text='', **kwargs):
     sel.write(driver, find=find, text=text, **kwargs)
 
 
-def write_stored_value(driver, find=sel._find_element, text_key='', **kwargs):
+def write_stored_value(driver, find=_find_element_hide_keyboard, text_key='', **kwargs):
     """Send a stored string to an element in the DOM
 
     Execute the selenium send_keys(str) function against the locator
@@ -80,7 +138,7 @@ def write_stored_value(driver, find=sel._find_element, text_key='', **kwargs):
         find:
             The function to be called when attempting to locate
             an element. Must use either a explicit wait function
-            or the default _find_element fuinction.
+            or the default _find_element function.
         text_key:
             The str key used to store a str using ValueStore.
         **kwargs:
@@ -92,7 +150,7 @@ def write_stored_value(driver, find=sel._find_element, text_key='', **kwargs):
     sel.write_stored_value(driver, find=find, text_key=text_key, **kwargs)
 
 
-def select_dropdown(driver, value, using, find=sel._find_element, **kwargs):
+def select_dropdown(driver, value, using, find=_find_element_hide_keyboard, **kwargs):
     """Select an option from a dropdown using text, value, or index in the DOM
 
     Execute the selenium Select.select_by_* function
@@ -129,7 +187,7 @@ def select_dropdown(driver, value, using, find=sel._find_element, **kwargs):
     sel.select_dropdown(driver, value, using, find=find, **kwargs)
 
 
-def clear(driver, find=sel._find_element, **kwargs):
+def clear(driver, find=_find_element_hide_keyboard, **kwargs):
     """Clear the value of a text input element in the DOM
 
     Execute the selenium clear function against the locator
@@ -144,7 +202,7 @@ def clear(driver, find=sel._find_element, **kwargs):
         find:
             The function to be called when attempting to locate
             an element. Must use either a explicit wait function
-            or the default _find_element fuinction.
+            or the default _find_element function.
         **kwargs:
             Dictionary containing additional parameters. Contents
             of the dictionary will vary based on the find function used.
@@ -211,7 +269,7 @@ def load_page(driver, page, url_key='url', use_local=False):
     sel.load_page(driver, page, url_key=url_key, use_local=use_local)
 
 
-def read_attribute(driver, attribute, find=sel._find_element, **kwargs):
+def read_attribute(driver, attribute, find=_find_element_hide_keyboard, **kwargs):
     """Read the value of an attribute for an element in the DOM
 
     Execute the selenium get_attribute function against the locator
@@ -226,7 +284,7 @@ def read_attribute(driver, attribute, find=sel._find_element, **kwargs):
         find:
             The function to be called when attempting to locate
             an element. Must use either a explicit wait function
-            or the default _find_element fuinction.
+            or the default _find_element function.
         attribute:
             The str name of the attribute to be read from the element.
             Must match the HTML element attribute name exactly.
@@ -243,7 +301,7 @@ def read_attribute(driver, attribute, find=sel._find_element, **kwargs):
     sel.read_attribute(driver, attribute, find=find, **kwargs)
 
 
-def read_css(driver, attribute, find=sel._find_element, **kwargs):
+def read_css(driver, attribute, find=_find_element_hide_keyboard, **kwargs):
     """Read the value of a css attribute for an element in the DOM
 
     Execute the selenium value_of_css function against the locator
@@ -258,7 +316,7 @@ def read_css(driver, attribute, find=sel._find_element, **kwargs):
         find:
             The function to be called when attempting to locate
             an element. Must use either a explicit wait function
-            or the default _find_element fuinction.
+            or the default _find_element function.
         attribute:
             The str name of the attribute to be read from the element.
             Must match the CSS element attribute name exactly.
@@ -276,7 +334,7 @@ def read_css(driver, attribute, find=sel._find_element, **kwargs):
     sel.read_css(driver, attribute, find=find, **kwargs)
 
 
-def read_text(driver, find=sel._find_element, **kwargs):
+def read_text(driver, find=_find_element_hide_keyboard, **kwargs):
     """Read the text value for an element in the DOM
 
     Get the text value of the element with the locator
@@ -291,7 +349,7 @@ def read_text(driver, find=sel._find_element, **kwargs):
         find:
             The function to be called when attempting to locate
             an element. Must use either a explicit wait function
-            or the default _find_element fuinction.
+            or the default _find_element function.
         **kwargs:
             Dictionary containing additional parameters. Contents
             of the dictionary will vary based on the find function used.
@@ -302,7 +360,7 @@ def read_text(driver, find=sel._find_element, **kwargs):
     sel.read_text(driver, find=find, **kwargs)
 
 
-def switch_frame(driver, frame, page=None, find=sel._find_element):
+def switch_frame(driver, frame, page=None, find=_find_element_hide_keyboard):
     """Change the active frame by name or element
 
     Execute the selenium switch_to.frame function against the locator
@@ -317,7 +375,7 @@ def switch_frame(driver, frame, page=None, find=sel._find_element):
         find:
             The function to be called when attempting to locate
             an element. Must use either a explicit wait function
-            or the default _find_element fuinction.
+            or the default _find_element function.
         frame:
             The frame that should take focus. This can be either a str
             name or id of the frame or it can be a dictionary composed of 'by'
@@ -401,9 +459,9 @@ def handle_alert(driver, handle=True, text=None):
 def screenshot(driver,
                name="screenshot",
                locator=None,
-               find=sel._find_element,
+               find=_find_element_hide_keyboard,
                **kwargs):
-    
+
     sel.screenshot(driver,
                    name=name,
                    locator=locator,
@@ -435,7 +493,7 @@ def assert_alert_displayed(driver, text=None, soft=False):
 
 
 
-def assert_page_is_open(driver, page=None, find=sel._find_element,
+def assert_page_is_open(driver, page=None, find=_find_element_hide_keyboard,
                         soft=False, page_id=None):
     """Assert the given page is open using the described method
 
@@ -463,7 +521,7 @@ def assert_page_is_open(driver, page=None, find=sel._find_element,
                             page_id=page_id)
 
 
-def assert_contains_text(driver, text, find=sel._find_element,
+def assert_contains_text(driver, text, find=_find_element_hide_keyboard,
                          soft=False, exact=False, **kwargs):
     """Assert the given text is displayed in the element.
        Can be soft, or hard check.
@@ -488,7 +546,7 @@ def assert_contains_text(driver, text, find=sel._find_element,
                              soft=soft, exact=exact, **kwargs)
 
 
-def assert_displayed(driver, find=sel._find_element, soft=False, **kwargs):
+def assert_displayed(driver, find=_find_element_hide_keyboard, soft=False, **kwargs):
     """Assert the given element is displayed. Can be a soft or hard check
 
     Execute the selenium is_displayed function against the locator
@@ -501,7 +559,7 @@ def assert_displayed(driver, find=sel._find_element, soft=False, **kwargs):
         find:
             The function to be called when attempting to locate
             an element. Must use either a explicit wait function
-            or the default _find_element fuinction.
+            or the default _find_element function.
         soft:
             Boolean flag that indicates if a failed assertion
             should end execution. If True execution for the
@@ -516,7 +574,7 @@ def assert_displayed(driver, find=sel._find_element, soft=False, **kwargs):
     sel.assert_displayed(driver, find=find, soft=soft, **kwargs)
 
 
-def assert_not_displayed(driver, find=sel._find_element, soft=False, **kwargs):
+def assert_not_displayed(driver, find=_find_element_hide_keyboard, soft=False, **kwargs):
     """Assert the given element is not displayed. Can be a soft of hard check
 
     Execute the selenium is_displayed function against the locator
@@ -529,7 +587,7 @@ def assert_not_displayed(driver, find=sel._find_element, soft=False, **kwargs):
         find:
             The function to be called when attempting to locate
             an element. Must use either a explicit wait function
-            or the default _find_element fuinction.
+            or the default _find_element function.
         soft:
             Boolean flag that indicates if a failed assertion
             should end execution. If True execution for the
@@ -545,7 +603,7 @@ def assert_not_displayed(driver, find=sel._find_element, soft=False, **kwargs):
 
 
 def assert_attribute_contains_value(driver, attribute, value,
-                                    find=sel._find_element, soft=False,
+                                    find=_find_element_hide_keyboard, soft=False,
                                     exact=False, **kwargs):
     """ Assert that the given element contains the specified
     value for the given attribute.
@@ -564,7 +622,7 @@ def assert_attribute_contains_value(driver, attribute, value,
         find:
             The function to be called when attempting to locate
             an element. Must use either a explicit wait function
-            or the default _find_element fuinction.
+            or the default _find_element function.
         soft:
             Boolean flag that indicates if a failed assertion
             should end execution. If True execution for the
