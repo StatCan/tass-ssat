@@ -16,6 +16,15 @@ pages = {
         # QA Practice
 }
 
+# TODO: define function to test installation of drivers/emulators/devices
+def start_driver(self, device):
+    # TODO: create instance of custom driver
+    # TODO: create and start appium service
+
+    # TODO: yield driver, stop service.
+    # TODO: Catch appium errors, fail with message.
+    pass
+
 @unittest.skipUnless(appium_inst, "Appium is not installed.")
 class TestAppium(unittest.TestCase):
     # TODO: setup & start/close appium
