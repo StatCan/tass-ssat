@@ -32,17 +32,7 @@ class MobileDriver(webdriver.Remote):
         self.logger = getLogger(__name__, self.name)
 
     def find_element(self, by, value):
-        if by.lower() == "id" or by.lower() == "name":
-            # Convert ID and Name locator methods to xpath for compatibility.
-            logger.warning("Locator By methods: ID and NAME may not be supported. Consider updating.")
-            _value = f"//*[@{by}='{value}']"
-            _by = "xpath"
-            logger.warning("Converting to simple xpath. %s", _value)
-        else:
-            _value = value
-            _by = by
-
-        element = super().find_element(_by, _value)
+        element = super().find_element(by, value)
         if element.is_displayed():
             rect = element.rect
         else:
@@ -96,6 +86,16 @@ class MobileDriver(webdriver.Remote):
         else:
             self.logger.warning("%s context is not found.", context)
 
+    def get(self, url):
+        self.logger.info("Navigating to URL: %s", url)
+        super().get(url)
+        # Ensure context is active for Webview interactions
+        if self.WEBVIEW not in self.current_context:
+            webview = self.find_webview_context()
+            # Single webview is assumed
+            if webview:
+                self.switch_to_context(webview)
+
 class AndroidDriver(MobileDriver):
 
     def __init__(self, *args, **kwargs):
@@ -106,16 +106,6 @@ class AndroidDriver(MobileDriver):
         self.logger.debug("Android driver found element >>> tag: %s, location: %s",
                           element.tag_name, rect)
         return element
-
-    def get(self, url):
-        self.logger.info("Navigating to URL: %s", url)
-        super().get(url)
-        # Ensure context is active for Webview interactions
-        if self.WEBVIEW not in self.current_context:
-            webview = self.find_webview_context()
-            # Single webview is assumed
-            if webview:
-                self.switch_to_context(webview)
 
     def hide_keyboard(self, strategy="back", *args, **kwargs):
         def back(*args, **kwargs):

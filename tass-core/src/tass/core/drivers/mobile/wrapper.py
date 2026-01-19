@@ -23,7 +23,6 @@ class BaseMobileDriverWrapper():
         self._service = None
 
     def __call__(self, driver_options, driver_init, *args, **kwargs):
-        breakpoint()
         if not self._driver:
             options = self.set_options(driver_options)
             # Start Appium Service
@@ -151,9 +150,7 @@ class AndroidDriverWrapper(BaseMobileDriverWrapper):
 
     def quit(self):
         if self._driver:
-            self._driver.quit()
             self._driver.terminate_app("com.android.chrome")
-            self._driver = None
         super().quit()
 
 

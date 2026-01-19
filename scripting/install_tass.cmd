@@ -13,4 +13,6 @@ pip install -e tass-core
 pip install -e tass-converter
 @echo "INSTALLING EDITABLE TASS-ORCHESTRATOR"
 pip install -e tass-orchestrator
+@echo "INSTALLING APPIUM"
+npm i --location=global appium
 @echo "INSTALLATION COMPLETED"

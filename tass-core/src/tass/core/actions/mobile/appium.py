@@ -35,6 +35,14 @@ def locate(page, locator, locator_args):
         # scenario converter should convert locator args to a list by default
         _loc['value'] = _loc['value'].format(*locator_args)
 
+    if _loc['by'].lower() == "id" or _loc['by'].lower() == "name":
+            # Convert ID and Name locator methods to xpath for compatibility.
+            logger.warning("Locator By methods: ID and NAME may not be supported. Consider updating.")
+            _loc['value'] = f"//*[@{_loc['by']}='{_loc['value']}']"
+            _loc['by'] = "xpath"
+            logger.warning("Converting to simple xpath. %s", _loc['value'])
+
+
     logger.debug("Using locator: %s", _loc)
     return _loc
 

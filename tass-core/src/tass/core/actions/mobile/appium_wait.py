@@ -1,3 +1,4 @@
+from . import appium as app
 from ...log.logging import getLogger
 from ..browser import selenium_wait as selwait
 
@@ -59,6 +60,8 @@ def wait_element_visible(driver, locator,
             Dictionary containing additional parameters. Contents
             of the dictionary will vary based on the find function used.
     """
+    page = kwargs.get("page", None)
+    locator = app.locate(page=page, locator=locator, locator_args=locator_args)
     selwait.wait_element_visible(driver, locator,
                                  locator_args=locator_args,
                                  action=action, **kwargs)
