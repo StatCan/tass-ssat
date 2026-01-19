@@ -122,6 +122,7 @@ class BaseDriverWrapper():
         return wait_.until(until_func(**kwargs))
     
     def select(self, element, value, using):
+        # send_keys to scroll element into view
         element.send_keys("")
         match using:
             case 'text':
