@@ -1,4 +1,4 @@
-# Testing and Automated Services Suite – Suite et service d’automatisation et de testing
+# Testing and Automation Software Suite – Suite et service d’automatisation et de testing
 
 The TASS application assists users in creating and running reproducible
 test cases for web applications. TASS uses json configuration files to
@@ -8,8 +8,11 @@ executing the defined tests.
 ## Getting Started
 
 TASS relies on a conda compatible environment and package manager. The
-framework is tested on Windows, and efforts are made for it to be
-compatible with Linux/macOS.
+framework is tested on Windows and macOS, and efforts are made for it to be
+functional on Linux. You can install the package from the 
+[releases](https://github.com/StatCan/tass-ssat/releases) section of 
+the repository. Further documentation can be found at our [Github 
+Pages](https://statcan.github.io/tass-ssat/) website.
 
 ### Development
 
@@ -19,9 +22,10 @@ docs/best_practices.md. Also, create your conda environment via
 `conda env create -f environment.yaml`.
 
 The conda environment will contain all the of the dependencies at the
-correct versions. To run tests, make sure you have an editable install
-with `pip install -e <module>` from the root directory. Where `<module>`
-is replaced with the desired component of TASS:
+correct versions with the exception of Appium. You can install Appium inside the
+conda environment by typing `npm -g install appium`. To run tests, make sure you have 
+an editable install with `pip install -e <module>` from the root directory. 
+Where `<module>` is replaced with the desired component of TASS:
 
 - tass-core
 - tass-converter
@@ -55,7 +59,7 @@ release and then running the install command.
 #### pip
 
 Download the .whl file for the desired release version. Using the CLI
-with pip and python >=3.10 enter the command `pip install <path/to/wheel/file>`
+with pip and python >=3.13 enter the command `pip install <path/to/wheel/file>`
 
 #### conda
 
@@ -101,9 +105,3 @@ distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations
 under the License.
-
-## Documentation
-
-Further documentation can be found in the docs folder. The documentation
-can be built using the `sphinx-build -b html source build` from the `doc`
-folder.
