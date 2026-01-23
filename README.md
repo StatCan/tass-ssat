@@ -49,3 +49,26 @@ valider son fonctionnement sur Linux. SSAT peut être installé de la
 page de [publication](https://github.com/StatCan/tass-ssat/releases) 
 de Github. Il y a plus de documentation sur notre site [Github 
 Pages](https://statcan.github.io/tass-ssat/).
+
+## Licence/Droit d'auteur
+
+Le code et tous les fichiers dans ce projet sont sous la licence Apache
+license version 2, sauf si une licence différente est spécifiée dans le 
+fichier. Si c'est le cas, la licence du fichier est applicable.
+
+Copyright © Sa Majesté le Roi du chef du Canada, représentée par le 
+ministre responsable de Statistique Canada, 2023.
+
+Le texte ci-bas est tiré de la notification officielle d'Apache:
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may
+not use this file except in compliance with the License. You may obtain
+a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations
+under the License.
