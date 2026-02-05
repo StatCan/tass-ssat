@@ -74,9 +74,10 @@ installer les dépédences.
 TASS peut être utilisé dans la CLI avec les commandes documentées dans les pages 
 des modules appropriées:
 
-- [tass-core](./tass-core/README.md)
-- [tass-converter](./tass-converter/README.md)
-- [tass-orchestrator](./tass-orchestrator/README.md)
+- [tass-core](https://github.com/StatCan/tass-ssat/tree/main/tass-core)
+- [tass-converter](https://github.com/StatCan/tass-ssat/tree/main/tass-converter)
+- [tass-orchestrator](https://github.com/StatCan/tass-ssat/tree/main/tass-orchestrator)
+- [tass-report](https://github.com/StatCan/tass-ssat/tree/main/tass-report)
 
 #### Démo
 
@@ -84,7 +85,7 @@ Le projet contient plusieurs examples et fichiers de démonstrations. Pour les
 utiliser, faîtes une copie du projet et créer votre environnement conda. Tous 
 les fichiers nécessaires sont dans le dossier d'examples.
 
-[EXAMPLES](examples/)
+[EXAMPLES](https://github.com/StatCan/tass-ssat/tree/main/examples)
 
 ## Licence / Droits d'auteurs
 

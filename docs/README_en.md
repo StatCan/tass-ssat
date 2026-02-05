@@ -72,9 +72,10 @@ dependencies.
 
 The testing framework can be invoked from your CLI with the commands described in the module README:
 
-- [tass-core](./tass-core/README.md)
-- [tass-converter](./tass-converter/README.md)
-- [tass-orchestrator](./tass-orchestrator/README.md)
+- [tass-core](https://github.com/StatCan/tass-ssat/tree/main/tass-core)
+- [tass-converter](https://github.com/StatCan/tass-ssat/tree/main/tass-converter)
+- [tass-orchestrator](https://github.com/StatCan/tass-ssat/tree/main/tass-orchestrator)
+- [tass-report](https://github.com/StatCan/tass-ssat/tree/main/tass-report)
 
 #### Demo
 
@@ -82,7 +83,7 @@ The repository comes with several examples and working demos. To use any of the 
 create and activate your conda environment. All the files required for a demo should be provided
 in the examples folder.
 
-[EXAMPLES](examples/)
+[EXAMPLES](https://github.com/StatCan/tass-ssat/tree/main/examples)
 
 
 ## License/Copyright
