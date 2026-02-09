@@ -1,5 +1,6 @@
 from enum import Enum
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.select import Select
 from appium.options.common import AppiumOptions
 from ...log.logging import getLogger
 from .appium_service import TASSAppiumService
@@ -124,6 +125,26 @@ class BaseMobileDriverWrapper():
 
         wait_ = self._waits.get(time, new_wait(time))
         return wait_.until(until_func(**kwargs))
+    
+    def select(self, element, value, using):
+        # send_keys to scroll element into view.
+        element.send_keys("")
+        match using:
+            case 'text':
+                select = Select(element).select_by_visible_text
+                value = str(value)
+                log.debug('Selecting with visible text')
+            case 'value':
+                select = Select(element).select_by_value
+                value = str(value)
+                log.debug('Selecting using option value')
+            case 'index':
+                select = Select(element).select_by_index
+                value = int(value)
+                log.debug("Selecting using option index")
+            case _:
+                raise ValueError(f'Select method {using} is not a valid method.')
+        select(value)
 
     def quit(self):
         if self._driver:

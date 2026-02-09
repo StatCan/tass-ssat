@@ -195,30 +195,14 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
             requires: locator.
 
     """
-    match using:
-        case 'text':
-            select = Select.select_by_visible_text
-            value = str(value)
-            logger.debug('Selecting with visible text')
-        case 'value':
-            select = Select.select_by_value
-            value = str(value)
-            logger.debug('Selecting using option value')
-        case 'index':
-            select = Select.select_by_index
-            value = int(value)
-            logger.debug("Selecting using option index")
-        case _:
-            raise ValueError(f'Select method {using} is not a valid method.')
+    
 
     try:
-        dropdown = Select(find(driver, **kwargs))
-        select(dropdown, value)
+        driver.select(find(driver, **kwargs), value, using)
         logger.debug("Dropdown selected: '%s' -- using: '%s'", value, using)
     except WebDriverException as e:
         logger.warning("Something went wrong, %s -- Trying again", e)
-        dropdown = Select(find(driver, **kwargs))
-        select(dropdown, value)
+        driver.select(find(driver, **kwargs), value, using)
         logger.debug("Attempt 2 >> Dropdown selected: '%s' -- using: '%s'",
                      value, using)
 
