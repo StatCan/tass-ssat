@@ -98,17 +98,19 @@ class TestSelenium(unittest.TestCase):
         str(pathlib.Path(__file__).parents[1].resolve())
         + '/pages/page1.html'
         )
+    
+    def setUpClass():
+        # Moved from setUp, only needed to be executed 1 time.
+        TestSelenium.drivers = [(TestSelenium.config[0], CDriver),
+                        (TestSelenium.config[1], FDriver),
+                        (TestSelenium.config[2], EDriver)]
+        if platform == "darwin":
+            TestSelenium.drivers.append((TestSelenium.config[3], SDriver))
 
     def setUp(self):
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         print("Beginning new test TestCase %s" % self._testMethodName)
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-
-        self.drivers = [(self.config[0], CDriver),
-                        (self.config[1], FDriver),
-                        (self.config[2], EDriver)]
-        if platform == "darwin":
-            self.drivers.append((self.config[3], SDriver))
 
     def start_driver(self, browser):
         print("\nStarting driver for: %s" % browser[1].__name__)

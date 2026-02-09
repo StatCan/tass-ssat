@@ -12,8 +12,8 @@ logger = getLogger(__name__)
 
 def _find_element_hide_keyboard(driver, locator, locator_args=None, page=None, hide_keyboard=True, *args, **kwargs):
     # Hide keyboard before locating element if True. Set to False to keep keyboard open.
-    if hide_keyboard and driver().is_keyboard_shown:
-        driver().hide_keyboard(*args, **kwargs)
+    # if hide_keyboard and driver().is_keyboard_shown:
+    #     driver().hide_keyboard(*args, **kwargs)
     return driver().find_element(**locate(page, locator, locator_args))
 
 
@@ -306,7 +306,7 @@ def read_attribute(driver, attribute, find=_find_element_hide_keyboard, **kwargs
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    sel.read_attribute(driver, attribute, find=find, **kwargs)
+    return sel.read_attribute(driver, attribute, find=find, **kwargs)
 
 
 def read_css(driver, attribute, find=_find_element_hide_keyboard, **kwargs):
@@ -339,7 +339,7 @@ def read_css(driver, attribute, find=_find_element_hide_keyboard, **kwargs):
             requires: locator.
     """
 
-    sel.read_css(driver, attribute, find=find, **kwargs)
+    return sel.read_css(driver, attribute, find=find, **kwargs)
 
 
 def read_text(driver, find=_find_element_hide_keyboard, **kwargs):
@@ -365,7 +365,7 @@ def read_text(driver, find=_find_element_hide_keyboard, **kwargs):
             requires: locator.
     """
 
-    sel.read_text(driver, find=find, **kwargs)
+    return sel.read_text(driver, find=find, **kwargs)
 
 
 def switch_frame(driver, frame, page=None, find=_find_element_hide_keyboard):
