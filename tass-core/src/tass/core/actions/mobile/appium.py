@@ -470,7 +470,7 @@ def screenshot(driver,
                find=_find_element_hide_keyboard,
                **kwargs):
 
-    sel.screenshot(driver,
+    return sel.screenshot(driver,
                    name=name,
                    locator=locator,
                    find=find,
