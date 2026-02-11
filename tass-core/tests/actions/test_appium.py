@@ -195,7 +195,7 @@ class TestAppium(unittest.TestCase):
 
 
 
-    def start_driver(self, devices):
+    def appium_starter(self, devices):
         # Generator for Appium services and drivers.
         for device in devices:
             service = None
@@ -220,7 +220,7 @@ class TestAppium(unittest.TestCase):
 
 class TestAppiumStartupActions(TestAppium):
     def test_AppiumNewDriver(self):
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             with self.subTest(device=device[1].__name__):
                 try:
                     self.assertIsInstance(driver(), device[1])
@@ -230,7 +230,7 @@ class TestAppiumStartupActions(TestAppium):
 
     def test_AppiumLoadURL(self):
         url = "https://www.google.ca"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
                     appium.load_url(driver, url)
@@ -243,7 +243,7 @@ class TestAppiumStartupActions(TestAppium):
 class TestAppiumBasicActions(TestAppium):
     def test_AppiumClose(self):
         url = "https://www.google.ca"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
                     driver().get(url)
@@ -258,7 +258,7 @@ class TestAppiumBasicActions(TestAppium):
 
     def test_AppiumQuit(self):
         url = "https://www.google.ca"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
                     driver().get(url)
@@ -270,7 +270,7 @@ class TestAppiumBasicActions(TestAppium):
 
     def test_AppiumClick(self):
         url = pages['btn-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
                     driver().get(url)
@@ -290,7 +290,7 @@ class TestAppiumBasicActions(TestAppium):
 
     def test_AppiumWrite(self):
         url = pages['txt-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
                     driver().get(url)
@@ -308,7 +308,7 @@ class TestAppiumBasicActions(TestAppium):
 
     def test_AppiumClear(self):
         url = pages['txt-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
                     driver().get(url)
@@ -336,7 +336,7 @@ class TestAppiumReadOnlyActions(TestAppium):
     def test_AppiumReadAttribute(self):
         url = pages['btn-page']['url']
         expected = "btn btn-primary"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
                     driver().get(url)
@@ -350,7 +350,7 @@ class TestAppiumReadOnlyActions(TestAppium):
 
     def test_AppiumReadCSS(self):
         url = pages['btn-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
                     driver().get(url)
@@ -370,7 +370,7 @@ class TestAppiumWindowControlActions(TestAppium):
 
     def test_AppiumSwitchToFrameElement(self):
         url = pages['frm-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
                     driver().get(url)
@@ -388,7 +388,7 @@ class TestAppiumWindowControlActions(TestAppium):
     def test_AppiumSwitchWindowNoTitle(self):
         url_0 = pages["btn-page"]['url']
         url_1 = 'https://www.google.ca'
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
                     driver().get(url_1)
@@ -404,7 +404,7 @@ class TestAppiumWindowControlActions(TestAppium):
     def test_AppiumSwitchWindowClosed(self):
         url_0 = pages['btn-page']['url']
         url_1 = 'https://www.google.ca'
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
                     driver().get(url_0)
@@ -425,7 +425,7 @@ class TestAppiumWindowControlActions(TestAppium):
         google = 'Google'
         pageOne = pages['btn-page']['title']
         statcan = "Statistics Canada: Canada's national statistical agency"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url_1)
@@ -453,7 +453,7 @@ class TestAppiumWindowControlActions(TestAppium):
         txt = pages["txt-page"]
         frm = pages["frm-page"]
 
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get(btn['url'])
@@ -478,7 +478,7 @@ class TestAppiumDropdownActions(TestAppium):
 
     def test_AppiumSelectDropdownByText(self):
         url = pages['drpdnw-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
@@ -493,7 +493,7 @@ class TestAppiumDropdownActions(TestAppium):
 
     def test_AppiumSelectDropdownByValue(self):
         url = pages['drpdnw-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
@@ -508,7 +508,7 @@ class TestAppiumDropdownActions(TestAppium):
 
     def test_AppiumSelectDropdownByIndex(self):
         url = pages['drpdnw-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
@@ -527,7 +527,7 @@ class TestAppiumAssertActions(TestAppium):
     def test_AppiumAssertTextDisplayedSuccess(self):
         url = pages['btn-page']['url']
         text = "Submitted"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 btn = pages['btn-page']['elements']['btn']
                 txt = pages['btn-page']['elements']['click-confirm']
@@ -548,7 +548,7 @@ class TestAppiumAssertActions(TestAppium):
     def test_AppiumAssertPartialTextDisplayedSuccess(self):
         url = pages['btn-page']['url']
         text = "ubmit"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 btn = pages['btn-page']['elements']['btn']
                 txt = pages['btn-page']['elements']['click-confirm']
@@ -569,7 +569,7 @@ class TestAppiumAssertActions(TestAppium):
     def test_AppiumAssertTextDisplayedSoftFailure(self):
         url = pages['btn-page']['url']
         text = "FAIL"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 btn = pages['btn-page']['elements']['btn']
                 txt = pages['btn-page']['elements']['click-confirm']
@@ -589,7 +589,7 @@ class TestAppiumAssertActions(TestAppium):
     def test_AppiumAssertTextDisplayedFailure(self):
         url = pages['btn-page']['url']
         text = "FAIL"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 btn = pages['btn-page']['elements']['btn']
                 txt = pages['btn-page']['elements']['click-confirm']
@@ -608,7 +608,7 @@ class TestAppiumAssertActions(TestAppium):
     def test_AppiumAssertExactTextDisplayedSuccess(self):
         url = pages['btn-page']['url']
         text = "Submitted"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 btn = pages['btn-page']['elements']['btn']
                 txt = pages['btn-page']['elements']['click-confirm']
@@ -630,7 +630,7 @@ class TestAppiumAssertActions(TestAppium):
     def test_AppiumAssertExactTextDisplayedSoftFailure(self):
         url = pages['btn-page']['url']
         text = "FAIL"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 btn = pages['btn-page']['elements']['btn']
                 txt = pages['btn-page']['elements']['click-confirm']
@@ -651,7 +651,7 @@ class TestAppiumAssertActions(TestAppium):
     def test_AppiumAssertExactTextDisplayedFailure(self):
         url = pages['btn-page']['url']
         text = "FAIL"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 btn = pages['btn-page']['elements']['btn']
                 txt = pages['btn-page']['elements']['click-confirm']
@@ -670,7 +670,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertDisplayedSuccess(self):
         url = pages['btn-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 btn = pages['btn-page']['elements']['btn']
                 txt = pages['btn-page']['elements']['click-confirm']
@@ -689,7 +689,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertDisplayedFailed(self):
         url = pages['btn-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 hidden = pages['btn-page']['elements']['req-txt']
                 with self.subTest(browser=device[1].__name__):
@@ -704,7 +704,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertDisplayedSoftSuccess(self):
         url = pages['btn-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 btn = pages['btn-page']['elements']['btn']
                 txt = pages['btn-page']['elements']['click-confirm']
@@ -724,7 +724,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertDisplayedSoftFailed(self):
         url = pages['btn-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 hidden = pages['btn-page']['elements']['req-txt']
                 with self.subTest(browser=device[1].__name__):
@@ -740,7 +740,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertNotDisplayedSuccess(self):
         url = pages['btn-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 hidden = pages['btn-page']['elements']['req-txt']
                 with self.subTest(browser=device[1].__name__):
@@ -757,7 +757,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertNotDisplayedFailed(self):
         url = pages['btn-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 btn = pages['btn-page']['elements']['btn']
                 txt = pages['btn-page']['elements']['click-confirm']
@@ -775,7 +775,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertNotDisplayedSoftSuccess(self):
         url = pages['btn-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 hidden = pages['btn-page']['elements']['req-txt']
                 with self.subTest(browser=device[1].__name__):
@@ -793,7 +793,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertNotDisplayedSoftFailed(self):
         url = pages['btn-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 btn = pages['btn-page']['elements']['btn']
                 txt = pages['btn-page']['elements']['click-confirm']
@@ -812,7 +812,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertPageIsOpenByTitleSoftFailure(self):
         page = pages['btn-page']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get("https://www.google.ca")
@@ -826,7 +826,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertPageIsOpenByURLSoftFailure(self):
         page = pages['txt-page']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get("https://www.google.ca")
@@ -840,7 +840,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertPageIsOpenByElementSoftFailure(self):
         page = pages['drpdnw-page']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get("https://www.google.ca")
@@ -854,7 +854,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertPageIsOpenByTitleSoftSuccess(self):
         page = pages['btn-page']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get(page['url'])
@@ -870,7 +870,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertPageIsOpenByURLSoftSuccess(self):
         page = pages['txt-page']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get(page['url'])
@@ -886,7 +886,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertPageIsOpenByElementSoftSuccess(self):
         page = pages['drpdnw-page']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get(page['url'])
@@ -902,7 +902,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertPageIsOpenByTitleFailure(self):
         page = pages['btn-page']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get("https://www.google.ca")
@@ -916,7 +916,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertPageIsOpenByURLFailure(self):
         page = pages['txt-page']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get("https://www.google.ca")
@@ -930,7 +930,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertPageIsOpenByElementFailure(self):
         page = pages['drpdnw-page']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get("https://www.google.ca")
@@ -944,7 +944,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertPageIsOpenByTitleSuccess(self):
         page = pages['btn-page']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get(page['url'])
@@ -960,7 +960,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertPageIsOpenByURLSuccess(self):
         page = pages['txt-page']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get(page['url'])
@@ -976,7 +976,7 @@ class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertPageIsOpenByElementSuccess(self):
         page = pages['drpdnw-page']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get(page['url'])
@@ -996,7 +996,7 @@ class TestAppiumAssertActions(TestAppium):
 
         value = "submit"
         attribute = "name"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1019,7 +1019,7 @@ class TestAppiumAssertActions(TestAppium):
 
         value = "ubmi"
         attribute = "name"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1042,7 +1042,7 @@ class TestAppiumAssertActions(TestAppium):
 
         value = "FAIL"
         attribute = "name"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1064,7 +1064,7 @@ class TestAppiumAssertActions(TestAppium):
 
         value = "FAIL"
         attribute = "name"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1085,7 +1085,7 @@ class TestAppiumAssertActions(TestAppium):
 
         value = "submit"
         attribute = "name"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1109,7 +1109,7 @@ class TestAppiumAssertActions(TestAppium):
 
         value = "submi"
         attribute = "name"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1132,7 +1132,7 @@ class TestAppiumAssertActions(TestAppium):
 
         value = "submi"
         attribute = "name"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1154,7 +1154,7 @@ class AppiumScreenshotActions(TestAppium):
     def test_AppiumScreenshotPage(self):
         url = pages['btn-page']['url']
         name = "test"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1177,7 +1177,7 @@ class AppiumScreenshotActions(TestAppium):
         url = pages['btn-page']['url']
         locator = pages['btn-page']['elements']['btn']
         name = "test"
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1202,7 +1202,7 @@ class TestAppiumAlertActions(TestAppium):
 
     def test_AppiumHandleAlertAccept(self):
         url = pages['alrt-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1216,7 +1216,7 @@ class TestAppiumAlertActions(TestAppium):
 
     def test_AppiumHandleAlertAccept1(self):
         url = pages['alrt-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1230,7 +1230,7 @@ class TestAppiumAlertActions(TestAppium):
 
     def test_AppiumHandleAlertAcceptStr(self):
         url = pages['alrt-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1244,7 +1244,7 @@ class TestAppiumAlertActions(TestAppium):
 
     def test_AppiumHandleAlertDismiss(self):
         url = pages['alrt-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1258,7 +1258,7 @@ class TestAppiumAlertActions(TestAppium):
 
     def test_AppiumHandleAlertDismiss0(self):
         url = pages['alrt-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1272,7 +1272,7 @@ class TestAppiumAlertActions(TestAppium):
 
     def test_AppiumHandleAlertDismissStr(self):
         url = pages['alrt-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1286,7 +1286,7 @@ class TestAppiumAlertActions(TestAppium):
 
     def test_AppiumHandleConfirmationAlertAccept(self):
         url = pages['conf-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1301,7 +1301,7 @@ class TestAppiumAlertActions(TestAppium):
 
     def test_AppiumHandleConfirmationAlertDismiss(self):
         url = pages['conf-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1316,7 +1316,7 @@ class TestAppiumAlertActions(TestAppium):
 
     def test_AppiumHandlePromptAlertAccept(self):
         url = pages['prmt-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1332,7 +1332,7 @@ class TestAppiumAlertActions(TestAppium):
 
     def test_AppiumHandlePromptAlertDismiss(self):
         url = pages['prmt-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1348,7 +1348,7 @@ class TestAppiumAlertActions(TestAppium):
 
     def test_AppiumAssertAlertDisplayedSoftFailure(self):
         url = pages['alrt-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1361,7 +1361,7 @@ class TestAppiumAlertActions(TestAppium):
 
     def test_AppiumAssertAlertDisplayedHardFailure(self):
         url = pages['alrt-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1374,7 +1374,7 @@ class TestAppiumAlertActions(TestAppium):
 
     def test_AppiumAssertAlertTextDisplayedSuccess(self):
         url = pages['alrt-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1388,7 +1388,7 @@ class TestAppiumAlertActions(TestAppium):
 
     def test_AppiumAssertAlertPartialTextDisplayedSuccess(self):
         url = pages['alrt-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
@@ -1401,7 +1401,7 @@ class TestAppiumAlertActions(TestAppium):
 
     def test_AppiumAssertAlertTextDisplayedFailureSoft(self):
         url = pages['alrt-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
@@ -1414,7 +1414,7 @@ class TestAppiumAlertActions(TestAppium):
 
     def test_AppiumAssertAlertTextDisplayedFailure(self):
         url = pages['alrt-page']['url']
-        for device, driver in self.start_driver(self.drivers):
+        for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
