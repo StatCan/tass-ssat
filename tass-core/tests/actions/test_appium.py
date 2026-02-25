@@ -1,6 +1,7 @@
 import unittest
 import importlib
 import pathlib
+from time import sleep
 from sys import platform
 from tass.core.drivers.new_driver import new_driver
 from tass.core.tools.page_reader import PageReader
@@ -8,7 +9,6 @@ from tass.core.exceptions.assertion_errors import (
     TassAssertionError,
     TassHardAssertionError,
     TassSoftAssertionError)
-from tass.core.drivers.browser.customdrivers import ChromeDriver as CDriver
 from selenium.webdriver.support.select import Select
 import tass.core.actions.mobile.appium as appium
 import selenium.webdriver.support.expected_conditions as EC
@@ -178,7 +178,6 @@ class TestAppium(unittest.TestCase):
 
 
     def setUpClass():
-        from tass.core.drivers.mobile.appium_service import TASSAppiumService
         from tass.core.drivers.mobile.customdrivers import (
             AndroidDriver as Android,
             IOSDriver as IOS
@@ -198,16 +197,8 @@ class TestAppium(unittest.TestCase):
     def appium_starter(self, devices):
         # Generator for Appium services and drivers.
         for device in devices:
-            service = None
             print("\nStarting driver for: %s" % device[1].__name__)
             driver = new_driver(**device[0])
-            try:
-                service = TASSAppiumService.service(driver)
-                TASSAppiumService.start_service(service)
-            except Exception as e:
-                print("\nERROR: Unable to start Appium service. Check Appium Server Installation.")
-                raise e
-
             try:
                 driver()
             except Exception as e:
@@ -215,7 +206,6 @@ class TestAppium(unittest.TestCase):
                 raise e
 
             yield device, driver
-            TASSAppiumService.stop_service(service)
 
 
 class TestAppiumStartupActions(TestAppium):
@@ -301,7 +291,7 @@ class TestAppiumBasicActions(TestAppium):
                     self.assertEqual(
                         driver()
                         .find_element(**pages['txt-page']['elements']['input'])
-                        .get_attribute('value'), text)
+                        .get_property('value'), text)
             finally:
                 if driver:
                     driver.quit()
@@ -314,18 +304,18 @@ class TestAppiumBasicActions(TestAppium):
                     driver().get(url)
                     text = 'Selenium Test Type'
                     locator = pages['txt-page']['elements']['input']
-                    driver().find_element(**locator).send_keys(text)
+                    driver().find_element("xpath", f"//*[@id='{locator['value']}']").send_keys(text)
                     self.assertEqual(
                         driver()
-                        .find_element(**locator)
-                        .get_attribute('value'), text)
+                        .find_element("xpath", f"//*[@id='{locator['value']}']")
+                        .get_property('value'), text)
                     appium.clear(
                         driver,
                         locator=locator)
                     self.assertEqual(
                         driver()
-                        .find_element(**locator)
-                        .get_attribute('value'), '')
+                        .find_element("xpath", f"//*[@id='{locator['value']}']")
+                        .get_property('value'), '')
             finally:
                 if driver:
                     driver.quit()
@@ -513,7 +503,7 @@ class TestAppiumDropdownActions(TestAppium):
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
                     locator = pages['drpdnw-page']['elements']['select']
-                    appium.select_dropdown(driver, 1, 'index',
+                    appium.select_dropdown(driver, 2, 'index',
                                              locator=locator)
                     sel = Select(driver().find_element(**locator))
                     self.assertEqual(sel.first_selected_option.text, 'Python')

@@ -24,7 +24,7 @@ def locate(page, locator, locator_args):
         _loc = PageReader().get_element(*page, locator)
     elif isinstance(locator, dict):
         logger.debug("Locator provided directly...")
-        _loc = locator
+        _loc = locator.copy()
     else:
         msg = f"Locator type not supported. Type: {type(locator)}"
         logger.error(msg)
