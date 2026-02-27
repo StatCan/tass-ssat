@@ -68,14 +68,11 @@ class PageReader(metaclass=Singleton):
                                                default=default, llist=llist)
                     if element:
                         break
-                
-            if element is None:
-                return None
 
             # copy of element is returned to prevent
             # modifications to the element during run time
-            
-            return element.copy()
+            if isinstance(element, dict):
+                return element.copy()
 
         except KeyError as e:
             if default:
