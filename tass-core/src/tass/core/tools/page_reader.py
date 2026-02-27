@@ -46,6 +46,7 @@ class PageReader(metaclass=Singleton):
     def get_element(self, file_key,
                     page_key, element_key,
                     default=None, llist=None):
+        element = None
         if llist and [file_key, page_key] in llist:
             # If page has already been checked return None
             # llist will only be None on the
@@ -67,9 +68,13 @@ class PageReader(metaclass=Singleton):
                                                default=default, llist=llist)
                     if element:
                         break
+                
+            if element is None:
+                return None
 
             # copy of element is returned to prevent
             # modifications to the element during run time
+            
             return element.copy()
 
         except KeyError as e:
