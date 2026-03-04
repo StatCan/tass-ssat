@@ -784,10 +784,13 @@ def assert_page_is_open(driver, page=None, find=_find_element,
             _fail(soft,
                   'Element {identifier} not found. Page is not open')
 
-    def _title(driver, find, title, soft):
+    def _title(driver, find, title, soft, normalize=False):
         if (driver().title != title):
             ele = None
-            ele_title = {"by": "xpath", "value": f"//title[text()='{title}']"}
+            if normalize:
+                ele_title = {"by": "xpath", "value": f"//title[normalize-space(text())='{title}']"}
+            else:
+                ele_title = {"by": "xpath", "value": f"//title[text()='{title}']"}
             try:
                 ele = find(driver, ele_title, page=page)
                 logger.debug("Element: %s found, page is open.", ele_title)
@@ -823,6 +826,9 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                          page_id['identifier'],
                          page,
                          soft)
+            case 'normalize-title':
+                title = page_id['identifier']
+                _title(driver, find, title, soft, normalize=True)
             case 'title':
                 title = page_id.get('identifier',
                                     PageReader().get_page_title(*page))
@@ -841,6 +847,9 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                          page_id['identifier'],
                          None,
                          soft)
+            case 'normalize-title':
+                title = page_id['identifier']
+                _title(driver, find, title, soft, normalize=True)
             case 'title':
                 title = page_id['identifier']
                 _title(driver, find, title, soft)
