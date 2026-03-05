@@ -3,6 +3,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.select import Select
 from appium.options.common import AppiumOptions
 from ...log.logging import getLogger
+from ..wrapper import BaseDriverWrapper
 from .appium_service import TASSAppiumService
 from .customdrivers import TassMobileDriverWait
 from .customdrivers import (
@@ -14,13 +15,9 @@ from .customdrivers import (
 log = getLogger(__name__)
 
 
-class BaseMobileDriverWrapper():
+class BaseMobileDriverWrapper(BaseDriverWrapper):
     def __init__(self, uuid, configs, *args, **kwargs):
-        self._waits = {}
-        self._conf = self._set_defaults(configs)
-        self._driver = None
-        self._uuid = uuid
-        self._chain = None
+        super().__init__(uuid, configs, *args, **kwargs)
         self._service = None
 
     def __call__(self, driver_options, driver_init, *args, **kwargs):
@@ -39,7 +36,7 @@ class BaseMobileDriverWrapper():
                 self._conf['driver'].get('implicit_wait', 5)
                 )
 
-        return self._driver
+        return self._with_delay(self._driver)
 
     @property
     def uuid(self):
@@ -125,7 +122,7 @@ class BaseMobileDriverWrapper():
 
         wait_ = self._waits.get(time, new_wait(time))
         return wait_.until(until_func(**kwargs))
-    
+
     def select(self, element, value, using):
         # send_keys to scroll element into view.
         element.send_keys("")

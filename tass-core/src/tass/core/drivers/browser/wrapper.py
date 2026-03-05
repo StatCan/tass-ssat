@@ -9,6 +9,7 @@ from selenium.webdriver import (
     SafariOptions
 )
 from ...log.logging import getLogger
+from ..wrapper import BaseDriverWrapper
 from .customdrivers import TassDriverWait
 from .customdrivers import (
     ChromeDriver,
@@ -21,13 +22,9 @@ from .customdrivers import (
 log = getLogger(__name__)
 
 
-class BaseDriverWrapper():
+class BaseBrowserDriverWrapper(BaseDriverWrapper):
     def __init__(self, uuid, configs, *args, **kwargs):
-        self._waits = {}
-        self._conf = self._set_defaults(configs)
-        self._driver = None
-        self._uuid = uuid
-        self._chain = None
+        super().__init__(uuid, configs, *args, **kwargs)
 
     def _with_delay(self, driver):
         delayMin = abs(float(self._conf['driver'].get('delay', 0)))
@@ -120,7 +117,7 @@ class BaseDriverWrapper():
 
         wait_ = self._waits.get(time, new_wait(time))
         return wait_.until(until_func(**kwargs))
-    
+
     def select(self, element, value, using):
         # send_keys to scroll element into view
         element.send_keys("")
