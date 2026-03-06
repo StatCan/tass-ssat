@@ -32,9 +32,3 @@ class BaseDriverWrapper():
             log.debug("Delaying for %s seconds.", delay)
             time.sleep(delay)
         return driver
-
-    def _setup(self, function, *args, **kwargs):
-        func = getattr(self, function, None)
-        if not func:
-            log.warning("Function %s not found in driver wrapper: %s", function, self.__class__.__name__)
-        return func(*args, **kwargs)

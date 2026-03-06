@@ -2,6 +2,7 @@ from enum import Enum
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.select import Select
 from appium.options.common import AppiumOptions
+from . import scripting
 from ...log.logging import getLogger
 from ..wrapper import BaseDriverWrapper
 from .appium_service import TASSAppiumService
@@ -16,6 +17,9 @@ log = getLogger(__name__)
 
 
 class BaseMobileDriverWrapper(BaseDriverWrapper):
+
+    executor = scripting.MobileDriverScriptExecutor
+
     def __init__(self, uuid, configs, *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
         self._service = None
@@ -28,6 +32,11 @@ class BaseMobileDriverWrapper(BaseDriverWrapper):
                                                       self._conf["appium:server"]
             )
             TASSAppiumService.start_service(self._service)
+            # run before scripts
+            if "setup" in self._conf:
+                for func in self._conf["setup"]:
+                    _ = self.executor.execute(func, driver_wrapper=self) or "Completed"
+                    log.debug("Setup script result: %s", _)
             # initialize driver
             self._driver = driver_init(options=options, *args, **kwargs)
 
@@ -63,7 +72,17 @@ class BaseMobileDriverWrapper(BaseDriverWrapper):
     @property
     def os(self):
         if (self._driver):
-            return self._driver.capabilities["platformName"]
+            return self._driver.capabilities.get("platformName", None)
+        return None
+    
+    @property
+    def device_id(self):
+        # extract device id from driver
+        if self._driver:
+            return self._driver.capabilities.get("udid", None)
+        # extract device id from configs if driver not instantiated
+        elif "udid" in self._conf["appium:driver"]:
+            return self._conf["appium:driver"]["udid"]
         return None
 
     def _set_defaults(self, configs):
@@ -144,6 +163,11 @@ class BaseMobileDriverWrapper(BaseDriverWrapper):
         select(value)
 
     def quit(self):
+        # Execute teardown scripts if any
+        if "teardown" in self._conf:
+            for func in self._conf["teardown"]:
+                _ = self.executor.execute(func, driver_wrapper=self) or "Completed"
+                log.debug("Teardown script result: %s", _)
         if self._driver:
             self._driver.quit()
         if self._service:
@@ -159,6 +183,8 @@ class AndroidDriverWrapper(BaseMobileDriverWrapper):
         "platformName": "Android",
         "automationName": "UiAutomator2",
     }
+
+    executor = scripting.AndroidDriverScriptExecutor
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
@@ -177,6 +203,8 @@ class IOSDriverWrapper(BaseMobileDriverWrapper):
         "platformName": "ios",
         "automationName": "xcuitest",
     }
+
+    executor = scripting.IOSDriverScriptExecutor
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
