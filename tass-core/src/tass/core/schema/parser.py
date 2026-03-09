@@ -218,6 +218,9 @@ class Tass1_1Parser(Parser):
         _case = deepcopy(found[0])
         _case['steps'] = self._parse_steps(found[0]['steps'], job)
 
+        for step in _case['steps']:
+            step['status'] = "incomplete"
+
         return _case
 
     def _parse_configurations(self, config, job):
