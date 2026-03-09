@@ -26,20 +26,6 @@ class BaseBrowserDriverWrapper(BaseDriverWrapper):
     def __init__(self, uuid, configs, *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
 
-    def _with_delay(self, driver):
-        delayMin = abs(float(self._conf['driver'].get('delay', 0)))
-        delayMax = abs(float(self._conf['driver'].get('delayMax', delayMin)))
-        if delayMax == delayMin or delayMax < delayMin:
-            delay = delayMax
-        elif delayMax != delayMin:
-            delay = round(
-                random.uniform(delayMin, delayMax), 2
-                )
-        if delay > 0:
-            log.debug("Delaying for %s seconds.", delay)
-            time.sleep(delay)
-        return driver
-
     def __call__(self, browser_options, driver_init, *args, **kwargs):
         if not self._driver:
             options = self.set_options(browser_options)
@@ -148,7 +134,7 @@ class BaseBrowserDriverWrapper(BaseDriverWrapper):
         self._driver = None
 
 
-class SafariDriverWrapper(BaseDriverWrapper):
+class SafariDriverWrapper(BaseBrowserDriverWrapper):
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
@@ -168,7 +154,7 @@ class SafariDriverWrapper(BaseDriverWrapper):
         return self._with_delay(self._driver)
 
 
-class ChromeDriverWrapper(BaseDriverWrapper):
+class ChromeDriverWrapper(BaseBrowserDriverWrapper):
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
@@ -177,7 +163,7 @@ class ChromeDriverWrapper(BaseDriverWrapper):
         return super().__call__(ChromeOptions, ChromeDriver, *args, **kwargs)
 
 
-class FirefoxDriverWrapper(BaseDriverWrapper):
+class FirefoxDriverWrapper(BaseBrowserDriverWrapper):
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
@@ -197,7 +183,7 @@ class FirefoxDriverWrapper(BaseDriverWrapper):
         return self._with_delay(self._driver)
 
 
-class EdgeDriverWrapper(BaseDriverWrapper):
+class EdgeDriverWrapper(BaseBrowserDriverWrapper):
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)

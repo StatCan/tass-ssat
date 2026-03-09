@@ -33,8 +33,8 @@ class BaseMobileDriverWrapper(BaseDriverWrapper):
             )
             TASSAppiumService.start_service(self._service)
             # run before scripts
-            if "setup" in self._conf:
-                for func in self._conf["setup"]:
+            if "scripts" in self._conf:
+                for func in self._conf["scripts"].get("driver:setup", []):
                     _ = self.executor.execute(func, driver_wrapper=self) or "Completed"
                     log.debug("Setup script result: %s", _)
             # initialize driver
@@ -74,7 +74,7 @@ class BaseMobileDriverWrapper(BaseDriverWrapper):
         if (self._driver):
             return self._driver.capabilities.get("platformName", None)
         return None
-    
+
     @property
     def device_id(self):
         # extract device id from driver
@@ -164,8 +164,8 @@ class BaseMobileDriverWrapper(BaseDriverWrapper):
 
     def quit(self):
         # Execute teardown scripts if any
-        if "teardown" in self._conf:
-            for func in self._conf["teardown"]:
+        if "scripts" in self._conf:
+            for func in self._conf["scripts"].get("driver:teardown", []):
                 _ = self.executor.execute(func, driver_wrapper=self) or "Completed"
                 log.debug("Teardown script result: %s", _)
         if self._driver:
