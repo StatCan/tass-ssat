@@ -29,6 +29,10 @@ class TestPageReader(unittest.TestCase):
             {
                 "by": "id",
                 "value": "btn-x"
+            },
+            "inherit-field": {
+                "by": "id",
+                "value": "replace"
             }
         }
     }
@@ -63,7 +67,13 @@ class TestPageReader(unittest.TestCase):
 
     page1 = {
         "title": "Page Two",
-        "inherits": [["custom", "page-two"], ["custom", "page-one"]]
+        "inherits": [["custom", "page-two"], ["custom", "page-one"]],
+        "elements": {
+            "btnX": {
+                "by": "id",
+                "value": "replace"
+            }
+        }
     }
 
     def setUp(self):
@@ -112,7 +122,11 @@ class TestPageReader(unittest.TestCase):
         title = PageReader().get_page_title('custom', 'test')
         alt_url = PageReader().get_url('custom', 'test', url_key='alt-url')
         url = PageReader().get_url('custom', 'test')
+        element = PageReader().get_element("custom", "test", "inherit-field")
+        replace = PageReader().get_element("custom", "test", "btnX")
 
         self.assertEqual(title, self.page1['title'])
         self.assertEqual(alt_url, self.page2['alt-url'])
         self.assertEqual(url, self.page['url'])
+        self.assertEqual(element, self.page["elements"]["inherit-field"])
+        self.assertEqual(replace, self.page1["elements"]["btnX"])
