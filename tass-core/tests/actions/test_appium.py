@@ -156,6 +156,13 @@ class TestAppium(unittest.TestCase):
                     "implicit_wait": "15",
                     "explicit_wait": "30"
                 },
+                "scripts": {
+                    "driver:setup": [
+                        "reset_chrome",
+                        "debug_chrome",
+                        "allow_chrome_notifications"
+                    ]
+                },
                 "appium:server": {
                     "--allow-insecure": "uiautomator2:chromedriver_autodownload"
                 },
@@ -264,16 +271,15 @@ class TestAppiumBasicActions(TestAppium):
             try:
                 with self.subTest(device=device[1].__name__):
                     driver().get(url)
+                    locator = pages['btn-page']['elements']['btn']
                     appium.click(driver,
-                                   locator=pages['btn-page']['elements']['btn'])
+                                   locator=locator)
                     until = EC.presence_of_element_located
                     wait = driver.wait_until
-                    _ = pages["btn-page"]['elements']['click-confirm']
-                    locator = (_['by'], _['value'])
                     self.assertIsNotNone(wait(
                                          until_func=until,
-                                         locator=locator
-                                         ))
+                                         locator=("xpath", f"//*[@id='{locator['value']}']"))
+                                         )
             finally:
                 if driver:
                     driver.quit()
@@ -285,12 +291,13 @@ class TestAppiumBasicActions(TestAppium):
                 with self.subTest(device=device[1].__name__):
                     driver().get(url)
                     text = 'Selenium Test Type'
+                    locator = pages['txt-page']['elements']['input']
                     appium.write(
                         driver, text=text,
-                        locator=pages['txt-page']['elements']['input'])
+                        locator=locator)
                     self.assertEqual(
                         driver()
-                        .find_element(**pages['txt-page']['elements']['input'])
+                        .find_element("xpath", f"//*[@id='{locator['value']}']")
                         .get_property('value'), text)
             finally:
                 if driver:
@@ -475,7 +482,7 @@ class TestAppiumDropdownActions(TestAppium):
                     locator = pages['drpdnw-page']['elements']['select']
                     appium.select_dropdown(driver, 'Python', 'text',
                                              locator=locator)
-                    sel = Select(driver().find_element(**locator))
+                    sel = Select(driver().find_element("xpath", f"//*[@id='{locator['value']}']"))
                     self.assertEqual(sel.first_selected_option.text, 'Python')
             finally:
                 if driver:
@@ -490,7 +497,7 @@ class TestAppiumDropdownActions(TestAppium):
                     locator = pages['drpdnw-page']['elements']['select']
                     appium.select_dropdown(driver, '1', 'value',
                                              locator=locator)
-                    sel = Select(driver().find_element(**locator))
+                    sel = Select(driver().find_element("xpath", f"//*[@id='{locator['value']}']"))
                     self.assertEqual(sel.first_selected_option.text, 'Python')
             finally:
                 if driver:
@@ -505,7 +512,7 @@ class TestAppiumDropdownActions(TestAppium):
                     locator = pages['drpdnw-page']['elements']['select']
                     appium.select_dropdown(driver, 2, 'index',
                                              locator=locator)
-                    sel = Select(driver().find_element(**locator))
+                    sel = Select(driver().find_element("xpath", f"//*[@id='{locator['value']}']"))
                     self.assertEqual(sel.first_selected_option.text, 'Python')
             finally:
                 if driver:
@@ -523,7 +530,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
-                    driver().find_element(**btn).click()
+                    driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     try:
                         appium.assert_contains_text(
                             driver,
@@ -544,7 +551,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
-                    driver().find_element(**btn).click()
+                    driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     try:
                         appium.assert_contains_text(
                             driver,
@@ -565,7 +572,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
-                    driver().find_element(**btn).click()
+                    driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     with self.assertRaises(TassSoftAssertionError):
                         appium.assert_contains_text(
                             driver,
@@ -585,7 +592,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
-                    driver().find_element(**btn).click()
+                    driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     with self.assertRaises(TassHardAssertionError):
                         appium.assert_contains_text(
                             driver,
@@ -604,7 +611,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
-                    driver().find_element(**btn).click()
+                    driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     try:
                         appium.assert_contains_text(
                             driver,
@@ -626,7 +633,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
-                    driver().find_element(**btn).click()
+                    driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     with self.assertRaises(TassSoftAssertionError):
                         appium.assert_contains_text(
                             driver,
@@ -647,7 +654,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
-                    driver().find_element(**btn).click()
+                    driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     with self.assertRaises(TassHardAssertionError):
                         appium.assert_contains_text(
                             driver,
@@ -666,7 +673,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
-                    driver().find_element(**btn).click()
+                    driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     try:
                         appium.assert_displayed(
                             driver,
@@ -700,7 +707,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
-                    driver().find_element(**btn).click()
+                    driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     try:
                         appium.assert_displayed(
                             driver,
@@ -753,7 +760,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
-                    driver().find_element(**btn).click()
+                    driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     with self.assertRaises(TassHardAssertionError):
                         appium.assert_not_displayed(
                             driver,
@@ -789,7 +796,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     driver().get(url)
-                    driver().find_element(**btn).click()
+                    driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     with self.assertRaises(TassSoftAssertionError):
                         appium.assert_not_displayed(
                             driver,
@@ -1283,7 +1290,8 @@ class TestAppiumAlertActions(TestAppium):
                     driver().get(url)
                     driver().find_element(**pages['conf-page']['elements']['btn']).click()
                     appium.handle_alert(driver)
-                    result = driver().find_element(**pages['conf-page']['elements']['result']).text
+                    result_locator = pages['conf-page']['elements']['result']
+                    result = driver().find_element("xpath", f"//*[@id='{result_locator['value']}']").text
                     self.assertEqual(result.lower(), "ok")
             finally:
                 if driver:
@@ -1298,7 +1306,8 @@ class TestAppiumAlertActions(TestAppium):
                     driver().get(url)
                     driver().find_element(**pages['conf-page']['elements']['btn']).click()
                     appium.handle_alert(driver, handle='dismiss')
-                    result = driver().find_element(**pages['conf-page']['elements']['result']).text
+                    result_locator = pages['conf-page']['elements']['result']
+                    result = driver().find_element("xpath", f"//*[@id='{result_locator['value']}']").text
                     self.assertEqual(result.lower(), "cancel")
             finally:
                 if driver:
@@ -1314,7 +1323,8 @@ class TestAppiumAlertActions(TestAppium):
                     driver().find_element(**pages['prmt-page']['elements']['btn']).click()
                     appium.handle_alert(driver, text="abc")
                     self.assertIsNotNone(driver().title)
-                    result = driver().find_element(**pages['prmt-page']['elements']['result']).text
+                    result_locator = pages['prmt-page']['elements']['result']
+                    result = driver().find_element("xpath", f"//*[@id='{result_locator['value']}']").text
                     self.assertEqual(result, "abc")
             finally:
                 if driver:
@@ -1330,7 +1340,8 @@ class TestAppiumAlertActions(TestAppium):
                     driver().find_element(**pages['prmt-page']['elements']['btn']).click()
                     appium.handle_alert(driver, text="abc", handle='dismiss')
                     self.assertIsNotNone(driver().title)
-                    result = driver().find_element(**pages['prmt-page']['elements']['result']).text
+                    result_locator = pages['prmt-page']['elements']['result']
+                    result = driver().find_element("xpath", f"//*[@id='{result_locator['value']}']").text
                     self.assertIn("canceled", result.lower())
             finally:
                 if driver:

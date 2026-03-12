@@ -76,10 +76,22 @@ class BaseMobileDriverWrapper(BaseDriverWrapper):
         return None
 
     @property
+    def platform_version(self):
+        if (self._driver):
+            return self._driver.capabilities.get("platformVersion", None)
+        return None
+
+    @property
+    def device_name(self):
+        if (self._driver):
+            return self._driver.capabilities.get("deviceName", None)
+        return None
+
+    @property
     def device_id(self):
         # extract device id from driver
         if self._driver:
-            return self._driver.capabilities.get("udid", None)
+            return self._driver.capabilities.get("deviceUDID", None)
         # extract device id from configs if driver not instantiated
         elif "udid" in self._conf["appium:driver"]:
             return self._conf["appium:driver"]["udid"]
