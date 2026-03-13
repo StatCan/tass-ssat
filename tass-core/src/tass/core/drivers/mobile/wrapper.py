@@ -2,7 +2,9 @@ from enum import Enum
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.select import Select
 from appium.options.common import AppiumOptions
+from . import scripting
 from ...log.logging import getLogger
+from ..wrapper import BaseDriverWrapper
 from .appium_service import TASSAppiumService
 from .customdrivers import TassMobileDriverWait
 from .customdrivers import (
@@ -14,13 +16,12 @@ from .customdrivers import (
 log = getLogger(__name__)
 
 
-class BaseMobileDriverWrapper():
+class BaseMobileDriverWrapper(BaseDriverWrapper):
+
+    executor = scripting.MobileDriverScriptExecutor
+
     def __init__(self, uuid, configs, *args, **kwargs):
-        self._waits = {}
-        self._conf = self._set_defaults(configs)
-        self._driver = None
-        self._uuid = uuid
-        self._chain = None
+        super().__init__(uuid, configs, *args, **kwargs)
         self._service = None
 
     def __call__(self, driver_options, driver_init, *args, **kwargs):
@@ -31,6 +32,11 @@ class BaseMobileDriverWrapper():
                                                       self._conf["appium:server"]
             )
             TASSAppiumService.start_service(self._service)
+            # run before scripts
+            if "scripts" in self._conf:
+                for func in self._conf["scripts"].get("driver:setup", []):
+                    _ = self.executor.execute(func, driver_wrapper=self) or "Completed"
+                    log.debug("Setup script result: %s", _)
             # initialize driver
             self._driver = driver_init(options=options, *args, **kwargs)
 
@@ -39,7 +45,7 @@ class BaseMobileDriverWrapper():
                 self._conf['driver'].get('implicit_wait', 5)
                 )
 
-        return self._driver
+        return self._with_delay(self._driver)
 
     @property
     def uuid(self):
@@ -66,7 +72,29 @@ class BaseMobileDriverWrapper():
     @property
     def os(self):
         if (self._driver):
-            return self._driver.capabilities["platformName"]
+            return self._driver.capabilities.get("platformName", None)
+        return None
+
+    @property
+    def platform_version(self):
+        if (self._driver):
+            return self._driver.capabilities.get("platformVersion", None)
+        return None
+
+    @property
+    def device_name(self):
+        if (self._driver):
+            return self._driver.capabilities.get("deviceName", None)
+        return None
+
+    @property
+    def device_id(self):
+        # extract device id from driver
+        if self._driver:
+            return self._driver.capabilities.get("deviceUDID", None)
+        # extract device id from configs if driver not instantiated
+        elif "udid" in self._conf["appium:driver"]:
+            return self._conf["appium:driver"]["udid"]
         return None
 
     def _set_defaults(self, configs):
@@ -125,7 +153,7 @@ class BaseMobileDriverWrapper():
 
         wait_ = self._waits.get(time, new_wait(time))
         return wait_.until(until_func(**kwargs))
-    
+
     def select(self, element, value, using):
         # send_keys to scroll element into view.
         element.send_keys("")
@@ -147,6 +175,11 @@ class BaseMobileDriverWrapper():
         select(value)
 
     def quit(self):
+        # Execute teardown scripts if any
+        if "scripts" in self._conf:
+            for func in self._conf["scripts"].get("driver:teardown", []):
+                _ = self.executor.execute(func, driver_wrapper=self) or "Completed"
+                log.debug("Teardown script result: %s", _)
         if self._driver:
             self._driver.quit()
         if self._service:
@@ -162,6 +195,8 @@ class AndroidDriverWrapper(BaseMobileDriverWrapper):
         "platformName": "Android",
         "automationName": "UiAutomator2",
     }
+
+    executor = scripting.AndroidDriverScriptExecutor
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
@@ -180,6 +215,8 @@ class IOSDriverWrapper(BaseMobileDriverWrapper):
         "platformName": "ios",
         "automationName": "xcuitest",
     }
+
+    executor = scripting.IOSDriverScriptExecutor
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)

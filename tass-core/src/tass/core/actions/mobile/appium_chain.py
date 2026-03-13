@@ -64,7 +64,7 @@ def write(driver, locator=None, text='', find=app._find_element_hide_keyboard, *
     """Add a send_keys action to the action queue.
 
     Add a send_keys action to the action queue. If a locator is
-    provided, the send_keys_to_element will be used 
+    provided, the send_keys_to_element will be used
     instead.
 
     Args:

@@ -23,12 +23,12 @@ class MobileDriver(webdriver.Remote):
     NATIVE = "NATIVE_APP"
     WEBVIEW = "WEBVIEW"
 
-    def __init__(self, options,
+    def __init__(self,
                  url_base="http://localhost",
                  port=4723,
                  *args, **kwargs):
         server_url = f"{url_base}:{port}"
-        super().__init__(server_url, options=options, *args, **kwargs)
+        super().__init__(server_url, *args, **kwargs)
         self.logger = getLogger(__name__, self.name)
 
     def find_element(self, by, value):

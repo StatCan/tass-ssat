@@ -9,6 +9,7 @@ from selenium.webdriver import (
     SafariOptions
 )
 from ...log.logging import getLogger
+from ..wrapper import BaseDriverWrapper
 from .customdrivers import TassDriverWait
 from .customdrivers import (
     ChromeDriver,
@@ -21,27 +22,9 @@ from .customdrivers import (
 log = getLogger(__name__)
 
 
-class BaseDriverWrapper():
+class BaseBrowserDriverWrapper(BaseDriverWrapper):
     def __init__(self, uuid, configs, *args, **kwargs):
-        self._waits = {}
-        self._conf = self._set_defaults(configs)
-        self._driver = None
-        self._uuid = uuid
-        self._chain = None
-
-    def _with_delay(self, driver):
-        delayMin = abs(float(self._conf['driver'].get('delay', 0)))
-        delayMax = abs(float(self._conf['driver'].get('delayMax', delayMin)))
-        if delayMax == delayMin or delayMax < delayMin:
-            delay = delayMax
-        elif delayMax != delayMin:
-            delay = round(
-                random.uniform(delayMin, delayMax), 2
-                )
-        if delay > 0:
-            log.debug("Delaying for %s seconds.", delay)
-            time.sleep(delay)
-        return driver
+        super().__init__(uuid, configs, *args, **kwargs)
 
     def __call__(self, browser_options, driver_init, *args, **kwargs):
         if not self._driver:
@@ -120,7 +103,7 @@ class BaseDriverWrapper():
 
         wait_ = self._waits.get(time, new_wait(time))
         return wait_.until(until_func(**kwargs))
-    
+
     def select(self, element, value, using):
         # send_keys to scroll element into view
         element.send_keys("")
@@ -151,7 +134,7 @@ class BaseDriverWrapper():
         self._driver = None
 
 
-class SafariDriverWrapper(BaseDriverWrapper):
+class SafariDriverWrapper(BaseBrowserDriverWrapper):
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
@@ -171,7 +154,7 @@ class SafariDriverWrapper(BaseDriverWrapper):
         return self._with_delay(self._driver)
 
 
-class ChromeDriverWrapper(BaseDriverWrapper):
+class ChromeDriverWrapper(BaseBrowserDriverWrapper):
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
@@ -180,7 +163,7 @@ class ChromeDriverWrapper(BaseDriverWrapper):
         return super().__call__(ChromeOptions, ChromeDriver, *args, **kwargs)
 
 
-class FirefoxDriverWrapper(BaseDriverWrapper):
+class FirefoxDriverWrapper(BaseBrowserDriverWrapper):
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
@@ -200,7 +183,7 @@ class FirefoxDriverWrapper(BaseDriverWrapper):
         return self._with_delay(self._driver)
 
 
-class EdgeDriverWrapper(BaseDriverWrapper):
+class EdgeDriverWrapper(BaseBrowserDriverWrapper):
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)

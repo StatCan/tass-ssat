@@ -246,6 +246,10 @@
                     "implicit_wait": "15",
                     "explicit_wait": "30"
                 },
+                "scripts": {
+                    "driver:setup": [],
+                    "driver:teardown": []
+                },
                 "browser": {
                     "arguments": [
                         "--start-maximized"

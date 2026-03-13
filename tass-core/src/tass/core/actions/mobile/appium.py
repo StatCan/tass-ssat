@@ -1,3 +1,5 @@
+import pathlib
+from datetime import datetime
 from ..browser import selenium as sel
 from ...tools.page_reader import PageReader
 from ...log.logging import getLogger
@@ -12,8 +14,8 @@ logger = getLogger(__name__)
 
 def _find_element_hide_keyboard(driver, locator, locator_args=None, page=None, hide_keyboard=True, *args, **kwargs):
     # Hide keyboard before locating element if True. Set to False to keep keyboard open.
-    if hide_keyboard and driver().is_keyboard_shown:
-        driver().hide_keyboard(*args, **kwargs)
+    # if hide_keyboard and driver().is_keyboard_shown:
+    #     driver().hide_keyboard(*args, **kwargs)
     return driver().find_element(**locate(page, locator, locator_args))
 
 
@@ -24,7 +26,7 @@ def locate(page, locator, locator_args):
         _loc = PageReader().get_element(*page, locator)
     elif isinstance(locator, dict):
         logger.debug("Locator provided directly...")
-        _loc = locator
+        _loc = locator.copy()
     else:
         msg = f"Locator type not supported. Type: {type(locator)}"
         logger.error(msg)
@@ -306,7 +308,7 @@ def read_attribute(driver, attribute, find=_find_element_hide_keyboard, **kwargs
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    sel.read_attribute(driver, attribute, find=find, **kwargs)
+    return sel.read_attribute(driver, attribute, find=find, **kwargs)
 
 
 def read_css(driver, attribute, find=_find_element_hide_keyboard, **kwargs):
@@ -339,7 +341,7 @@ def read_css(driver, attribute, find=_find_element_hide_keyboard, **kwargs):
             requires: locator.
     """
 
-    sel.read_css(driver, attribute, find=find, **kwargs)
+    return sel.read_css(driver, attribute, find=find, **kwargs)
 
 
 def read_text(driver, find=_find_element_hide_keyboard, **kwargs):
@@ -365,7 +367,7 @@ def read_text(driver, find=_find_element_hide_keyboard, **kwargs):
             requires: locator.
     """
 
-    sel.read_text(driver, find=find, **kwargs)
+    return sel.read_text(driver, find=find, **kwargs)
 
 
 def switch_frame(driver, frame, page=None, find=_find_element_hide_keyboard):
@@ -470,11 +472,43 @@ def screenshot(driver,
                find=_find_element_hide_keyboard,
                **kwargs):
 
-    sel.screenshot(driver,
-                   name=name,
-                   locator=locator,
-                   find=find,
-                   **kwargs)
+    screenshotsfldr = pathlib.Path("screenshots").resolve()
+    # Sort png by browser config
+    driverfldr = [driver.os, driver.device_name, driver.platform_version]
+    screenshotsfldr = screenshotsfldr.joinpath(*driverfldr).resolve()
+    screenshotsfldr.mkdir(exist_ok=True, parents=True)
+    date_tag = datetime.now().strftime("%d-%m-%y--%H-%M-%S")
+    name = name.replace(" ", "_")  # Remove spaces from file name
+    file_name = "_".join([name, date_tag])
+    _file = screenshotsfldr.joinpath(file_name).with_suffix(".png")
+    count = 0
+
+    while _file.exists():
+        count += 1
+        file_name = "".join([name, date_tag, f"({count})"])
+        _file = _file.with_stem(file_name)
+
+    out = str(_file.resolve())
+    logger.info("Saving screenshot as: %s", out)
+
+    try:
+        if locator:
+            status = find(driver, locator, **kwargs).screenshot(out)
+        else:
+            status = driver().save_screenshot(out)
+    except WebDriverException as e:
+        logger.warning("Something went wrong, %s -- Trying again", e)
+        if locator:
+            status = find(driver, locator, **kwargs).screenshot(out)
+        else:
+            status = driver().save_screenshot(out)
+
+    if status:
+        logger.info("Screenshot saved successfully.")
+    else:
+        logger.warning("Screenshot was not saved!")
+
+    return out
 
 
 # / / / / / / / Assertions / / / / / / /
