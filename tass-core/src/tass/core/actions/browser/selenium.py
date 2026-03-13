@@ -628,7 +628,6 @@ def screenshot(driver,
                locator=None,
                find=_find_element,
                **kwargs):
-    breakpoint()
     screenshotsfldr = pathlib.Path("screenshots").resolve()
     # Sort png by browser config
     driverfldr = [driver.os, driver.browser, driver.browser_version]
