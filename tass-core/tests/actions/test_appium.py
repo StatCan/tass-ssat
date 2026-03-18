@@ -176,7 +176,10 @@ class TestAppium(unittest.TestCase):
                 "appium:server": {
                     "--allow-insecure": "uiautomator2:chromedriver_autodownload"
                 },
-                "appium:driver": {}
+                "appium:driver": {
+                    "browserName": "Chrome"
+
+                }
             }
         },
         {
@@ -187,7 +190,9 @@ class TestAppium(unittest.TestCase):
                     "implicit_wait": "15",
                     "explicit_wait": "30"
                 },
-                "appium:server": {},
+                "appium:server": {
+                    "appium:includeSafariInWebviews": True
+                },
                 "appium:driver": {}
             }
         }
