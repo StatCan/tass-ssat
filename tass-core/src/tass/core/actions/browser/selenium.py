@@ -57,7 +57,7 @@ def _is_displayed(driver, find=_find_element, **kwargs):
 
 def _switch_to_alert(driver):
     try:
-        return driver().switch_to.alert
+        return driver.alert
     except NoAlertPresentException as e:
         logger.warning("No alert present to switch to.")
         raise e
@@ -602,27 +602,19 @@ def handle_alert(driver, handle=True, text=None):
     else:
         alert_accept = bool(handle)
 
-    if alert_accept:
-        do_alert = Alert.accept
-        logger.debug("Handle alert using Alert.accept()")
-    else:
-        do_alert = Alert.dismiss
-        logger.debug("Handle alert using Alert.dismiss()")
+
 
     try:
-        alert = _switch_to_alert(driver)
-        if text and isinstance(text, str):
-            logger.info("Sending text to alert prompt: %s", text)
-            alert.send_keys(text)
-        do_alert(alert)
+        if alert_accept:
+            driver.accept_alert(text=text)
+        else:
+            driver.dismiss_alert(text=text)
     except WebDriverException as e:
         logger.warning("Something went wrong, %s -- Trying again", e)
-        alert = _switch_to_alert(driver)
-        if text and isinstance(text, str):
-            logger.info("Sending text to alert prompt: %s", text)
-            alert.send_keys(text)
-        do_alert(alert)
-
+        if alert_accept:
+            driver.accept_alert(text=text)
+        else:
+            driver.dismiss_alert(text=text)
 def screenshot(driver,
                name="screenshot",
                locator=None,

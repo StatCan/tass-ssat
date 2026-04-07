@@ -177,7 +177,8 @@ class TestAppium(unittest.TestCase):
                     "--allow-insecure": "uiautomator2:chromedriver_autodownload"
                 },
                 "appium:driver": {
-                    "browserName": "Chrome"
+                    "browserName": "Chrome",
+                    "fastReset": True
 
                 }
             }
@@ -190,10 +191,11 @@ class TestAppium(unittest.TestCase):
                     "implicit_wait": "15",
                     "explicit_wait": "30"
                 },
-                "appium:server": {
-                    "appium:includeSafariInWebviews": True
-                },
-                "appium:driver": {}
+                "appium:server": {},
+                "appium:driver": {
+                    "appium:includeSafariInWebviews": True,
+                    "fullReset": True
+                }
             }
         }
     ]
@@ -224,7 +226,7 @@ class TestAppium(unittest.TestCase):
             try:
                 driver()
             except Exception as e:
-                print("\nERROR: Unable to launch driver. Check driver installation and devices/emulators.")
+                print(f"\nERROR: Unable to launch driver. Check driver installation and devices/emulators. {str(e)}")
                 raise e
 
             yield device, driver

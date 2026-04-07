@@ -48,10 +48,6 @@ class BaseMobileDriverWrapper(BaseDriverWrapper):
         return self._with_delay(self._driver)
 
     @property
-    def uuid(self):
-        return self._uuid
-
-    @property
     def browser(self):
         if (self._driver):
             return self._driver.capabilities.get("browserName", None)

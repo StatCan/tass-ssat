@@ -32,3 +32,33 @@ class BaseDriverWrapper():
             log.debug("Delaying for %s seconds.", delay)
             time.sleep(delay)
         return driver
+
+    @property
+    def alert_text(self):
+        log.debug("Getting alert text.")
+        return self.alert.text
+
+    @property
+    def alert(self):
+        log.debug("Getting alert.")
+        return self._driver.switch_to.alert
+
+    def accept_alert(self, text=None):
+        log.debug("Accepting alert.")
+        alert = self.alert
+        if text:
+            log.debug("Sending text to alert: %s", text)
+            alert.send_keys(text)
+        return alert.accept()
+
+    def dismiss_alert(self, text=None):
+        log.debug("Dismissing alert.")
+        alert = self.alert
+        if text:
+            log.debug("Sending text to alert: %s", text)
+            alert.send_keys(text)
+        return alert.dismiss()
+
+    @property
+    def uuid(self):
+        return self._uuid
