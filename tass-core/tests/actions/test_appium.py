@@ -194,7 +194,8 @@ class TestAppium(unittest.TestCase):
                 "appium:server": {},
                 "appium:driver": {
                     "appium:includeSafariInWebviews": True,
-                    "fullReset": True
+                    "fullReset": True,
+                    "nativeWebTap": True
                 }
             }
         }
