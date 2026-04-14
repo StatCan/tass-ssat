@@ -201,8 +201,6 @@ class AndroidDriverWrapper(BaseMobileDriverWrapper):
         return super().__call__(AppiumOptions, AndroidDriver, *args, **kwargs)
 
     def quit(self):
-        if self._driver:
-            self._driver.terminate_app("com.android.chrome")
         super().quit()
 
 
