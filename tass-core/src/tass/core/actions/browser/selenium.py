@@ -615,6 +615,8 @@ def handle_alert(driver, handle=True, text=None):
             driver.accept_alert(text=text)
         else:
             driver.dismiss_alert(text=text)
+
+
 def screenshot(driver,
                name="screenshot",
                locator=None,
