@@ -493,6 +493,19 @@ def switch_window(driver, title=None, page=None):
     """
     # TODO: Keep track of window handles to avoid loop?
     # TODO: Handle switching from closed tabs
+    handles = driver().window_handles
+    if len(handles) == 1:
+        logger.info("Only one window/tab open. Switching to that window.")
+        driver.switch_window(handles[0])
+        return
+    if len(handles) < 1:
+        logger.warning("No windows open. Cannot switch.")
+        return
+    if (page):
+        switch_window(driver,
+                      title=PageReader().get_page_title(*page),
+                      page=None)
+        return
     cur_handle = None
     try:
         cur_handle = driver().current_window_handle
@@ -502,26 +515,19 @@ def switch_window(driver, title=None, page=None):
         logger.info(
             "Current window closed or missing. Switching to other tab/window"
             )
-    if (page):
-        switch_window(driver,
-                      title=PageReader().get_page_title(*page),
-                      page=None)
-        return
-
-    handles = driver().window_handles
     if (title is None):
         logger.info("Switching to next tab or window...")
         for handle in handles:
             # TODO: Handle switching if only 1 tab/window
             if (handle != cur_handle):
-                driver().switch_to.window(handle)
+                driver.switch_window(handle)
                 return
     elif (isinstance(title, str)):
         for handle in handles:
             if (handle == cur_handle):
                 continue
             else:
-                driver().switch_to.window(handle)
+                driver.switch_window(handle)
                 if (driver().title == title):
                     return
 

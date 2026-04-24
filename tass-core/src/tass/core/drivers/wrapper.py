@@ -17,6 +17,7 @@ class BaseDriverWrapper():
         raise NotImplementedError("This method should be implemented by subclasses")
 
     def __call__(self, *args, **kwargs):
+        # This method should be implemented by subclasses to initialize the driver, as needed, and return it.
         raise NotImplementedError("This method should be implemented by subclasses")
 
     def _with_delay(self, driver):
@@ -41,7 +42,13 @@ class BaseDriverWrapper():
     @property
     def alert(self):
         log.debug("Getting alert.")
-        return self._driver.switch_to.alert
+        return self().switch_to.alert
+
+    def switch_window(self, handle):
+        log.debug("Switching to window handle: %s", handle)
+        self().switch_to.window(handle)
+        log.debug("Switched to window handle: %s",
+                         handle)
 
     def accept_alert(self, text=None):
         log.debug("Accepting alert.")

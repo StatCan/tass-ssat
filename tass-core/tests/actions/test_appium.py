@@ -159,7 +159,7 @@ class TestAppium(unittest.TestCase):
         AndroidDriver as Android,
         IOSDriver as IOS
         )
-        
+
     # TODO: Refactor, open new tab for tests as needed.
     def new_tab(self, driver):
         if isinstance(driver(), TestAppium.IOS):
@@ -173,7 +173,7 @@ class TestAppium(unittest.TestCase):
             driver().switch_to_context(driver().find_webview_context()) # Switch back to webview context
         else:
             driver().switch_to.new_window('tab')
-        
+
     config = [
         {
             "driver_name": "android",
@@ -219,15 +219,14 @@ class TestAppium(unittest.TestCase):
 
 
     def setUpClass():
-        TestAppium.drivers = [(TestAppium.config[1], TestAppium.IOS)]
-#        if platform == "darwin":
-#            TestAppium.drivers.append((TestAppium.config[1], IOS))
+        TestAppium.drivers = [(TestAppium.config[0], TestAppium.Android)]
+        if platform == "darwin":
+            TestAppium.drivers.append((TestAppium.config[1], TestAppium.IOS))
 
     def setUp(self):
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         print("Beginning new test TestCase %s" % self._testMethodName)
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-
 
 
     def appium_starter(self, devices):
@@ -242,7 +241,7 @@ class TestAppium(unittest.TestCase):
                 raise e
 
             yield device, driver
-            
+
     def load_initial_url(self, driver, url):
         driver().get(url)
         if isinstance(driver(), TestAppium.IOS):
