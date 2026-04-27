@@ -217,6 +217,12 @@ class IOSDriverWrapper(BaseMobileDriverWrapper):
 
     def __call__(self, *args, **kwargs):
         return super().__call__(AppiumOptions, IOSDriver, *args, **kwargs)
+        
+    @property
+    def device_name(self):
+        if (self._driver):
+            return self._driver.capabilities.get("deviceName", "UnknownIOSDevice")
+        return None
 
     def accept_alert(self, text=None):
         # self._driver.switch_to_context(self._driver.NATIVE)

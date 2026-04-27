@@ -1,6 +1,7 @@
 import unittest
 import importlib
 import pathlib
+import time
 from sys import platform
 from tass.core.drivers.new_driver import new_driver
 from tass.core.tools.page_reader import PageReader
@@ -8,7 +9,7 @@ from tass.core.exceptions.assertion_errors import (
     TassAssertionError,
     TassHardAssertionError,
     TassSoftAssertionError)
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import (NoSuchElementException, TimeoutException)
 from selenium.webdriver.support.select import Select
 import tass.core.actions.mobile.appium as appium
 import selenium.webdriver.support.expected_conditions as EC
@@ -165,12 +166,21 @@ class TestAppium(unittest.TestCase):
         if isinstance(driver(), TestAppium.IOS):
             driver().switch_to_context(driver().NATIVE)
             try:
-                driver.wait_until(EC.element_to_be_clickable, mark=tuple(["accessibility id", "xmark.circle.fill"])).click()
-            except NoSuchElementException:
+                driver.wait_until(EC.element_to_be_clickable, time=5, mark=tuple(["accessibility id", "xmark.circle.fill"])).click()
+            except TimeoutException:
                 pass
             driver().find_element(by="accessibility id", value="MoreMenuButton").click() # TODO: Click menu button on safari
             driver().find_element(by="accessibility id", value="NewTabButton").click() # TODO: Click the new tab button
             driver().switch_to_context(driver().find_webview_context()) # Switch back to webview context
+            handles = driver().window_handles
+            cur_handle = driver().current_window_handle
+            if cur_handle == handles[-1]:
+                for handle in handles:
+                    if (handle != cur_handle):
+                        driver.switch_window(handle)
+                        break
+            else:
+                driver.switch_window(handles[-1])
         else:
             driver().switch_to.new_window('tab')
 
@@ -768,7 +778,6 @@ class TestAppiumAssertActions(TestAppium):
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    # driver().find_element("xpath", f"//*[@id='{btn['value']}']").send_keys("")
                     driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     try:
                         appium.assert_displayed(
@@ -823,7 +832,6 @@ class TestAppiumAssertActions(TestAppium):
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    # driver().find_element("xpath", f"//*[@id='{btn['value']}']").send_keys("")
                     driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     with self.assertRaises(TassHardAssertionError):
                         appium.assert_not_displayed(
@@ -861,7 +869,6 @@ class TestAppiumAssertActions(TestAppium):
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    # driver().find_element("xpath", f"//*[@id='{btn['value']}']").send_keys("")
                     driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     with self.assertRaises(TassSoftAssertionError):
                         appium.assert_not_displayed(
@@ -922,6 +929,7 @@ class TestAppiumAssertActions(TestAppium):
                 with self.subTest(browser=device[1].__name__):
                     driver().get(page['url'])
                     try:
+                        time.sleep(1) # Sleep added to allow time for URL to load
                         appium.assert_page_is_open(
                             driver, soft=True, page_id=page['page_id'])
                     except TassAssertionError as e:
@@ -938,6 +946,7 @@ class TestAppiumAssertActions(TestAppium):
                 with self.subTest(browser=device[1].__name__):
                     driver().get(page['url'])
                     try:
+                        time.sleep(1) # Sleep added to allow time for URL to load
                         appium.assert_page_is_open(
                             driver, soft=True, page_id=page['page_id'])
                     except TassAssertionError as e:
@@ -1012,6 +1021,7 @@ class TestAppiumAssertActions(TestAppium):
                 with self.subTest(browser=device[1].__name__):
                     driver().get(page['url'])
                     try:
+                        time.sleep(2) # Sleep added to allow time for URL to load
                         appium.assert_page_is_open(
                             driver, page_id=page['page_id'])
                     except TassAssertionError as e:
