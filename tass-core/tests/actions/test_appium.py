@@ -28,131 +28,6 @@ def close_nav(driver):
     except NoSuchElementException:
         pass
 
-pages = {
-    # QA Practice
-
-    "btn-page": {
-            "title": "Buttons | Simple Button | QA Practice",
-            "url": "https://www.qa-practice.com/elements/button/simple",
-            "page_id":
-            {
-                "method": "title",
-                "identifier": "Buttons | Simple Button | QA Practice"
-            },
-            "elements":
-            {
-                "btn":
-                {
-                    "by": "id",
-                    "value": "submit-id-submit"
-                },
-                "click-confirm":
-                {
-                    "by": "id",
-                    "value": "result-text"
-                },
-                "req-txt": {
-                    "by": "id",
-                    "value": "req_text"
-                }
-            }
-        },
-    "txt-page": {
-        "title": "Input Field | Text Input | QA Practice",
-        "url": "https://www.qa-practice.com/elements/input/simple",
-        "page_id": {
-            "method": "url",
-            "identifier": "https://www.qa-practice.com/elements/input/simple"
-        },
-        "elements": {
-            "input": {
-                "by": "id",
-                "value": "id_text_string"
-            }
-        }
-    },
-    "frm-page": {
-        "title": "Iframes | Iframe | QA Practice",
-        "url": "https://www.qa-practice.com/elements/iframe/iframe_page",
-        "page_id": {
-            "method": "title"
-        },
-        "elements": {
-            "frame": {
-                "by": "xpath",
-                "value": "//*[@id='content']/iframe"
-            },
-            "main-btn": {
-                "by": "xpath",
-                "value": "//section/descendant::a[1]"
-            }
-        }
-    },
-    "drpdnw-page": {
-        "title": "Select Input | Single Select | QA Practice",
-        "url": "https://www.qa-practice.com/elements/select/single_select",
-        "page_id": {
-            "method": "element",
-            "identifier": {
-                "by": "id",
-                "value": "id_choose_language"
-            }
-        },
-        "elements": {
-            "select": {
-                "by": "id",
-                "value": "id_choose_language"
-            }
-        }
-    },
-    "alrt-page": {
-        "title": "Alerts | Alert Box | QA Practice",
-        "url": "https://www.qa-practice.com/elements/alert/alert",
-        "page_id": {
-            "method": "title"
-        },
-        "elements": {
-            "btn": {
-                "by": "xpath",
-                "value": "//*[@id='content']/a[1]"
-            }
-        }
-    },
-    "conf-page": {
-        "title": "Alerts | Confirm Box | QA Practice",
-        "url": "https://www.qa-practice.com/elements/alert/confirm",
-        "page_id": {
-            "method": "title"
-        },
-        "elements": {
-            "btn": {
-                "by": "xpath",
-                "value": "//*[@id='content']/a[1]"
-            },
-            "result": {
-                "by": "id",
-                "value": "result-text"
-            }
-        }
-    },
-    "prmt-page": {
-        "title": "Alerts | Prompt Box | QA Practice",
-        "url": "https://www.qa-practice.com/elements/alert/prompt",
-        "page_id": {
-            "method": "title"
-        },
-        "elements": {
-            "btn": {
-                "by": "xpath",
-                "value": "//*[@id='content']/a[1]"
-            },
-            "result": {
-                "by": "id",
-                "value": "result-text"
-            }
-        }
-    }
-}
 
 @unittest.skipUnless(appium_inst, "Appium is not installed.")
 class TestAppium(unittest.TestCase):
@@ -160,6 +35,131 @@ class TestAppium(unittest.TestCase):
         AndroidDriver as Android,
         IOSDriver as IOS
         )
+
+    pages = {
+    # QA Practice
+        "btn-page": {
+                "title": "Buttons | Simple Button | QA Practice",
+                "url": "https://www.qa-practice.com/elements/button/simple",
+                "page_id":
+                {
+                    "method": "title",
+                    "identifier": "Buttons | Simple Button | QA Practice"
+                },
+                "elements":
+                {
+                    "btn":
+                    {
+                        "by": "id",
+                        "value": "submit-id-submit"
+                    },
+                    "click-confirm":
+                    {
+                        "by": "id",
+                        "value": "result-text"
+                    },
+                    "req-txt": {
+                        "by": "id",
+                        "value": "req_text"
+                    }
+                }
+            },
+        "txt-page": {
+            "title": "Input Field | Text Input | QA Practice",
+            "url": "https://www.qa-practice.com/elements/input/simple",
+            "page_id": {
+                "method": "url",
+                "identifier": "https://www.qa-practice.com/elements/input/simple"
+            },
+            "elements": {
+                "input": {
+                    "by": "id",
+                    "value": "id_text_string"
+                }
+            }
+        },
+        "frm-page": {
+            "title": "Iframes | Iframe | QA Practice",
+            "url": "https://www.qa-practice.com/elements/iframe/iframe_page",
+            "page_id": {
+                "method": "title"
+            },
+            "elements": {
+                "frame": {
+                    "by": "xpath",
+                    "value": "//*[@id='content']/iframe"
+                },
+                "main-btn": {
+                    "by": "xpath",
+                    "value": "//section/descendant::a[1]"
+                }
+            }
+        },
+        "drpdnw-page": {
+            "title": "Select Input | Single Select | QA Practice",
+            "url": "https://www.qa-practice.com/elements/select/single_select",
+            "page_id": {
+                "method": "element",
+                "identifier": {
+                    "by": "id",
+                    "value": "id_choose_language"
+                }
+            },
+            "elements": {
+                "select": {
+                    "by": "id",
+                    "value": "id_choose_language"
+                }
+            }
+        },
+        "alrt-page": {
+            "title": "Alerts | Alert Box | QA Practice",
+            "url": "https://www.qa-practice.com/elements/alert/alert",
+            "page_id": {
+                "method": "title"
+            },
+            "elements": {
+                "btn": {
+                    "by": "xpath",
+                    "value": "//*[@id='content']/a[1]"
+                }
+            }
+        },
+        "conf-page": {
+            "title": "Alerts | Confirm Box | QA Practice",
+            "url": "https://www.qa-practice.com/elements/alert/confirm",
+            "page_id": {
+                "method": "title"
+            },
+            "elements": {
+                "btn": {
+                    "by": "xpath",
+                    "value": "//*[@id='content']/a[1]"
+                },
+                "result": {
+                    "by": "id",
+                    "value": "result-text"
+                }
+            }
+        },
+        "prmt-page": {
+            "title": "Alerts | Prompt Box | QA Practice",
+            "url": "https://www.qa-practice.com/elements/alert/prompt",
+            "page_id": {
+                "method": "title"
+            },
+            "elements": {
+                "btn": {
+                    "by": "xpath",
+                    "value": "//*[@id='content']/a[1]"
+                },
+                "result": {
+                    "by": "id",
+                    "value": "result-text"
+                }
+            }
+        }
+    }
 
     # TODO: Refactor, open new tab for tests as needed.
     def new_tab(self, driver):
@@ -314,13 +314,13 @@ class TestAppiumBasicActions(TestAppium):
                     driver.quit()
 
     def test_AppiumClick(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    locator = pages['btn-page']['elements']['btn']
+                    locator = self.pages['btn-page']['elements']['btn']
                     appium.click(driver,
                                    locator=locator)
                     until = EC.presence_of_element_located
@@ -334,14 +334,14 @@ class TestAppiumBasicActions(TestAppium):
                     driver.quit()
 
     def test_AppiumWrite(self):
-        url = pages['txt-page']['url']
+        url = self.pages['txt-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
                     text = 'Selenium Test Type'
-                    locator = pages['txt-page']['elements']['input']
+                    locator = self.pages['txt-page']['elements']['input']
                     appium.write(
                         driver, text=text,
                         locator=locator)
@@ -354,14 +354,14 @@ class TestAppiumBasicActions(TestAppium):
                     driver.quit()
 
     def test_AppiumClear(self):
-        url = pages['txt-page']['url']
+        url = self.pages['txt-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
                     text = 'Selenium Test Type'
-                    locator = pages['txt-page']['elements']['input']
+                    locator = self.pages['txt-page']['elements']['input']
                     driver().find_element("xpath", f"//*[@id='{locator['value']}']").send_keys(text)
                     self.assertEqual(
                         driver()
@@ -382,7 +382,7 @@ class TestAppiumBasicActions(TestAppium):
 class TestAppiumReadOnlyActions(TestAppium):
 
     def test_AppiumReadAttribute(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         expected = "btn btn-primary"
         for device, driver in self.appium_starter(self.drivers):
             try:
@@ -390,21 +390,21 @@ class TestAppiumReadOnlyActions(TestAppium):
                     self.load_initial_url(driver, url)
                     self.assertEqual(appium.read_attribute(
                             driver, attribute='class',
-                            locator=pages['btn-page']['elements']['btn']),
+                            locator=self.pages['btn-page']['elements']['btn']),
                             expected)
             finally:
                 if driver:
                     driver.quit()
 
     def test_AppiumReadCSS(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
                     self.load_initial_url(driver, url)
                     self.assertEqual(appium.read_css(
                             driver, attribute='display',
-                            locator=pages['btn-page']['elements']['btn']), 'inline-block')
+                            locator=self.pages['btn-page']['elements']['btn']), 'inline-block')
             finally:
                 if driver:
                     driver.quit()
@@ -417,24 +417,24 @@ class TestAppiumWindowControlActions(TestAppium):
         self.skipTest("Not currently testable")
 
     def test_AppiumSwitchToFrameElement(self):
-        url = pages['frm-page']['url']
+        url = self.pages['frm-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    locator = pages['frm-page']['elements']['frame']
+                    locator = self.pages['frm-page']['elements']['frame']
                     appium.switch_frame(driver, frame={
                                         'locator': locator
                                         })
                     btn = driver().find_element(
-                        **pages['frm-page']['elements']['main-btn']).get_attribute('class')
+                        **self.pages['frm-page']['elements']['main-btn']).get_attribute('class')
                     self.assertEqual(btn, 'btn btn-primary my-2')
             finally:
                 if driver:
                     driver.quit()
 
     def test_AppiumSwitchWindowNoTitle(self):
-        url_0 = pages["btn-page"]['url']
+        url_0 = self.pages["btn-page"]['url']
         url_1 = 'https://www.google.ca'
         for device, driver in self.appium_starter(self.drivers):
             try:
@@ -442,7 +442,7 @@ class TestAppiumWindowControlActions(TestAppium):
                     driver().get(url_1)
                     self.new_tab(driver)
                     driver().get(url_0)
-                    self.assertEqual(driver().title, pages['btn-page']['title'])
+                    self.assertEqual(driver().title, self.pages['btn-page']['title'])
                     appium.switch_window(driver)
                     self.assertEqual(driver().title, 'Google')
             finally:
@@ -450,7 +450,7 @@ class TestAppiumWindowControlActions(TestAppium):
                     driver.quit()
 
     def test_AppiumSwitchWindowClosed(self):
-        url_0 = pages['btn-page']['url']
+        url_0 = self.pages['btn-page']['url']
         url_1 = 'https://www.google.ca'
         for device, driver in self.appium_starter(self.drivers):
             try:
@@ -461,17 +461,17 @@ class TestAppiumWindowControlActions(TestAppium):
                     self.assertEqual(driver().title, 'Google')
                     driver().close()
                     appium.switch_window(driver)
-                    self.assertEqual(driver().title, pages['btn-page']['title'])
+                    self.assertEqual(driver().title, self.pages['btn-page']['title'])
             finally:
                 if driver:
                     driver.quit()
 
     def test_AppiumSwitchWindowByTitle(self):
-        url_0 = pages['btn-page']['url']
+        url_0 = self.pages['btn-page']['url']
         url_1 = 'https://www.google.ca'
         url_2 = 'https://www.statcan.gc.ca/en/start'
         google = 'Google'
-        pageOne = pages['btn-page']['title']
+        pageOne = self.pages['btn-page']['title']
         statcan = "Statistics Canada: Canada's national statistical agency"
         for device, driver in self.appium_starter(self.drivers):
             try:
@@ -493,13 +493,13 @@ class TestAppiumWindowControlActions(TestAppium):
                     driver.quit()
 
     def test_AppiumSwitchWindowByPageTitle(self):
-        PageReader().add_page('btn-page', pages["btn-page"])
-        PageReader().add_page('txt-page', pages["txt-page"])
-        PageReader().add_page('frm-page', pages["frm-page"])
+        PageReader().add_page('btn-page', self.pages["btn-page"])
+        PageReader().add_page('txt-page', self.pages["txt-page"])
+        PageReader().add_page('frm-page', self.pages["frm-page"])
 
-        btn = pages["btn-page"]
-        txt = pages["txt-page"]
-        frm = pages["frm-page"]
+        btn = self.pages["btn-page"]
+        txt = self.pages["txt-page"]
+        frm = self.pages["frm-page"]
 
         for device, driver in self.appium_starter(self.drivers):
             try:
@@ -525,13 +525,13 @@ class TestAppiumWindowControlActions(TestAppium):
 class TestAppiumDropdownActions(TestAppium):
 
     def test_AppiumSelectDropdownByText(self):
-        url = pages['drpdnw-page']['url']
+        url = self.pages['drpdnw-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    locator = pages['drpdnw-page']['elements']['select']
+                    locator = self.pages['drpdnw-page']['elements']['select']
                     appium.select_dropdown(driver, 'Python', 'text',
                                              locator=locator)
                     sel = Select(driver().find_element("xpath", f"//*[@id='{locator['value']}']"))
@@ -541,13 +541,13 @@ class TestAppiumDropdownActions(TestAppium):
                     driver.quit()
 
     def test_AppiumSelectDropdownByValue(self):
-        url = pages['drpdnw-page']['url']
+        url = self.pages['drpdnw-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    locator = pages['drpdnw-page']['elements']['select']
+                    locator = self.pages['drpdnw-page']['elements']['select']
                     appium.select_dropdown(driver, '1', 'value',
                                              locator=locator)
                     sel = Select(driver().find_element("xpath", f"//*[@id='{locator['value']}']"))
@@ -557,13 +557,13 @@ class TestAppiumDropdownActions(TestAppium):
                     driver.quit()
 
     def test_AppiumSelectDropdownByIndex(self):
-        url = pages['drpdnw-page']['url']
+        url = self.pages['drpdnw-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    locator = pages['drpdnw-page']['elements']['select']
+                    locator = self.pages['drpdnw-page']['elements']['select']
                     appium.select_dropdown(driver, 1, 'index',
                                              locator=locator)
                     sel = Select(driver().find_element("xpath", f"//*[@id='{locator['value']}']"))
@@ -576,12 +576,12 @@ class TestAppiumDropdownActions(TestAppium):
 class TestAppiumAssertActions(TestAppium):
 
     def test_AppiumAssertTextDisplayedSuccess(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         text = "Submitted"
         for device, driver in self.appium_starter(self.drivers):
             try:
-                btn = pages['btn-page']['elements']['btn']
-                txt = pages['btn-page']['elements']['click-confirm']
+                btn = self.pages['btn-page']['elements']['btn']
+                txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
@@ -599,12 +599,12 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertPartialTextDisplayedSuccess(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         text = "ubmit"
         for device, driver in self.appium_starter(self.drivers):
             try:
-                btn = pages['btn-page']['elements']['btn']
-                txt = pages['btn-page']['elements']['click-confirm']
+                btn = self.pages['btn-page']['elements']['btn']
+                txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
@@ -622,12 +622,12 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertTextDisplayedSoftFailure(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         text = "FAIL"
         for device, driver in self.appium_starter(self.drivers):
             try:
-                btn = pages['btn-page']['elements']['btn']
-                txt = pages['btn-page']['elements']['click-confirm']
+                btn = self.pages['btn-page']['elements']['btn']
+                txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
@@ -644,12 +644,12 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertTextDisplayedFailure(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         text = "FAIL"
         for device, driver in self.appium_starter(self.drivers):
             try:
-                btn = pages['btn-page']['elements']['btn']
-                txt = pages['btn-page']['elements']['click-confirm']
+                btn = self.pages['btn-page']['elements']['btn']
+                txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
@@ -665,12 +665,12 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertExactTextDisplayedSuccess(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         text = "Submitted"
         for device, driver in self.appium_starter(self.drivers):
             try:
-                btn = pages['btn-page']['elements']['btn']
-                txt = pages['btn-page']['elements']['click-confirm']
+                btn = self.pages['btn-page']['elements']['btn']
+                txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
@@ -689,12 +689,12 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertExactTextDisplayedSoftFailure(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         text = "FAIL"
         for device, driver in self.appium_starter(self.drivers):
             try:
-                btn = pages['btn-page']['elements']['btn']
-                txt = pages['btn-page']['elements']['click-confirm']
+                btn = self.pages['btn-page']['elements']['btn']
+                txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
@@ -712,12 +712,12 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertExactTextDisplayedFailure(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         text = "FAIL"
         for device, driver in self.appium_starter(self.drivers):
             try:
-                btn = pages['btn-page']['elements']['btn']
-                txt = pages['btn-page']['elements']['click-confirm']
+                btn = self.pages['btn-page']['elements']['btn']
+                txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
@@ -734,11 +734,11 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertDisplayedSuccess(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
-                btn = pages['btn-page']['elements']['btn']
-                txt = pages['btn-page']['elements']['click-confirm']
+                btn = self.pages['btn-page']['elements']['btn']
+                txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
@@ -755,10 +755,10 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertDisplayedFailed(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
-                hidden = pages['btn-page']['elements']['req-txt']
+                hidden = self.pages['btn-page']['elements']['req-txt']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     with self.assertRaises(TassHardAssertionError):
@@ -770,11 +770,11 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertDisplayedSoftSuccess(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
-                btn = pages['btn-page']['elements']['btn']
-                txt = pages['btn-page']['elements']['click-confirm']
+                btn = self.pages['btn-page']['elements']['btn']
+                txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
@@ -791,10 +791,10 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertDisplayedSoftFailed(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
-                hidden = pages['btn-page']['elements']['req-txt']
+                hidden = self.pages['btn-page']['elements']['req-txt']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     with self.assertRaises(TassSoftAssertionError):
@@ -807,10 +807,10 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertNotDisplayedSuccess(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
-                hidden = pages['btn-page']['elements']['req-txt']
+                hidden = self.pages['btn-page']['elements']['req-txt']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     try:
@@ -824,11 +824,11 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertNotDisplayedFailed(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
-                btn = pages['btn-page']['elements']['btn']
-                txt = pages['btn-page']['elements']['click-confirm']
+                btn = self.pages['btn-page']['elements']['btn']
+                txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
@@ -843,10 +843,10 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertNotDisplayedSoftSuccess(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
-                hidden = pages['btn-page']['elements']['req-txt']
+                hidden = self.pages['btn-page']['elements']['req-txt']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     try:
@@ -861,11 +861,11 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertNotDisplayedSoftFailed(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
-                btn = pages['btn-page']['elements']['btn']
-                txt = pages['btn-page']['elements']['click-confirm']
+                btn = self.pages['btn-page']['elements']['btn']
+                txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
@@ -881,7 +881,7 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertPageIsOpenByTitleSoftFailure(self):
-        page = pages['btn-page']
+        page = self.pages['btn-page']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -895,7 +895,7 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertPageIsOpenByURLSoftFailure(self):
-        page = pages['txt-page']
+        page = self.pages['txt-page']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -909,7 +909,7 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertPageIsOpenByElementSoftFailure(self):
-        page = pages['drpdnw-page']
+        page = self.pages['drpdnw-page']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -923,7 +923,7 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertPageIsOpenByTitleSoftSuccess(self):
-        page = pages['btn-page']
+        page = self.pages['btn-page']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -940,7 +940,7 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertPageIsOpenByURLSoftSuccess(self):
-        page = pages['txt-page']
+        page = self.pages['txt-page']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -957,7 +957,7 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertPageIsOpenByElementSoftSuccess(self):
-        page = pages['drpdnw-page']
+        page = self.pages['drpdnw-page']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -973,7 +973,7 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertPageIsOpenByTitleFailure(self):
-        page = pages['btn-page']
+        page = self.pages['btn-page']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -987,7 +987,7 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertPageIsOpenByURLFailure(self):
-        page = pages['txt-page']
+        page = self.pages['txt-page']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1001,7 +1001,7 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertPageIsOpenByElementFailure(self):
-        page = pages['drpdnw-page']
+        page = self.pages['drpdnw-page']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1015,7 +1015,7 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertPageIsOpenByTitleSuccess(self):
-        page = pages['btn-page']
+        page = self.pages['btn-page']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1032,7 +1032,7 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertPageIsOpenByURLSuccess(self):
-        page = pages['txt-page']
+        page = self.pages['txt-page']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1048,7 +1048,7 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertPageIsOpenByElementSuccess(self):
-        page = pages['drpdnw-page']
+        page = self.pages['drpdnw-page']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
@@ -1064,8 +1064,8 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertAttributeDisplayedSuccess(self):
-        url = pages['btn-page']['url']
-        element = pages['btn-page']['elements']['btn']
+        url = self.pages['btn-page']['url']
+        element = self.pages['btn-page']['elements']['btn']
 
         value = "submit"
         attribute = "name"
@@ -1087,8 +1087,8 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertPartialAttributeDisplayedSuccess(self):
-        url = pages['btn-page']['url']
-        element = pages['btn-page']['elements']['btn']
+        url = self.pages['btn-page']['url']
+        element = self.pages['btn-page']['elements']['btn']
 
         value = "ubmi"
         attribute = "name"
@@ -1110,8 +1110,8 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertAttributeDisplayedSoftFailure(self):
-        url = pages['btn-page']['url']
-        element = pages['btn-page']['elements']['btn']
+        url = self.pages['btn-page']['url']
+        element = self.pages['btn-page']['elements']['btn']
 
         value = "FAIL"
         attribute = "name"
@@ -1132,8 +1132,8 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertAttributeDisplayedFailure(self):
-        url = pages['btn-page']['url']
-        element = pages['btn-page']['elements']['btn']
+        url = self.pages['btn-page']['url']
+        element = self.pages['btn-page']['elements']['btn']
 
         value = "FAIL"
         attribute = "name"
@@ -1153,8 +1153,8 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertExactAttributeDisplayedSuccess(self):
-        url = pages['btn-page']['url']
-        element = pages['btn-page']['elements']['btn']
+        url = self.pages['btn-page']['url']
+        element = self.pages['btn-page']['elements']['btn']
 
         value = "submit"
         attribute = "name"
@@ -1177,8 +1177,8 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertExactAttributeDisplayedSoftFailure(self):
-        url = pages['btn-page']['url']
-        element = pages['btn-page']['elements']['btn']
+        url = self.pages['btn-page']['url']
+        element = self.pages['btn-page']['elements']['btn']
 
         value = "submi"
         attribute = "name"
@@ -1200,8 +1200,8 @@ class TestAppiumAssertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertExactAttributeDisplayedFailure(self):
-        url = pages['btn-page']['url']
-        element = pages['btn-page']['elements']['btn']
+        url = self.pages['btn-page']['url']
+        element = self.pages['btn-page']['elements']['btn']
 
         value = "submi"
         attribute = "name"
@@ -1225,7 +1225,7 @@ class TestAppiumAssertActions(TestAppium):
 class AppiumScreenshotActions(TestAppium):
 
     def test_AppiumScreenshotPage(self):
-        url = pages['btn-page']['url']
+        url = self.pages['btn-page']['url']
         name = "test"
         for device, driver in self.appium_starter(self.drivers):
 
@@ -1248,8 +1248,8 @@ class AppiumScreenshotActions(TestAppium):
                     driver.quit()
 
     def test_AppiumScreenshotElement(self):
-        url = pages['btn-page']['url']
-        locator = pages['btn-page']['elements']['btn']
+        url = self.pages['btn-page']['url']
+        locator = self.pages['btn-page']['elements']['btn']
         name = "test"
         for device, driver in self.appium_starter(self.drivers):
 
@@ -1276,15 +1276,15 @@ class AppiumScreenshotActions(TestAppium):
 class TestAppiumAlertActions(TestAppium):
 
     def test_AppiumHandleAlertAccept(self):
-        url = pages['alrt-page']['url']
+        url = self.pages['alrt-page']['url']
         for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    # driver().find_element(**pages['alrt-page']['elements']['btn']).send_keys("")
-                    driver().find_element(**pages['alrt-page']['elements']['btn']).click()
+                    # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
+                    driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     appium.handle_alert(driver)
                     self.assertIsNotNone(driver().title)
             finally:
@@ -1292,15 +1292,15 @@ class TestAppiumAlertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumHandleAlertAccept1(self):
-        url = pages['alrt-page']['url']
+        url = self.pages['alrt-page']['url']
         for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    # driver().find_element(**pages['alrt-page']['elements']['btn']).send_keys("")
-                    driver().find_element(**pages['alrt-page']['elements']['btn']).click()
+                    # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
+                    driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     appium.handle_alert(driver, handle=1)
                     self.assertIsNotNone(driver().title)
             finally:
@@ -1308,15 +1308,15 @@ class TestAppiumAlertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumHandleAlertAcceptStr(self):
-        url = pages['alrt-page']['url']
+        url = self.pages['alrt-page']['url']
         for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    # driver().find_element(**pages['alrt-page']['elements']['btn']).send_keys("")
-                    driver().find_element(**pages['alrt-page']['elements']['btn']).click()
+                    # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
+                    driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     appium.handle_alert(driver, handle='accept')
                     self.assertIsNotNone(driver().title)
             finally:
@@ -1324,15 +1324,15 @@ class TestAppiumAlertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumHandleAlertDismiss(self):
-        url = pages['alrt-page']['url']
+        url = self.pages['alrt-page']['url']
         for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    # driver().find_element(**pages['alrt-page']['elements']['btn']).send_keys("")
-                    driver().find_element(**pages['alrt-page']['elements']['btn']).click()
+                    # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
+                    driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     appium.handle_alert(driver, handle=False)
                     self.assertIsNotNone(driver().title)
             finally:
@@ -1340,15 +1340,15 @@ class TestAppiumAlertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumHandleAlertDismiss0(self):
-        url = pages['alrt-page']['url']
+        url = self.pages['alrt-page']['url']
         for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    # driver().find_element(**pages['alrt-page']['elements']['btn']).send_keys("")
-                    driver().find_element(**pages['alrt-page']['elements']['btn']).click()
+                    # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
+                    driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     appium.handle_alert(driver, handle=0)
                     self.assertIsNotNone(driver().title)
             finally:
@@ -1356,15 +1356,15 @@ class TestAppiumAlertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumHandleAlertDismissStr(self):
-        url = pages['alrt-page']['url']
+        url = self.pages['alrt-page']['url']
         for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    # driver().find_element(**pages['alrt-page']['elements']['btn']).send_keys("")
-                    driver().find_element(**pages['alrt-page']['elements']['btn']).click()
+                    # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
+                    driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     appium.handle_alert(driver, handle='dismiss')
                     self.assertIsNotNone(driver().title)
             finally:
@@ -1372,17 +1372,17 @@ class TestAppiumAlertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumHandleConfirmationAlertAccept(self):
-        url = pages['conf-page']['url']
+        url = self.pages['conf-page']['url']
         for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    # driver().find_element(**pages['conf-page']['elements']['btn']).send_keys("")
-                    driver().find_element(**pages['conf-page']['elements']['btn']).click()
+                    # driver().find_element(**self.pages['conf-page']['elements']['btn']).send_keys("")
+                    driver().find_element(**self.pages['conf-page']['elements']['btn']).click()
                     appium.handle_alert(driver)
-                    result_locator = pages['conf-page']['elements']['result']
+                    result_locator = self.pages['conf-page']['elements']['result']
                     result = driver().find_element("xpath", f"//*[@id='{result_locator['value']}']").text
                     self.assertEqual(result.lower(), "ok")
             finally:
@@ -1390,17 +1390,17 @@ class TestAppiumAlertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumHandleConfirmationAlertDismiss(self):
-        url = pages['conf-page']['url']
+        url = self.pages['conf-page']['url']
         for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    # driver().find_element(**pages['conf-page']['elements']['btn']).send_keys("")
-                    driver().find_element(**pages['conf-page']['elements']['btn']).click()
+                    # driver().find_element(**self.pages['conf-page']['elements']['btn']).send_keys("")
+                    driver().find_element(**self.pages['conf-page']['elements']['btn']).click()
                     appium.handle_alert(driver, handle='dismiss')
-                    result_locator = pages['conf-page']['elements']['result']
+                    result_locator = self.pages['conf-page']['elements']['result']
                     result = driver().find_element("xpath", f"//*[@id='{result_locator['value']}']").text
                     self.assertEqual(result.lower(), "cancel")
             finally:
@@ -1408,18 +1408,18 @@ class TestAppiumAlertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumHandlePromptAlertAccept(self):
-        url = pages['prmt-page']['url']
+        url = self.pages['prmt-page']['url']
         for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    # driver().find_element(**pages['prmt-page']['elements']['btn']).send_keys("")
-                    driver().find_element(**pages['prmt-page']['elements']['btn']).click()
+                    # driver().find_element(**self.pages['prmt-page']['elements']['btn']).send_keys("")
+                    driver().find_element(**self.pages['prmt-page']['elements']['btn']).click()
                     appium.handle_alert(driver, text="abc")
                     self.assertIsNotNone(driver().title)
-                    result_locator = pages['prmt-page']['elements']['result']
+                    result_locator = self.pages['prmt-page']['elements']['result']
                     result = driver().find_element("xpath", f"//*[@id='{result_locator['value']}']").text
                     self.assertEqual(result, "abc")
             finally:
@@ -1427,18 +1427,18 @@ class TestAppiumAlertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumHandlePromptAlertDismiss(self):
-        url = pages['prmt-page']['url']
+        url = self.pages['prmt-page']['url']
         for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    # driver().find_element(**pages['prmt-page']['elements']['btn']).send_keys("")
-                    driver().find_element(**pages['prmt-page']['elements']['btn']).click()
+                    # driver().find_element(**self.pages['prmt-page']['elements']['btn']).send_keys("")
+                    driver().find_element(**self.pages['prmt-page']['elements']['btn']).click()
                     appium.handle_alert(driver, text="abc", handle='dismiss')
                     self.assertIsNotNone(driver().title)
-                    result_locator = pages['prmt-page']['elements']['result']
+                    result_locator = self.pages['prmt-page']['elements']['result']
                     result = driver().find_element("xpath", f"//*[@id='{result_locator['value']}']").text
                     self.assertIn("canceled", result.lower())
             finally:
@@ -1446,7 +1446,7 @@ class TestAppiumAlertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertAlertDisplayedSoftFailure(self):
-        url = pages['alrt-page']['url']
+        url = self.pages['alrt-page']['url']
         for device, driver in self.appium_starter(self.drivers):
 
             try:
@@ -1459,7 +1459,7 @@ class TestAppiumAlertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertAlertDisplayedHardFailure(self):
-        url = pages['alrt-page']['url']
+        url = self.pages['alrt-page']['url']
         for device, driver in self.appium_starter(self.drivers):
 
             try:
@@ -1472,15 +1472,15 @@ class TestAppiumAlertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertAlertTextDisplayedSuccess(self):
-        url = pages['alrt-page']['url']
+        url = self.pages['alrt-page']['url']
         for device, driver in self.appium_starter(self.drivers):
 
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    # driver().find_element(**pages['alrt-page']['elements']['btn']).send_keys("")
-                    driver().find_element(**pages['alrt-page']['elements']['btn']).click()
+                    # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
+                    driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     text = "I am an alert!"
                     appium.assert_alert_displayed(driver, text=text)
             finally:
@@ -1488,14 +1488,14 @@ class TestAppiumAlertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertAlertPartialTextDisplayedSuccess(self):
-        url = pages['alrt-page']['url']
+        url = self.pages['alrt-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    # driver().find_element(**pages['alrt-page']['elements']['btn']).send_keys("")
-                    driver().find_element(**pages['alrt-page']['elements']['btn']).click()
+                    # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
+                    driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     text = "alert!"
                     appium.assert_alert_displayed(driver, text=text)
             finally:
@@ -1503,14 +1503,14 @@ class TestAppiumAlertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertAlertTextDisplayedFailureSoft(self):
-        url = pages['alrt-page']['url']
+        url = self.pages['alrt-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    # driver().find_element(**pages['alrt-page']['elements']['btn']).send_keys("")
-                    driver().find_element(**pages['alrt-page']['elements']['btn']).click()
+                    # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
+                    driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     with self.assertRaises(TassSoftAssertionError):
                         appium.assert_alert_displayed(driver, text="FAIL", soft=True)
             finally:
@@ -1518,14 +1518,14 @@ class TestAppiumAlertActions(TestAppium):
                     driver.quit()
 
     def test_AppiumAssertAlertTextDisplayedFailure(self):
-        url = pages['alrt-page']['url']
+        url = self.pages['alrt-page']['url']
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
                     close_nav(driver)
-                    # driver().find_element(**pages['alrt-page']['elements']['btn']).send_keys("")
-                    driver().find_element(**pages['alrt-page']['elements']['btn']).click()
+                    # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
+                    driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     with self.assertRaises(TassHardAssertionError):
                         appium.assert_alert_displayed(driver, text="FAIL")
             finally:
