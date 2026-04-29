@@ -20,15 +20,6 @@ import selenium.webdriver.support.expected_conditions as EC
 appium_inst = importlib.util.find_spec("appium")
 
 
-def close_nav(driver):
-    try:
-        element = driver().find_element("xpath", "//li[contains(@class, 'expand')]/a")
-        element.send_keys("")
-        element.click()
-    except NoSuchElementException:
-        pass
-
-
 @unittest.skipUnless(appium_inst, "Appium is not installed.")
 class TestAppium(unittest.TestCase):
     from tass.core.drivers.mobile.customdrivers import (
@@ -261,6 +252,13 @@ class TestAppium(unittest.TestCase):
             except NoSuchElementException:
                 pass
             driver().switch_to_context(driver().find_webview_context())
+            
+    def close_nav(self, driver):
+        try:
+            element = driver().find_element("xpath", "//li[contains(@class, 'expand')]/a")
+            element.click()
+        except NoSuchElementException:
+            pass
 
 
 class TestAppiumStartupActions(TestAppium):
@@ -319,7 +317,7 @@ class TestAppiumBasicActions(TestAppium):
             try:
                 with self.subTest(device=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     locator = self.pages['btn-page']['elements']['btn']
                     appium.click(driver,
                                    locator=locator)
@@ -339,7 +337,7 @@ class TestAppiumBasicActions(TestAppium):
             try:
                 with self.subTest(device=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     text = 'Selenium Test Type'
                     locator = self.pages['txt-page']['elements']['input']
                     appium.write(
@@ -359,7 +357,7 @@ class TestAppiumBasicActions(TestAppium):
             try:
                 with self.subTest(device=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     text = 'Selenium Test Type'
                     locator = self.pages['txt-page']['elements']['input']
                     driver().find_element("xpath", f"//*[@id='{locator['value']}']").send_keys(text)
@@ -530,7 +528,7 @@ class TestAppiumDropdownActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     locator = self.pages['drpdnw-page']['elements']['select']
                     appium.select_dropdown(driver, 'Python', 'text',
                                              locator=locator)
@@ -546,7 +544,7 @@ class TestAppiumDropdownActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     locator = self.pages['drpdnw-page']['elements']['select']
                     appium.select_dropdown(driver, '1', 'value',
                                              locator=locator)
@@ -562,7 +560,7 @@ class TestAppiumDropdownActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     locator = self.pages['drpdnw-page']['elements']['select']
                     appium.select_dropdown(driver, 1, 'index',
                                              locator=locator)
@@ -584,7 +582,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element("xpath", f"//*[@id='{btn['value']}']").send_keys("")
                     driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     try:
@@ -607,7 +605,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element("xpath", f"//*[@id='{btn['value']}']").send_keys("")
                     driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     try:
@@ -630,7 +628,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element("xpath", f"//*[@id='{btn['value']}']").send_keys("")
                     driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     with self.assertRaises(TassSoftAssertionError):
@@ -652,7 +650,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element("xpath", f"//*[@id='{btn['value']}']").send_keys("")
                     driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     with self.assertRaises(TassHardAssertionError):
@@ -673,7 +671,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element("xpath", f"//*[@id='{btn['value']}']").send_keys("")
                     driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     try:
@@ -697,7 +695,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element("xpath", f"//*[@id='{btn['value']}']").send_keys("")
                     driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     with self.assertRaises(TassSoftAssertionError):
@@ -720,7 +718,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element("xpath", f"//*[@id='{btn['value']}']").send_keys("")
                     driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     with self.assertRaises(TassHardAssertionError):
@@ -741,7 +739,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element("xpath", f"//*[@id='{btn['value']}']").send_keys("")
                     driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     try:
@@ -777,7 +775,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     try:
                         appium.assert_displayed(
@@ -831,7 +829,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     with self.assertRaises(TassHardAssertionError):
                         appium.assert_not_displayed(
@@ -868,7 +866,7 @@ class TestAppiumAssertActions(TestAppium):
                 txt = self.pages['btn-page']['elements']['click-confirm']
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     driver().find_element("xpath", f"//*[@id='{btn['value']}']").click()
                     with self.assertRaises(TassSoftAssertionError):
                         appium.assert_not_displayed(
@@ -1232,7 +1230,7 @@ class AppiumScreenshotActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     try:
                         out = pathlib.Path(
                             appium.screenshot(
@@ -1256,7 +1254,7 @@ class AppiumScreenshotActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     try:
                         out = pathlib.Path(
                             appium.screenshot(
@@ -1282,7 +1280,7 @@ class TestAppiumAlertActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
                     driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     appium.handle_alert(driver)
@@ -1298,7 +1296,7 @@ class TestAppiumAlertActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
                     driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     appium.handle_alert(driver, handle=1)
@@ -1314,7 +1312,7 @@ class TestAppiumAlertActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
                     driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     appium.handle_alert(driver, handle='accept')
@@ -1330,7 +1328,7 @@ class TestAppiumAlertActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
                     driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     appium.handle_alert(driver, handle=False)
@@ -1346,7 +1344,7 @@ class TestAppiumAlertActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
                     driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     appium.handle_alert(driver, handle=0)
@@ -1362,7 +1360,7 @@ class TestAppiumAlertActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
                     driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     appium.handle_alert(driver, handle='dismiss')
@@ -1378,7 +1376,7 @@ class TestAppiumAlertActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element(**self.pages['conf-page']['elements']['btn']).send_keys("")
                     driver().find_element(**self.pages['conf-page']['elements']['btn']).click()
                     appium.handle_alert(driver)
@@ -1396,7 +1394,7 @@ class TestAppiumAlertActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element(**self.pages['conf-page']['elements']['btn']).send_keys("")
                     driver().find_element(**self.pages['conf-page']['elements']['btn']).click()
                     appium.handle_alert(driver, handle='dismiss')
@@ -1414,7 +1412,7 @@ class TestAppiumAlertActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element(**self.pages['prmt-page']['elements']['btn']).send_keys("")
                     driver().find_element(**self.pages['prmt-page']['elements']['btn']).click()
                     appium.handle_alert(driver, text="abc")
@@ -1433,7 +1431,7 @@ class TestAppiumAlertActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element(**self.pages['prmt-page']['elements']['btn']).send_keys("")
                     driver().find_element(**self.pages['prmt-page']['elements']['btn']).click()
                     appium.handle_alert(driver, text="abc", handle='dismiss')
@@ -1478,7 +1476,7 @@ class TestAppiumAlertActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
                     driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     text = "I am an alert!"
@@ -1493,7 +1491,7 @@ class TestAppiumAlertActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
                     driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     text = "alert!"
@@ -1508,7 +1506,7 @@ class TestAppiumAlertActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
                     driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     with self.assertRaises(TassSoftAssertionError):
@@ -1523,7 +1521,7 @@ class TestAppiumAlertActions(TestAppium):
             try:
                 with self.subTest(browser=device[1].__name__):
                     self.load_initial_url(driver, url)
-                    close_nav(driver)
+                    self.close_nav(driver)
                     # driver().find_element(**self.pages['alrt-page']['elements']['btn']).send_keys("")
                     driver().find_element(**self.pages['alrt-page']['elements']['btn']).click()
                     with self.assertRaises(TassHardAssertionError):
