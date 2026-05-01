@@ -11,8 +11,6 @@ class TestAppiumChain(TestAppium):
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
-                    breakpoint()
-                    
                     self.load_initial_url(driver, url)
                     self.close_nav(driver)
                     locator = self.pages['btn-page']['elements']['btn']
@@ -91,7 +89,7 @@ class TestAppiumChain(TestAppium):
             finally:
                 if driver:
                     driver.quit()
-                    
+
 
     def test_AppiumChainMoveTo(self):
         # TODO: How to test this function?
