@@ -1,9 +1,6 @@
 import time
 from appium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.common.exceptions import (WebDriverException,
-                                        NoSuchWindowException,
-                                        NoAlertPresentException)
 from ...log.logging import getLogger
 
 
@@ -99,6 +96,7 @@ class MobileDriver(webdriver.Remote):
             if webview:
                 self.switch_to_context(webview)
 
+
 class AndroidDriver(MobileDriver):
 
     def __init__(self, *args, **kwargs):
@@ -106,8 +104,10 @@ class AndroidDriver(MobileDriver):
 
     def find_element(self, by, value):
         rect, element = super().find_element(by, value)
-        self.logger.debug("Android driver found element >>> tag: %s, location: %s",
-                          element.tag_name, rect)
+        self.logger.debug(
+            "Android driver found element >>> tag: %s, location: %s",
+            element.tag_name, rect
+            )
         return element
 
     def hide_keyboard(self, strategy="back", *args, **kwargs):
@@ -142,10 +142,12 @@ class AndroidDriver(MobileDriver):
             "default": default
         }
 
-
         hide = valid_strategies.get(strategy, None)
         if not hide:
-            self.logger.warning("\"%s\" is not a valid strategy. Using \"back\" strategy.", strategy)
+            self.logger.warning(
+                "\"%s\" is not a valid strategy. Using \"back\" strategy.",
+                strategy
+                )
             hide = back
         hide(*args, **kwargs)
 

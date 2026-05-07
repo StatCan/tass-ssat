@@ -44,10 +44,10 @@ def wait_element_clickable(driver, locator,
                     action[1])
         # TODO: Rework this to perform ANY action not just selenium
         # TODO: Alternate: Create generic wait until condition in core?
-        getattr(sel, action[1])(driver,
-                                find=_wait,
-                                locator=locator,
-                                **kwargs)
+        return getattr(sel, action[1])(driver,
+                                       find=_wait,
+                                       locator=locator,
+                                       **kwargs)
 
 
 def wait_element_visible(driver, locator,
@@ -89,7 +89,7 @@ def wait_element_visible(driver, locator,
         # TODO: Alternate: Create generic wait until condition in core?
         logger.info("Waiting for element before selenium action: %s",
                     action[1])
-        getattr(sel, action[1])(driver,
-                                find=_wait,
-                                locator=locator,
-                                **kwargs)
+        return getattr(sel, action[1])(driver,
+                                       find=_wait,
+                                       locator=locator,
+                                       **kwargs)

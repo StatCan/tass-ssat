@@ -5,6 +5,7 @@ from .browser import wrapper
 
 log = getLogger(__name__)
 
+
 def new_driver(uuid, driver_name, **kwargs):
     log.info("Creating driver for: %s", driver_name)
     try:

@@ -3,8 +3,6 @@ from datetime import datetime
 from selenium.common.exceptions import (WebDriverException,
                                         NoSuchWindowException,
                                         NoAlertPresentException)
-from selenium.webdriver.support.select import Select
-from selenium.webdriver.common.alert import Alert
 from ...tools.page_reader import PageReader
 from ...exceptions.assertion_errors import TassHardAssertionError
 from ...exceptions.assertion_errors import TassSoftAssertionError
@@ -54,6 +52,7 @@ def _is_displayed(driver, find=_find_element, **kwargs):
         display = find(driver, **kwargs).is_displayed()
         logger.debug("Attempt 2 >> Found element, displayed=%s", display)
         return display
+
 
 def _switch_to_alert(driver):
     try:
@@ -195,8 +194,6 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
             requires: locator.
 
     """
-
-
     try:
         driver.select(find(driver, **kwargs), value, using)
         logger.debug("Dropdown selected: '%s' -- using: '%s'", value, using)
@@ -607,9 +604,6 @@ def handle_alert(driver, handle=True, text=None):
             alert_accept = True
     else:
         alert_accept = bool(handle)
-
-
-
     try:
         if alert_accept:
             driver.accept_alert(text=text)
@@ -678,6 +672,7 @@ def _fail(soft, message, exception=None, *args):
                 "Hard Assertion failed: " + message,
                 exception, *args)
 
+
 def assert_alert_displayed(driver, text=None, soft=False):
     """ Assert that an alert is currently displayed in the browser.
 
@@ -717,12 +712,8 @@ def assert_alert_displayed(driver, text=None, soft=False):
                       f"Alert text does not contain expected text: {text}")
             else:
                 logger.debug("Alert text contains expected text: %s", text)
-
-
     except WebDriverException as e:
         _fail(soft, 'WebDriver exception raised', exception=e)
-
-
 
 
 def assert_page_is_open(driver, page=None, find=_find_element,
@@ -772,9 +763,15 @@ def assert_page_is_open(driver, page=None, find=_find_element,
         if (driver().title != title):
             ele = None
             if normalize:
-                ele_title = {"by": "xpath", "value": f"//title[normalize-space(text())='{title}']"}
+                ele_title = {
+                    "by": "xpath",
+                    "value": f"//title[normalize-space(text())='{title}']"
+                    }
             else:
-                ele_title = {"by": "xpath", "value": f"//title[text()='{title}']"}
+                ele_title = {
+                    "by": "xpath",
+                    "value": f"//title[text()='{title}']"
+                    }
             try:
                 ele = find(driver, ele_title, page=page)
                 logger.debug("Element: %s found, page is open.", ele_title)

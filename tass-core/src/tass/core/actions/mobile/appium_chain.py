@@ -39,7 +39,10 @@ def reset(driver, **kwargs):
     selchain.reset(driver, **kwargs)
 
 
-def click(driver, locator=None, find=app._find_element_hide_keyboard, **kwargs):
+def click(driver,
+          locator=None,
+          find=app._find_element_hide_keyboard,
+          **kwargs):
     """Add a click action to the action queue.
 
     Add a click action to the action queue. If a locator is
@@ -60,7 +63,12 @@ def click(driver, locator=None, find=app._find_element_hide_keyboard, **kwargs):
     """
     selchain.click(driver, locator=locator, find=find, **kwargs)
 
-def write(driver, locator=None, text='', find=app._find_element_hide_keyboard, **kwargs):
+
+def write(driver,
+          locator=None,
+          text='',
+          find=app._find_element_hide_keyboard,
+          **kwargs):
     """Add a send_keys action to the action queue.
 
     Add a send_keys action to the action queue. If a locator is
@@ -202,5 +210,5 @@ def scroll(driver, locator=None, deltax=0, deltay=0,
     selchain.scroll(driver, locator=locator,
                     deltax=deltax, deltay=deltay,
                     xoffset=xoffset, yoffset=yoffset,
-                    find=find
+                    find=find,
                     **kwargs)

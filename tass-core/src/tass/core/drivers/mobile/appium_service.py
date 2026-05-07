@@ -28,7 +28,7 @@ class TASSAppiumService(AppiumService):
         if appium is not None:
             DEFAULT.update(appium)
 
-        for k,v in DEFAULT.items():
+        for k,  v in DEFAULT.items():
             args.append(str(k))
             if not isinstance(v, bool):
                 args.append(str(v))
@@ -39,9 +39,17 @@ class TASSAppiumService(AppiumService):
     @classmethod
     def start_service(cls, service):
         if service and service.is_running:
-            cls.logger.debug("Appium Server is currently running: %s>%s", service.uuid, service)
+            cls.logger.debug(
+                "Appium Server is currently running: %s>%s",
+                service.uuid,
+                service
+                )
             return None
-        cls.logger.debug("Starting Appium Server %s: %s", service.uuid, service.args)
+        cls.logger.debug(
+            "Starting Appium Server %s: %s",
+            service.uuid,
+            service.args
+            )
         _ = service.start(args=service.args)
         cls.logger.debug("Appium Server started: %s", _)
         return _
@@ -49,8 +57,16 @@ class TASSAppiumService(AppiumService):
     @classmethod
     def stop_service(cls, service):
         if service and service.is_running:
-            cls.logger.debug("Stopping Appium Server %s: %s", service.uuid, service)
+            cls.logger.debug(
+                "Stopping Appium Server %s: %s",
+                service.uuid,
+                service
+                )
             return service.stop()
         else:
-            cls.logger.debug("Appium Server is not running: %s>%s", service.uuid, service)
+            cls.logger.debug(
+                "Appium Server is not running: %s>%s",
+                service.uuid,
+                service
+                )
             return False
