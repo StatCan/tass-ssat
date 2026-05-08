@@ -22,10 +22,12 @@ appium_inst = importlib.util.find_spec("appium")
 
 @unittest.skipUnless(appium_inst, "Appium is not installed.")
 class TestAppium(unittest.TestCase):
-    from tass.core.drivers.mobile.customdrivers import (
+    if appium_inst:
+        from tass.core.drivers.mobile.customdrivers import (
         AndroidDriver as Android,
         IOSDriver as IOS
         )
+
 
     pages = {
     # QA Practice
