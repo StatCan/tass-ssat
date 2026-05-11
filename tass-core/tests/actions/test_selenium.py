@@ -98,6 +98,11 @@ class TestSelenium(unittest.TestCase):
         str(pathlib.Path(__file__).parents[1].resolve())
         + '/pages/page1.html'
         )
+    
+    test_page_url_2 = (
+        str(pathlib.Path(__file__).parents[1].resolve())
+        + '/pages/page2.html'
+        )
 
     def setUpClass():
         # Moved from setUp, only needed to be executed 1 time.

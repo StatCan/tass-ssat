@@ -760,6 +760,7 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                   'Element {identifier} not found. Page is not open')
 
     def _title(driver, find, title, soft, normalize=False):
+    def _title(driver, find, title, soft, normalize=False):
         if (driver().title != title):
             ele = None
             if normalize:
@@ -810,6 +811,9 @@ def assert_page_is_open(driver, page=None, find=_find_element,
             case 'normalize-title':
                 title = page_id['identifier']
                 _title(driver, find, title, soft, normalize=True)
+            case 'normalize-title':
+                title = page_id['identifier']
+                _title(driver, find, title, soft, normalize=True)
             case 'title':
                 title = page_id.get('identifier',
                                     PageReader().get_page_title(*page))
@@ -828,6 +832,9 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                          page_id['identifier'],
                          None,
                          soft)
+            case 'normalize-title':
+                title = page_id['identifier']
+                _title(driver, find, title, soft, normalize=True)
             case 'normalize-title':
                 title = page_id['identifier']
                 _title(driver, find, title, soft, normalize=True)
