@@ -5,18 +5,18 @@ from tass.core.log.logging import getLogger
 log = getLogger(__name__)
 
 modules = {
-    "selenium": # For Backwards Compatibility
-        'tass.core.actions.browser.selenium_action_manager',
-    "core": # For Backwards Compatibility
-        'tass.core.actions.core_action_manager',
-    "selwait": # For Backwards Compatibility
-        'tass.core.actions.browser.selenium_action_manager',
-    "selchain": # For Backwards Compatibility
-        'tass.core.actions.browser.selenium_action_manager',
+    "selenium":  # For Backwards Compatibility
+    'tass.core.actions.browser.selenium_action_manager',
+    "core":  # For Backwards Compatibility
+    'tass.core.actions.core_action_manager',
+    "selwait":  # For Backwards Compatibility
+    'tass.core.actions.browser.selenium_action_manager',
+    "selchain":  # For Backwards Compatibility
+    'tass.core.actions.browser.selenium_action_manager',
     "browser":
-        'tass.core.actions.browser.selenium_action_manager',
+    'tass.core.actions.browser.selenium_action_manager',
     "mobile":
-        'tass.core.actions.mobile.appium_action_manager'
+    'tass.core.actions.mobile.appium_action_manager'
 }
 
 

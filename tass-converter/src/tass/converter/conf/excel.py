@@ -240,8 +240,10 @@ def convert_mobiles(mobiles, wb):
         d_config = {}  # Driver configurations
         a_server = {} # Appium server configurations
         a_driver = {} # Appium driver configurations
+        sb_driver = set() # Setup scripts for driver
+        sa_driver = set() # Tear down scripts for driver
 
-        for row in s.iter_rows(min_row=3, min_col=2, max_col=10):
+        for row in s.iter_rows(min_row=3, min_col=2, max_col=14):
             if row[0].value:
                 k, v = row[0].value.split(',', maxsplit=1)
                 d_config[k] = v
@@ -266,12 +268,20 @@ def convert_mobiles(mobiles, wb):
                     k = _[0]
                     v = True
                 a_driver[k] = v
+            if row[10].value:
+                sb_driver.add(row[10].value)
+            if row[12].value:
+                sa_driver.add(row[12].value)
 
         config = {
             'driver': d_config,
             'browser': {
                 'arguments': sorted(list(b_args)),
-                'preferences': b_pref
+                'preferences': b_pref,
+                },
+            "scripts": {
+                    "driver:setup": list(sb_driver),
+                    "driver:teardown": list(sa_driver)
                 },
             'appium:server': a_server,
             'appium:driver': a_driver

@@ -23,12 +23,12 @@ class MobileDriver(webdriver.Remote):
     NATIVE = "NATIVE_APP"
     WEBVIEW = "WEBVIEW"
 
-    def __init__(self, options,
+    def __init__(self,
                  url_base="http://localhost",
                  port=4723,
                  *args, **kwargs):
         server_url = f"{url_base}:{port}"
-        super().__init__(server_url, options=options, *args, **kwargs)
+        super().__init__(server_url, *args, **kwargs)
         self.logger = getLogger(__name__, self.name)
 
     def find_element(self, by, value):
@@ -96,6 +96,7 @@ class MobileDriver(webdriver.Remote):
             if webview:
                 self.switch_to_context(webview)
 
+
 class AndroidDriver(MobileDriver):
 
     def __init__(self, *args, **kwargs):
@@ -103,8 +104,10 @@ class AndroidDriver(MobileDriver):
 
     def find_element(self, by, value):
         rect, element = super().find_element(by, value)
-        self.logger.debug("Android driver found element >>> tag: %s, location: %s",
-                          element.tag_name, rect)
+        self.logger.debug(
+            "Android driver found element >>> tag: %s, location: %s",
+            element.tag_name, rect
+            )
         return element
 
     def hide_keyboard(self, strategy="back", *args, **kwargs):
@@ -139,10 +142,12 @@ class AndroidDriver(MobileDriver):
             "default": default
         }
 
-
         hide = valid_strategies.get(strategy, None)
         if not hide:
-            self.logger.warning("\"%s\" is not a valid strategy. Using \"back\" strategy.", strategy)
+            self.logger.warning(
+                "\"%s\" is not a valid strategy. Using \"back\" strategy.",
+                strategy
+                )
             hide = back
         hide(*args, **kwargs)
 

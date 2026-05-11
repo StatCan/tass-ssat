@@ -1,3 +1,5 @@
+import pathlib
+from datetime import datetime
 from ..browser import selenium as sel
 from ...tools.page_reader import PageReader
 from ...log.logging import getLogger
@@ -10,10 +12,16 @@ from selenium.common.exceptions import WebDriverException
 logger = getLogger(__name__)
 
 
-def _find_element_hide_keyboard(driver, locator, locator_args=None, page=None, hide_keyboard=True, *args, **kwargs):
-    # Hide keyboard before locating element if True. Set to False to keep keyboard open.
-    if hide_keyboard and driver().is_keyboard_shown:
-        driver().hide_keyboard(*args, **kwargs)
+def _find_element_hide_keyboard(driver,
+                                locator,
+                                locator_args=None,
+                                page=None,
+                                hide_keyboard=True,
+                                *args, **kwargs):
+    # Hide keyboard before locating element if True.
+    # Set to False to keep keyboard open.
+    # if hide_keyboard and driver().is_keyboard_shown:
+    #     driver().hide_keyboard(*args, **kwargs)
     return driver().find_element(**locate(page, locator, locator_args))
 
 
@@ -24,7 +32,7 @@ def locate(page, locator, locator_args):
         _loc = PageReader().get_element(*page, locator)
     elif isinstance(locator, dict):
         logger.debug("Locator provided directly...")
-        _loc = locator
+        _loc = locator.copy()
     else:
         msg = f"Locator type not supported. Type: {type(locator)}"
         logger.error(msg)
@@ -36,18 +44,25 @@ def locate(page, locator, locator_args):
         _loc['value'] = _loc['value'].format(*locator_args)
 
     if _loc['by'].lower() == "id" or _loc['by'].lower() == "name":
-            # Convert ID and Name locator methods to xpath for compatibility.
-            logger.warning("Locator By methods: ID and NAME may not be supported. Consider updating.")
-            _loc['value'] = f"//*[@{_loc['by']}='{_loc['value']}']"
-            _loc['by'] = "xpath"
-            logger.warning("Converting to simple xpath. %s", _loc['value'])
-
+        # Convert ID and Name locator methods to xpath for compatibility.
+        logger.warning(
+            (
+                "Locator By methods: ID and NAME may not be supported."
+                " Consider updating."
+            )
+        )
+        _loc['value'] = f"//*[@{_loc['by']}='{_loc['value']}']"
+        _loc['by'] = "xpath"
+        logger.warning("Converting to simple xpath. %s", _loc['value'])
 
     logger.debug("Using locator: %s", _loc)
     return _loc
 
 
-def click(driver, pointer_type=None, find=_find_element_hide_keyboard, **kwargs):
+def click(driver,
+          pointer_type=None,
+          find=_find_element_hide_keyboard,
+          **kwargs):
     """Click an element in the DOM
 
     Execute the selenium click function against the locator
@@ -84,8 +99,10 @@ def click(driver, pointer_type=None, find=_find_element_hide_keyboard, **kwargs)
         "'}"
     )
     script = (
-        "arguments[0].scrollIntoView({'block': 'center'});" # Scroll element to center of view
-        f"arguments[0].dispatchEvent(new PointerEvent('click', {options}))" # Fire click event
+        # Scroll element to center of view
+        "arguments[0].scrollIntoView({'block': 'center'});"
+        # Fire click event
+        f"arguments[0].dispatchEvent(new PointerEvent('click', {options}))"
     )
     try:
         ele = find(driver, **kwargs)
@@ -131,7 +148,10 @@ def write(driver, find=_find_element_hide_keyboard, text='', **kwargs):
     sel.write(driver, find=find, text=text, **kwargs)
 
 
-def write_stored_value(driver, find=_find_element_hide_keyboard, text_key='', **kwargs):
+def write_stored_value(driver,
+                       find=_find_element_hide_keyboard,
+                       text_key='',
+                       **kwargs):
     """Send a stored string to an element in the DOM
 
     Execute the selenium send_keys(str) function against the locator
@@ -158,7 +178,11 @@ def write_stored_value(driver, find=_find_element_hide_keyboard, text_key='', **
     sel.write_stored_value(driver, find=find, text_key=text_key, **kwargs)
 
 
-def select_dropdown(driver, value, using, find=_find_element_hide_keyboard, **kwargs):
+def select_dropdown(driver,
+                    value,
+                    using,
+                    find=_find_element_hide_keyboard,
+                    **kwargs):
     """Select an option from a dropdown using text, value, or index in the DOM
 
     Execute the selenium Select.select_by_* function
@@ -277,7 +301,10 @@ def load_page(driver, page, url_key='url', use_local=False):
     sel.load_page(driver, page, url_key=url_key, use_local=use_local)
 
 
-def read_attribute(driver, attribute, find=_find_element_hide_keyboard, **kwargs):
+def read_attribute(driver,
+                   attribute,
+                   find=_find_element_hide_keyboard,
+                   **kwargs):
     """Read the value of an attribute for an element in the DOM
 
     Execute the selenium get_attribute function against the locator
@@ -306,7 +333,7 @@ def read_attribute(driver, attribute, find=_find_element_hide_keyboard, **kwargs
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    sel.read_attribute(driver, attribute, find=find, **kwargs)
+    return sel.read_attribute(driver, attribute, find=find, **kwargs)
 
 
 def read_css(driver, attribute, find=_find_element_hide_keyboard, **kwargs):
@@ -339,7 +366,7 @@ def read_css(driver, attribute, find=_find_element_hide_keyboard, **kwargs):
             requires: locator.
     """
 
-    sel.read_css(driver, attribute, find=find, **kwargs)
+    return sel.read_css(driver, attribute, find=find, **kwargs)
 
 
 def read_text(driver, find=_find_element_hide_keyboard, **kwargs):
@@ -365,7 +392,7 @@ def read_text(driver, find=_find_element_hide_keyboard, **kwargs):
             requires: locator.
     """
 
-    sel.read_text(driver, find=find, **kwargs)
+    return sel.read_text(driver, find=find, **kwargs)
 
 
 def switch_frame(driver, frame, page=None, find=_find_element_hide_keyboard):
@@ -464,17 +491,50 @@ def handle_alert(driver, handle=True, text=None):
     """
     sel.handle_alert(driver, handle=handle, text=text)
 
+
 def screenshot(driver,
                name="screenshot",
                locator=None,
                find=_find_element_hide_keyboard,
                **kwargs):
 
-    sel.screenshot(driver,
-                   name=name,
-                   locator=locator,
-                   find=find,
-                   **kwargs)
+    screenshotsfldr = pathlib.Path("screenshots").resolve()
+    # Sort png by browser config
+    driverfldr = [driver.os, driver.device_name, driver.platform_version]
+    screenshotsfldr = screenshotsfldr.joinpath(*driverfldr).resolve()
+    screenshotsfldr.mkdir(exist_ok=True, parents=True)
+    date_tag = datetime.now().strftime("%d-%m-%y--%H-%M-%S")
+    name = name.replace(" ", "_")  # Remove spaces from file name
+    file_name = "_".join([name, date_tag])
+    _file = screenshotsfldr.joinpath(file_name).with_suffix(".png")
+    count = 0
+
+    while _file.exists():
+        count += 1
+        file_name = "".join([name, date_tag, f"({count})"])
+        _file = _file.with_stem(file_name)
+
+    out = str(_file.resolve())
+    logger.info("Saving screenshot as: %s", out)
+
+    try:
+        if locator:
+            status = find(driver, locator, **kwargs).screenshot(out)
+        else:
+            status = driver().save_screenshot(out)
+    except WebDriverException as e:
+        logger.warning("Something went wrong, %s -- Trying again", e)
+        if locator:
+            status = find(driver, locator, **kwargs).screenshot(out)
+        else:
+            status = driver().save_screenshot(out)
+
+    if status:
+        logger.info("Screenshot saved successfully.")
+    else:
+        logger.warning("Screenshot was not saved!")
+
+    return out
 
 
 # / / / / / / / Assertions / / / / / / /
@@ -497,8 +557,6 @@ def assert_alert_displayed(driver, text=None, soft=False):
             recorded and execution can continue. The default is False.
     """
     sel.assert_alert_displayed(driver, text=text, soft=soft)
-
-
 
 
 def assert_page_is_open(driver, page=None, find=_find_element_hide_keyboard,
@@ -554,7 +612,10 @@ def assert_contains_text(driver, text, find=_find_element_hide_keyboard,
                              soft=soft, exact=exact, **kwargs)
 
 
-def assert_displayed(driver, find=_find_element_hide_keyboard, soft=False, **kwargs):
+def assert_displayed(driver,
+                     find=_find_element_hide_keyboard,
+                     soft=False,
+                     **kwargs):
     """Assert the given element is displayed. Can be a soft or hard check
 
     Execute the selenium is_displayed function against the locator
@@ -582,7 +643,10 @@ def assert_displayed(driver, find=_find_element_hide_keyboard, soft=False, **kwa
     sel.assert_displayed(driver, find=find, soft=soft, **kwargs)
 
 
-def assert_not_displayed(driver, find=_find_element_hide_keyboard, soft=False, **kwargs):
+def assert_not_displayed(driver,
+                         find=_find_element_hide_keyboard,
+                         soft=False,
+                         **kwargs):
     """Assert the given element is not displayed. Can be a soft of hard check
 
     Execute the selenium is_displayed function against the locator
@@ -610,9 +674,13 @@ def assert_not_displayed(driver, find=_find_element_hide_keyboard, soft=False, *
     sel.assert_not_displayed(driver, find=find, soft=soft, **kwargs)
 
 
-def assert_attribute_contains_value(driver, attribute, value,
-                                    find=_find_element_hide_keyboard, soft=False,
-                                    exact=False, **kwargs):
+def assert_attribute_contains_value(driver,
+                                    attribute,
+                                    value,
+                                    find=_find_element_hide_keyboard,
+                                    soft=False,
+                                    exact=False,
+                                    **kwargs):
     """ Assert that the given element contains the specified
     value for the given attribute.
 

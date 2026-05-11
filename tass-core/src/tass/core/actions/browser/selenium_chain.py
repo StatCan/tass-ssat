@@ -75,7 +75,7 @@ def write(driver, locator=None, find=sel._find_element, text='', **kwargs):
     """Add a send_keys action to the action queue.
 
     Add a send_keys action to the action queue. If a locator is
-    provided, the send_keys_to_element will be used 
+    provided, the send_keys_to_element will be used
     instead.
 
     Args:
@@ -99,7 +99,11 @@ def write(driver, locator=None, find=sel._find_element, text='', **kwargs):
             logger.warning("Something went wrong: %s -- Trying again", e)
             ele = find(driver, locator, **kwargs)
     if ele:
-        logger.info("Sending '%s' to element: %s added to Action Chain", text, locator)
+        logger.info(
+            "Sending '%s' to element: %s added to Action Chain",
+            text,
+            locator
+            )
         driver.chain().send_keys_to_element(ele, text)
     else:
         logger.info("Sending text: %s added to Action Chain", text)

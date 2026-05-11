@@ -1,6 +1,6 @@
 from . import appium as app
+import selenium.webdriver.support.expected_conditions as EC
 from ...log.logging import getLogger
-from ..browser import selenium_wait as selwait
 
 logger = getLogger(__name__)
 
@@ -30,9 +30,24 @@ def wait_element_clickable(driver, locator,
             Dictionary containing additional parameters. Contents
             of the dictionary will vary based on the find function used.
     """
-    selwait.wait_element_clickable(driver, locator,
-                                   locator_args=locator_args,
-                                   action=action, **kwargs)
+    def _wait(driver, locator, locator_args=None, page=None, time=None):
+        mark = tuple(app.locate(page, locator, locator_args).values())
+        logger.debug("Waiting for element to be clickable: %s", mark)
+        return driver.wait_until(EC.element_to_be_clickable, time=time,
+                                 mark=mark)
+
+    if (action is None):
+        logger.info("Waiting for element before continuing...")
+        _wait(driver, locator, locator_args, **kwargs)
+    else:
+        logger.info("Waiting for element before appium action: %s",
+                    action[1])
+        # TODO: Rework this to perform ANY action not just selenium
+        # TODO: Alternate: Create generic wait until condition in core?
+        return getattr(app, action[1])(driver,
+                                       find=_wait,
+                                       locator=locator,
+                                       **kwargs)
 
 
 def wait_element_visible(driver, locator,
@@ -60,8 +75,21 @@ def wait_element_visible(driver, locator,
             Dictionary containing additional parameters. Contents
             of the dictionary will vary based on the find function used.
     """
-    page = kwargs.get("page", None)
-    locator = app.locate(page=page, locator=locator, locator_args=locator_args)
-    selwait.wait_element_visible(driver, locator,
-                                 locator_args=locator_args,
-                                 action=action, **kwargs)
+    def _wait(driver, locator, locator_args=None, time=None, page=None):
+        mark = tuple(app.locate(page, locator, locator_args).values())
+        logger.debug("Waiting for element to be visible: %s", mark)
+        return driver.wait_until(EC.visibility_of_element_located, time=time,
+                                 locator=mark)
+
+    if (action is None):
+        logger.info("Waiting for element before continuing...")
+        _wait(driver, locator, locator_args, **kwargs)
+    else:
+        # TODO: Rework this to perform ANY action not just selenium
+        # TODO: Alternate: Create generic wait until condition in core?
+        logger.info("Waiting for element before appium action: %s",
+                    action[1])
+        return getattr(app, action[1])(driver,
+                                       find=_wait,
+                                       locator=locator,
+                                       **kwargs)

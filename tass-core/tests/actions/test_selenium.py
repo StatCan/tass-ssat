@@ -99,16 +99,23 @@ class TestSelenium(unittest.TestCase):
         + '/pages/page1.html'
         )
 
+    def setUpClass():
+        # Moved from setUp, only needed to be executed 1 time.
+        TestSelenium.drivers = [(TestSelenium.config[0], CDriver),
+                        (TestSelenium.config[1], FDriver),
+                        (TestSelenium.config[2], EDriver)]
+        if platform == "darwin":
+            TestSelenium.drivers.append((TestSelenium.config[3], SDriver))
+
+    test_page_url_2 = (
+        str(pathlib.Path(__file__).parents[1].resolve())
+        + '/pages/page2.html'
+        )
+
     def setUp(self):
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         print("Beginning new test TestCase %s" % self._testMethodName)
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-
-        self.drivers = [(self.config[0], CDriver),
-                        (self.config[1], FDriver),
-                        (self.config[2], EDriver)]
-        if platform == "darwin":
-            self.drivers.append((self.config[3], SDriver))
 
     def start_driver(self, browser):
         print("\nStarting driver for: %s" % browser[1].__name__)
@@ -921,6 +928,23 @@ class TestSeleniumAssertActions(TestSelenium):
                 if driver:
                     driver.quit()
 
+    def test_SeleniumAssertPageIsOpenByNormalizeTitleSoftFailure(self):
+        url = pathlib.Path(self.test_page_url_2).resolve().as_uri()
+        for browser in self.drivers:
+            try:
+                driver = self.start_driver(browser)
+                with self.subTest(browser=browser[1].__name__):
+                    driver().get(url)
+                    page = {'identifier': 'Page FAIL',
+                            'method': 'normalize-title'}
+                    with self.assertRaises(TassSoftAssertionError):
+                        selenium.assert_page_is_open(
+                            driver, soft=True, page_id=page)
+
+            finally:
+                if driver:
+                    driver.quit()
+
     def test_SeleniumAssertPageIsOpenByURLSoftFailure(self):
         url = pathlib.Path(self.test_page_url).resolve().as_uri()
         for browser in self.drivers:
@@ -973,6 +997,25 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     page = {'identifier': 'Page One',
                             'method': 'title'}
+                    try:
+                        selenium.assert_page_is_open(
+                            driver, soft=True, page_id=page)
+                    except TassAssertionError as e:
+                        self.fail(e.message)
+            finally:
+                if driver:
+                    driver.quit()
+
+    def test_SeleniumAssertPageIsOpenByTitleSoftSuccess(self):
+        url = pathlib.Path(self.test_page_url_2).resolve().as_uri()
+        for browser in self.drivers:
+            driver = None
+            try:
+                driver = self.start_driver(browser)
+                with self.subTest(browser=browser[1].__name__):
+                    driver().get(url)
+                    page = {'identifier': 'Page Two',
+                            'method': 'normalize-title'}
                     try:
                         selenium.assert_page_is_open(
                             driver, soft=True, page_id=page)
@@ -1039,6 +1082,24 @@ class TestSeleniumAssertActions(TestSelenium):
                             driver, page_id={
                                         'identifier': 'Page One1',
                                         'method': 'title'})
+
+            finally:
+                if driver:
+                    driver.quit()
+
+    def test_SeleniumAssertPageIsOpenByNormalizeTitleFailure(self):
+        url = pathlib.Path(self.test_page_url_2).resolve().as_uri()
+        for browser in self.drivers:
+            driver = None
+            try:
+                driver = self.start_driver(browser)
+                with self.subTest(browser=browser[1].__name__):
+                    driver().get(url)
+                    with self.assertRaises(TassHardAssertionError):
+                        selenium.assert_page_is_open(
+                            driver, page_id={
+                                        'identifier': 'Page FAIL',
+                                        'method': 'normalize-title'})
 
             finally:
                 if driver:
