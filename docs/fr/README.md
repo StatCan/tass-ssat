@@ -52,7 +52,7 @@ Pour créer le fichier d'installation pour conda, il faut taper la commande
 l'on veut bâtir. Le fichier d'installation peut être installé avec la commande 
 `conda install --use-local <module>`.
 
-### Installation
+### Installation - SSAT
 
 TASS peut être installé en téléchargeant le fichier d'installation approprié 
 et utilisé la commande d'installation appropriée.
@@ -68,6 +68,14 @@ Téléchargez le fichier .tar.bz2 pour la version désirée. Dans votre
 environnement conda, utiliser la commande `conda install <chemin/au/fichier/tar.bz2>`.
 Ensuite, utiliser la commande `conda install --use-local <nom du module>` pour 
 installer les dépédences.
+
+### Installation - Appium
+
+WIP
+
+#### Implémentation incomplète
+
+WIP
 
 ### Utilisation
 
