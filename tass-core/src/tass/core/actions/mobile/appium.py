@@ -20,8 +20,8 @@ def _find_element_hide_keyboard(driver,
                                 *args, **kwargs):
     # Hide keyboard before locating element if True.
     # Set to False to keep keyboard open.
-    # if hide_keyboard and driver().is_keyboard_shown:
-    #     driver().hide_keyboard(*args, **kwargs)
+    if hide_keyboard and driver().is_keyboard_shown():
+        driver().hide_keyboard(*args, **kwargs)
     return driver().find_element(**locate(page, locator, locator_args))
 
 
