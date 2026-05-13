@@ -207,8 +207,8 @@ def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
         # No target element provided
         # Drag and Drop using offset
         logger.info("Drag: %s and drop by offset: %s,%s added to Action Chain",
-                    source, xoffset, yoffset)
-        driver.chain().drag_and_drop_by_offset(locator, xoffset, yoffset)
+                    locator, xoffset, yoffset)
+        driver.chain().drag_and_drop_by_offset(source, xoffset, yoffset)
     else:
         # Target element has been provided
         # Drag and drop on target element
