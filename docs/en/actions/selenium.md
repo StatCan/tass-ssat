@@ -680,9 +680,9 @@ actual value taken from the DOM to the given value.
 
 ### Parameters
 
-y - Required parameter
-n - Not Applicable
-o - Optional parameter
+y - Required parameter  
+n - Not Applicable  
+o - Optional parameter  
 
 |Action|-|locator|page|locator_args|text|text_key|using|value|url|url_key|use_local|relative_path|name|attribute|frame|title|handle|page_id|soft|
 |------|-|:-----:|:--:|:----------:|:--:|:------:|:---:|:---:|:-:|:-----:|:-------:|:-----------:|:--:|:-------:|:---:|:---:|:----:|:-----:|:--:|
@@ -718,7 +718,12 @@ o - Optional parameter
 `selwait,{command}`
 
 ### Parameters
+
 For each Wait command with a secondary action, refer to the above for additional parameters. Both actions must share the same locator, page and locator_args parameters.
+
+y - Required parameter  
+n - Not Applicable  
+o - Optional parameter  
 
 |Action|-|locator|page|locator_args|second_action|
 |------|-|:-----:|:--:|:----------:|:-----------:|
@@ -728,12 +733,23 @@ For each Wait command with a secondary action, refer to the above for additional
 ## Action Chain Actions
 ### Usage
 
-`selchain,{command}`
+`selchain,{command}`  
+ActionChains are built by appending a series of actions that are later executed in sequence. The perform command must be called to execute the Action Chain in TASS tests. The reset command removes all appended actions, otherwise any added commands are not removed.
+
 ### Parameters
 
-|Action|-|locator|page|locator_args|text|offset|target|delta|
+y - Required parameter  
+n - Not Applicable  
+o - Optional parameter  
+
+|Action|-|locator|page|locator_args|text|xoffset/yoffset|target|deltax/deltay|
 |------|-|:-----:|:--:|:----------:|:--:|:----:|:----:|:---:|
 |perform|-|n|n|n|n|n|n|n|
 |reset|-|n|n|n|n|n|n|n|
 |click|-|o|o|o|n|n|n|n|
 |write|-|y|o|o|y|n|n|n|
+|move_mouse|-|o<sup>1</sup>|o|o|n|o<sup>1</sup>|n|n|
+|drag_and_drop|-|y|o|o|n|o<sup>1</sup>|o<sup>1</sup>|n|
+|scroll|-|o|o|o|n|o<sup>1</sup>|n|o<sup>1</sup>|
+
+<sup>1</sup> Default null/0 values are provided for these parameters, but without user inputed values for at least one field, no measurable effect is taken.
