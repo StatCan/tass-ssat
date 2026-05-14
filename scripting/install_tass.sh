@@ -35,3 +35,5 @@ pip install -e tass-report
 pip install -e tass-core
 pip install -e tass-converter
 pip install -e tass-orchestrator
+
+npm i --location=global appium

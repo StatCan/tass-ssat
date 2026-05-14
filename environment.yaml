@@ -1,6 +1,6 @@
 name: tass_ssat-dev
 dependencies:
-  - python=3.10
+  - python>3.13
   - jsonschema
   - packaging
   - requests
@@ -11,3 +11,5 @@ dependencies:
   - openpyxl
   - sphinx
   - myst-parser
+  - openjdk
+  - nodejs

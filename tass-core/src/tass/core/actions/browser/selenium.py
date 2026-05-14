@@ -3,12 +3,10 @@ from datetime import datetime
 from selenium.common.exceptions import (WebDriverException,
                                         NoSuchWindowException,
                                         NoAlertPresentException)
-from selenium.webdriver.support.select import Select
-from selenium.webdriver.common.alert import Alert
-from ..tools.page_reader import PageReader
-from ..exceptions.assertion_errors import TassHardAssertionError
-from ..exceptions.assertion_errors import TassSoftAssertionError
-from ..log.logging import getLogger
+from ...tools.page_reader import PageReader
+from ...exceptions.assertion_errors import TassHardAssertionError
+from ...exceptions.assertion_errors import TassSoftAssertionError
+from ...log.logging import getLogger
 
 #  For additional documentation, see selenium docs:
 #  https://www.selenium.dev/selenium/docs/api/py/webdriver_remote/selenium.webdriver.remote.webelement.html
@@ -55,9 +53,10 @@ def _is_displayed(driver, find=_find_element, **kwargs):
         logger.debug("Attempt 2 >> Found element, displayed=%s", display)
         return display
 
+
 def _switch_to_alert(driver):
     try:
-        return driver().switch_to.alert
+        return driver.alert
     except NoAlertPresentException as e:
         logger.warning("No alert present to switch to.")
         raise e
@@ -156,7 +155,7 @@ def write_stored_value(driver, find=_find_element, text_key='', **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    from . import core
+    from .. import core
     text = core.read_value(text_key)
     write(driver, find=find, text=text, **kwargs)
 
@@ -195,30 +194,12 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
             requires: locator.
 
     """
-    match using:
-        case 'text':
-            select = Select.select_by_visible_text
-            value = str(value)
-            logger.debug('Selecting with visible text')
-        case 'value':
-            select = Select.select_by_value
-            value = str(value)
-            logger.debug('Selecting using option value')
-        case 'index':
-            select = Select.select_by_index
-            value = int(value)
-            logger.debug("Selecting using option index")
-        case _:
-            raise ValueError(f'Select method {using} is not a valid method.')
-
     try:
-        dropdown = Select(find(driver, **kwargs))
-        select(dropdown, value)
+        driver.select(find(driver, **kwargs), value, using)
         logger.debug("Dropdown selected: '%s' -- using: '%s'", value, using)
     except WebDriverException as e:
         logger.warning("Something went wrong, %s -- Trying again", e)
-        dropdown = Select(find(driver, **kwargs))
-        select(dropdown, value)
+        driver.select(find(driver, **kwargs), value, using)
         logger.debug("Attempt 2 >> Dropdown selected: '%s' -- using: '%s'",
                      value, using)
 
@@ -509,6 +490,19 @@ def switch_window(driver, title=None, page=None):
     """
     # TODO: Keep track of window handles to avoid loop?
     # TODO: Handle switching from closed tabs
+    handles = driver().window_handles
+    if len(handles) == 1:
+        logger.info("Only one window/tab open. Switching to that window.")
+        driver.switch_window(handles[0])
+        return
+    if len(handles) < 1:
+        logger.warning("No windows open. Cannot switch.")
+        return
+    if (page):
+        switch_window(driver,
+                      title=PageReader().get_page_title(*page),
+                      page=None)
+        return
     cur_handle = None
     try:
         cur_handle = driver().current_window_handle
@@ -518,26 +512,19 @@ def switch_window(driver, title=None, page=None):
         logger.info(
             "Current window closed or missing. Switching to other tab/window"
             )
-    if (page):
-        switch_window(driver,
-                      title=PageReader().get_page_title(*page),
-                      page=None)
-        return
-
-    handles = driver().window_handles
     if (title is None):
         logger.info("Switching to next tab or window...")
         for handle in handles:
             # TODO: Handle switching if only 1 tab/window
             if (handle != cur_handle):
-                driver().switch_to.window(handle)
+                driver.switch_window(handle)
                 return
     elif (isinstance(title, str)):
         for handle in handles:
             if (handle == cur_handle):
                 continue
             else:
-                driver().switch_to.window(handle)
+                driver.switch_window(handle)
                 if (driver().title == title):
                     return
 
@@ -617,27 +604,18 @@ def handle_alert(driver, handle=True, text=None):
             alert_accept = True
     else:
         alert_accept = bool(handle)
-
-    if alert_accept:
-        do_alert = Alert.accept
-        logger.debug("Handle alert using Alert.accept()")
-    else:
-        do_alert = Alert.dismiss
-        logger.debug("Handle alert using Alert.dismiss()")
-
     try:
-        alert = _switch_to_alert(driver)
-        if text and isinstance(text, str):
-            logger.info("Sending text to alert prompt: %s", text)
-            alert.send_keys(text)
-        do_alert(alert)
+        if alert_accept:
+            driver.accept_alert(text=text)
+        else:
+            driver.dismiss_alert(text=text)
     except WebDriverException as e:
         logger.warning("Something went wrong, %s -- Trying again", e)
-        alert = _switch_to_alert(driver)
-        if text and isinstance(text, str):
-            logger.info("Sending text to alert prompt: %s", text)
-            alert.send_keys(text)
-        do_alert(alert)
+        if alert_accept:
+            driver.accept_alert(text=text)
+        else:
+            driver.dismiss_alert(text=text)
+
 
 def screenshot(driver,
                name="screenshot",
@@ -646,7 +624,7 @@ def screenshot(driver,
                **kwargs):
     screenshotsfldr = pathlib.Path("screenshots").resolve()
     # Sort png by browser config
-    driverfldr = [driver.os, driver.name, driver.version]
+    driverfldr = [driver.os, driver.browser, driver.browser_version]
     screenshotsfldr = screenshotsfldr.joinpath(*driverfldr).resolve()
     screenshotsfldr.mkdir(exist_ok=True, parents=True)
     date_tag = datetime.now().strftime("%d-%m-%y--%H-%M-%S")
@@ -694,6 +672,7 @@ def _fail(soft, message, exception=None, *args):
                 "Hard Assertion failed: " + message,
                 exception, *args)
 
+
 def assert_alert_displayed(driver, text=None, soft=False):
     """ Assert that an alert is currently displayed in the browser.
 
@@ -733,12 +712,8 @@ def assert_alert_displayed(driver, text=None, soft=False):
                       f"Alert text does not contain expected text: {text}")
             else:
                 logger.debug("Alert text contains expected text: %s", text)
-
-
     except WebDriverException as e:
         _fail(soft, 'WebDriver exception raised', exception=e)
-
-
 
 
 def assert_page_is_open(driver, page=None, find=_find_element,
@@ -784,10 +759,19 @@ def assert_page_is_open(driver, page=None, find=_find_element,
             _fail(soft,
                   'Element {identifier} not found. Page is not open')
 
-    def _title(driver, find, title, soft):
+    def _title(driver, find, title, soft, normalize=False):
         if (driver().title != title):
             ele = None
-            ele_title = {"by": "xpath", "value": f"//title[text()='{title}']"}
+            if normalize:
+                ele_title = {
+                    "by": "xpath",
+                    "value": f"//title[normalize-space(text())='{title}']"
+                    }
+            else:
+                ele_title = {
+                    "by": "xpath",
+                    "value": f"//title[text()='{title}']"
+                    }
             try:
                 ele = find(driver, ele_title, page=page)
                 logger.debug("Element: %s found, page is open.", ele_title)
@@ -823,6 +807,9 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                          page_id['identifier'],
                          page,
                          soft)
+            case 'normalize-title':
+                title = page_id['identifier']
+                _title(driver, find, title, soft, normalize=True)
             case 'title':
                 title = page_id.get('identifier',
                                     PageReader().get_page_title(*page))
@@ -841,6 +828,9 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                          page_id['identifier'],
                          None,
                          soft)
+            case 'normalize-title':
+                title = page_id['identifier']
+                _title(driver, find, title, soft, normalize=True)
             case 'title':
                 title = page_id['identifier']
                 _title(driver, find, title, soft)
