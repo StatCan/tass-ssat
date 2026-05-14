@@ -9,9 +9,9 @@ executing the defined tests.
 
 TASS relies on a conda compatible environment and package manager. The
 framework is tested on Windows and macOS, and efforts are made for it to be
-functional on Linux. You can install the package from the 
-[releases](https://github.com/StatCan/tass-ssat/releases) section of 
-the repository. Further documentation can be found at our [Github 
+functional on Linux. You can install the package from the
+[releases](https://github.com/StatCan/tass-ssat/releases) section of
+the repository. Further documentation can be found at our [Github
 Pages](https://statcan.github.io/tass-ssat/) website.
 
 ### Development
@@ -23,8 +23,8 @@ docs/best_practices.md. Also, create your conda environment via
 
 The conda environment will contain all the of the dependencies at the
 correct versions with the exception of Appium. You can install Appium inside the
-conda environment by typing `npm -g install appium`. To run tests, make sure you have 
-an editable install with `pip install -e <module>` from the root directory. 
+conda environment by typing `npm -g install appium`. To run tests, make sure you have
+an editable install with `pip install -e <module>` from the root directory.
 Where `<module>` is replaced with the desired component of TASS:
 
 - tass-core
@@ -87,6 +87,14 @@ The testing framework can be invoked from your CLI with the commands described i
 - [tass-converter](https://github.com/StatCan/tass-ssat/tree/main/tass-converter)
 - [tass-orchestrator](https://github.com/StatCan/tass-ssat/tree/main/tass-orchestrator)
 - [tass-report](https://github.com/StatCan/tass-ssat/tree/main/tass-report)
+
+#### Documentation
+
+Documentation for the various action commands can be found [here](./actions/actions.md):
+
+- [Selenium Actions](./actions/selenium.md)
+- [Core Actions](./actions/core.md)
+- [Appium Actions](./actions/appium.md)
 
 #### Demo
 
