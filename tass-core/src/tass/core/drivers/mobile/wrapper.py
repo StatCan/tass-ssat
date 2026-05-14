@@ -1,4 +1,3 @@
-from enum import Enum
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.select import Select
 from appium.options.common import AppiumOptions
@@ -28,14 +27,17 @@ class BaseMobileDriverWrapper(BaseDriverWrapper):
         if not self._driver:
             options = self.set_options(driver_options)
             # Start Appium Service
-            self._service = TASSAppiumService.service(self,
-                                                      self._conf["appium:server"]
+            self._service = TASSAppiumService.service(
+                self,
+                self._conf["appium:server"]
             )
             TASSAppiumService.start_service(self._service)
             # run before scripts
             if "scripts" in self._conf:
                 for func in self._conf["scripts"].get("driver:setup", []):
-                    _ = self.executor.execute(func, driver_wrapper=self) or "Completed"
+                    _ = self.executor.execute(
+                        func,
+                        driver_wrapper=self) or "Completed"
                     log.debug("Setup script result: %s", _)
             # initialize driver
             self._driver = driver_init(options=options, *args, **kwargs)
@@ -139,9 +141,12 @@ class BaseMobileDriverWrapper(BaseDriverWrapper):
                    ignored_exceptions=None,
                    **kwargs):
         def new_wait(time):
-            wait_ = TassMobileDriverWait(self(), time,
-                                   poll_frequency,
-                                   ignored_exceptions)
+            wait_ = TassMobileDriverWait(
+                self(),
+                time,
+                poll_frequency,
+                ignored_exceptions
+                )
             self._waits[time] = wait_
             return wait_
         if not time:
@@ -167,14 +172,18 @@ class BaseMobileDriverWrapper(BaseDriverWrapper):
                 value = int(value)
                 log.debug("Selecting using option index")
             case _:
-                raise ValueError(f'Select method {using} is not a valid method.')
+                raise ValueError(
+                    f'Select method {using} is not a valid method.'
+                    )
         select(value)
 
     def quit(self):
         # Execute teardown scripts if any
         if "scripts" in self._conf:
             for func in self._conf["scripts"].get("driver:teardown", []):
-                _ = self.executor.execute(func, driver_wrapper=self) or "Completed"
+                _ = self.executor.execute(
+                    func,
+                    driver_wrapper=self) or "Completed"
                 log.debug("Teardown script result: %s", _)
         if self._driver:
             self._driver.quit()
@@ -193,6 +202,7 @@ class AndroidDriverWrapper(BaseMobileDriverWrapper):
     }
 
     executor = scripting.AndroidDriverScriptExecutor
+
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
@@ -211,17 +221,21 @@ class IOSDriverWrapper(BaseMobileDriverWrapper):
     }
 
     executor = scripting.IOSDriverScriptExecutor
+
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
 
     def __call__(self, *args, **kwargs):
         return super().__call__(AppiumOptions, IOSDriver, *args, **kwargs)
-        
+
     @property
     def device_name(self):
         if (self._driver):
-            return self._driver.capabilities.get("deviceName", "UnknownIOSDevice")
+            return self._driver.capabilities.get(
+                "deviceName",
+                "UnknownIOSDevice"
+                )
         return None
 
     def accept_alert(self, text=None):

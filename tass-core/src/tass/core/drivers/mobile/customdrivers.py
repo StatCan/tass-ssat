@@ -99,6 +99,7 @@ class MobileDriver(webdriver.Remote):
             if webview:
                 self.switch_to_context(webview)
 
+
 class AndroidDriver(MobileDriver):
 
     def __init__(self, *args, **kwargs):
@@ -106,17 +107,19 @@ class AndroidDriver(MobileDriver):
 
     def find_element(self, by, value):
         rect, element = super().find_element(by, value)
-        self.logger.debug("Android driver found element >>> tag: %s, location: %s",
-                          element.tag_name, rect)
+        self.logger.debug(
+            "Android driver found element >>> tag: %s, location: %s",
+            element.tag_name, rect
+            )
         return element
 
     def hide_keyboard(self, strategy="back", *args, **kwargs):
         def back(*args, **kwargs):
             # Hiding the keyboard by tapping the android back button
-            if self.is_keyboard_shown:
+            if not self.is_keyboard_shown():
                 # If keyboard is not displayed, do not use the "back" button
                 self.logger.debug("Virtual keyboard is not displayed")
-                return
+                return None
             # Save the current context to switch back quickly
             curr = self.current_context
             self.logger.debug("Current context is: %s", curr)
@@ -142,18 +145,20 @@ class AndroidDriver(MobileDriver):
             "default": default
         }
 
-
         hide = valid_strategies.get(strategy, None)
         if not hide:
-            self.logger.warning("\"%s\" is not a valid strategy. Using \"back\" strategy.", strategy)
+            self.logger.warning(
+                "\"%s\" is not a valid strategy. Using \"back\" strategy.",
+                strategy
+                )
             hide = back
         hide(*args, **kwargs)
 
-        if self.is_keyboard_shown:
+        if self.is_keyboard_shown():
             self.logger.warning("Keyboard failed to close")
             return False
         else:
-            self.logger.info("Virtual keyboard close")
+            self.logger.info("Virtual keyboard closed")
             return True
 
 
@@ -167,3 +172,52 @@ class IOSDriver(MobileDriver):
         self.logger.debug("IOS driver found element >>> tag: %s, location: %s",
                           element.tag_name, rect)
         return element
+
+    def hide_keyboard(self, strategy="pressKey", *args, **kwargs):
+        def pressKey(key_name="Done", *args, **kwargs):
+            # Hiding the keyboard by tapping the android back button
+            if not self.is_keyboard_shown():
+                # If keyboard is not displayed
+                # do not interact with native app
+                self.logger.debug("Virtual keyboard is not displayed")
+                return None
+            # Save the current context to switch back quickly
+            curr = self.current_context
+            self.logger.debug("Current context is: %s", curr)
+            if curr != self.NATIVE:
+                # Switch to NATIVE context to interact with IOS buttons
+                self.logger.debug("Switching to %s context", self.NATIVE)
+                self.switch_to_context(self.NATIVE)
+
+            self.logger.info("Closing virtual keyboard with back button")
+            self.find_element(by="name", value=key_name).click()
+
+            if curr != self.current_context:
+                # Return to the original context for ease of use.
+                self.logger.debug("Switching back to %s context", curr)
+                self.switch_to_context(curr)
+
+        def default(*args, **kwargs):
+            # Use the default IOS hide_keyboard strategy.
+            super().hide_keyboard()
+
+        valid_strategies = {
+            "pressKey": pressKey,
+            "default": default
+        }
+
+        hide = valid_strategies.get(strategy, None)
+        if not hide:
+            self.logger.warning(
+                "\"%s\" is not a valid strategy. Using \"pressKey\" strategy.",
+                strategy
+                )
+            hide = pressKey
+        hide(*args, **kwargs)
+
+        if self.is_keyboard_shown():
+            self.logger.warning("Keyboard failed to close")
+            return False
+        else:
+            self.logger.info("Virtual keyboard closed")
+            return True

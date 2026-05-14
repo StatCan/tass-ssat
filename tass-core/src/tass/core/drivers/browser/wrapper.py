@@ -1,5 +1,3 @@
-import time
-import random
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.select import Select
 from selenium.webdriver import (
@@ -121,7 +119,9 @@ class BaseBrowserDriverWrapper(BaseDriverWrapper):
                 value = int(value)
                 log.debug("Selecting using option index")
             case _:
-                raise ValueError(f'Select method {using} is not a valid method.')
+                raise ValueError(
+                    f'Select method {using} is not a valid method.'
+                    )
         select(value)
 
     def quit(self):

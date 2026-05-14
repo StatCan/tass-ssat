@@ -35,7 +35,6 @@ def get_manager(mobile_configs, *args, **kwargs):
     managers['selwait'] = s_waiter
     managers['selchain'] = s_chain
 
-
     all_managers[mobile_configs['uuid']] = managers
 
     return managers

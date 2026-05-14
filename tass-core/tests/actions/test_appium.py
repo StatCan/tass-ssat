@@ -22,10 +22,12 @@ appium_inst = importlib.util.find_spec("appium")
 
 @unittest.skipUnless(appium_inst, "Appium is not installed.")
 class TestAppium(unittest.TestCase):
-    from tass.core.drivers.mobile.customdrivers import (
+    if appium_inst:
+        from tass.core.drivers.mobile.customdrivers import (
         AndroidDriver as Android,
         IOSDriver as IOS
         )
+
 
     pages = {
     # QA Practice
@@ -252,7 +254,7 @@ class TestAppium(unittest.TestCase):
             except NoSuchElementException:
                 pass
             driver().switch_to_context(driver().find_webview_context())
-            
+
     def close_nav(self, driver):
         try:
             element = driver().find_element("xpath", "//li[contains(@class, 'expand')]/a")
