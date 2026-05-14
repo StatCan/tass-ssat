@@ -52,7 +52,7 @@ Pour créer le fichier d'installation pour conda, il faut taper la commande
 l'on veut bâtir. Le fichier d'installation peut être installé avec la commande
 `conda install --use-local <module>`.
 
-### Installation - SSAT
+### Installation
 
 TASS peut être installé en téléchargeant le fichier d'installation approprié
 et utilisé la commande d'installation appropriée.
@@ -69,14 +69,6 @@ environnement conda, utiliser la commande `conda install <chemin/au/fichier/tar.
 Ensuite, utiliser la commande `conda install --use-local <nom du module>` pour
 installer les dépédences.
 
-### Installation - Appium
-
-WIP
-
-#### Implémentation incomplète
-
-WIP
-
 ### Utilisation
 
 TASS peut être utilisé dans la CLI avec les commandes documentées dans les pages
@@ -86,20 +78,6 @@ des modules appropriées:
 - [tass-converter](https://github.com/StatCan/tass-ssat/tree/main/tass-converter)
 - [tass-orchestrator](https://github.com/StatCan/tass-ssat/tree/main/tass-orchestrator)
 - [tass-report](https://github.com/StatCan/tass-ssat/tree/main/tass-report)
-
-#### Documentation
-
-WIP
-
-#### Documentation
-
-WIP
-
-[Documentation](./actions/actions.md):
-
-- [Selenium Actions](./actions/selenium.md)
-- [Core Actions](./actions/core.md)
-- [Appium Actions](./actions/appium.md)
 
 #### Démo
 

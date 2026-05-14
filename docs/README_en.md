@@ -51,7 +51,7 @@ To build the conda package, navigate to the root of the directory and type
 in the command output. You can always install it via `conda install --use-local <module>`
 if you wish to install it in the same environment you built it.
 
-### Installation - TASS
+### Installation
 
 The framework can be installed by downloading the appropriate
 release and then running the install command.
@@ -64,20 +64,9 @@ with pip and python >=3.13 enter the command `pip install <path/to/wheel/file>`
 #### conda
 
 Download the .tar.bz2 file for the desired release version. Using your conda environment
-enter the command `conda install <path/to/tar.bz2/file>`. After this installation is
+enter the command `conda install <path/to/tar.bz2/file>`. After this instllation is
 successful enter the command `conda install --use-local <module name>` to install
 dependencies.
-
-### Installation - Appium
-
-Appium must be installed and configured separately from the TASS framework. Follow the relevant
-installation instructions for your OS provided by the Appium3 developers, https://appium.io/docs/en/latest/.
-
-#### Partially Implemented
-
-The TASS framework partially supports Appium. Appropriately configured devices and tests can be
-executed using basic actions provided by TASS; however, the Action Chain framework is not fully supported
-and may be used with caution.
 
 ### Utilization
 
@@ -87,14 +76,6 @@ The testing framework can be invoked from your CLI with the commands described i
 - [tass-converter](https://github.com/StatCan/tass-ssat/tree/main/tass-converter)
 - [tass-orchestrator](https://github.com/StatCan/tass-ssat/tree/main/tass-orchestrator)
 - [tass-report](https://github.com/StatCan/tass-ssat/tree/main/tass-report)
-
-#### Documentation
-
-Documentation for the various action commands can be found [here](./actions/actions.md):
-
-- [Selenium Actions](./actions/selenium.md)
-- [Core Actions](./actions/core.md)
-- [Appium Actions](./actions/appium.md)
 
 #### Demo
 

@@ -1,9 +1,6 @@
 import time
 from appium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.common.exceptions import (WebDriverException,
-                                        NoSuchWindowException,
-                                        NoAlertPresentException)
 from ...log.logging import getLogger
 
 
