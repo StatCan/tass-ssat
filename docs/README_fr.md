@@ -79,6 +79,10 @@ des modules appropriées:
 - [tass-orchestrator](https://github.com/StatCan/tass-ssat/tree/main/tass-orchestrator)
 - [tass-report](https://github.com/StatCan/tass-ssat/tree/main/tass-report)
 
+#### Commandes d'Automatisation
+
+[Actions](./actions/actions.md)(anglais seulement)
+
 #### Démo
 
 Le projet contient plusieurs examples et fichiers de démonstrations. Pour les

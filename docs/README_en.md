@@ -77,6 +77,10 @@ The testing framework can be invoked from your CLI with the commands described i
 - [tass-orchestrator](https://github.com/StatCan/tass-ssat/tree/main/tass-orchestrator)
 - [tass-report](https://github.com/StatCan/tass-ssat/tree/main/tass-report)
 
+#### Automation Commands
+
+Currently supported automation commands and the required parameters can be found in our [Actions Pages](./actions/actions.md)
+
 #### Demo
 
 The repository comes with several examples and working demos. To use any of the demos, clone the repository, then
