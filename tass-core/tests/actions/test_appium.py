@@ -254,7 +254,7 @@ class TestAppium(unittest.TestCase):
             except NoSuchElementException:
                 pass
             driver().switch_to_context(driver().find_webview_context())
-            
+
     def close_nav(self, driver):
         try:
             element = driver().find_element("xpath", "//li[contains(@class, 'expand')]/a")

@@ -11,6 +11,15 @@ For production use, you can install it from the git repository.
 
 For development purposes, you will want an editable installation ```pip install -e ./tass-core``` from the working directory ```tass-ssat```.
 
+## Appium - Partially Implemented
+
+The tass-core module partially supports Appium. Appropriately configured devices and tests can be
+executed using basic actions provided by TASS; however, the Action Chain framework is not fully supported
+and may be used with caution. Appium is setup to mirror the Selenium actions, with modifications to
+ensure functionality on most mobile devices. Given the wide array of mobile devices available, 
+functionality is not guaranteed; however, best efforts are made to test Appium functions using 
+common Android and Apple mobile phone and tablet sized devices.
+
 ## Usage
 
 The module can be executed with CLI using the following commands. By default, when executing a job file
