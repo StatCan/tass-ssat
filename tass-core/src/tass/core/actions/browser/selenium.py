@@ -760,7 +760,6 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                   'Element {identifier} not found. Page is not open')
 
     def _title(driver, find, title, soft, normalize=False):
-    def _title(driver, find, title, soft, normalize=False):
         if (driver().title != title):
             ele = None
             if normalize:
