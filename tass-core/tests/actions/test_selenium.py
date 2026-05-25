@@ -98,19 +98,6 @@ class TestSelenium(unittest.TestCase):
         str(pathlib.Path(__file__).parents[1].resolve())
         + '/pages/page1.html'
         )
-    
-    test_page_url_2 = (
-        str(pathlib.Path(__file__).parents[1].resolve())
-        + '/pages/page2.html'
-        )
-
-    def setUpClass():
-        # Moved from setUp, only needed to be executed 1 time.
-        TestSelenium.drivers = [(TestSelenium.config[0], CDriver),
-                        (TestSelenium.config[1], FDriver),
-                        (TestSelenium.config[2], EDriver)]
-        if platform == "darwin":
-            TestSelenium.drivers.append((TestSelenium.config[3], SDriver))
 
     test_page_url_2 = (
         str(pathlib.Path(__file__).parents[1].resolve())
@@ -124,11 +111,6 @@ class TestSelenium(unittest.TestCase):
                         (TestSelenium.config[2], EDriver)]
         if platform == "darwin":
             TestSelenium.drivers.append((TestSelenium.config[3], SDriver))
-
-    test_page_url_2 = (
-        str(pathlib.Path(__file__).parents[1].resolve())
-        + '/pages/page2.html'
-        )
 
     def setUp(self):
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
@@ -1024,7 +1006,7 @@ class TestSeleniumAssertActions(TestSelenium):
                 if driver:
                     driver.quit()
 
-    def test_SeleniumAssertPageIsOpenByTitleSoftSuccess(self):
+    def test_SeleniumAssertPageIsOpenByNormalizeTitleSoftSuccess(self):
         url = pathlib.Path(self.test_page_url_2).resolve().as_uri()
         for browser in self.drivers:
             driver = None
