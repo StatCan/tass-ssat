@@ -1,16 +1,15 @@
-import time
-import random
-from enum import Enum
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.select import Select
 from selenium.webdriver import (
     ChromeOptions,
     FirefoxOptions,
     EdgeOptions,
     SafariOptions
 )
-from ..log.logging import getLogger
-from .custombrowserdrivers import TassDriverWait
-from .custombrowserdrivers import (
+from ...log.logging import getLogger
+from ..wrapper import BaseDriverWrapper
+from .customdrivers import TassDriverWait
+from .customdrivers import (
     ChromeDriver,
     EdgeDriver,
     FirefoxDriver,
@@ -21,38 +20,9 @@ from .custombrowserdrivers import (
 log = getLogger(__name__)
 
 
-def new_driver(uuid, browser_name, configs):
-    log.info("Creating driver for: %s", browser_name)
-    try:
-        wrapper = SupportedBrowsers[browser_name.upper()].value
-    except KeyError:
-        log.warning("%s browser not supported.", browser_name)
-        return None
-
-    return wrapper(uuid, configs)
-
-
-class BaseDriverWrapper():
-    def __init__(self, uuid, configs):
-        self._waits = {}
-        self._conf = self._set_defaults(configs)
-        self._driver = None
-        self._uuid = uuid
-        self._chain = None
-
-    def _with_delay(self, driver):
-        delayMin = abs(float(self._conf['driver'].get('delay', 0)))
-        delayMax = abs(float(self._conf['driver'].get('delayMax', delayMin)))
-        if delayMax == delayMin or delayMax < delayMin:
-            delay = delayMax
-        elif delayMax != delayMin:
-            delay = round(
-                random.uniform(delayMin, delayMax), 2
-                )
-        if delay > 0:
-            log.debug("Delaying for %s seconds.", delay)
-            time.sleep(delay)
-        return driver
+class BaseBrowserDriverWrapper(BaseDriverWrapper):
+    def __init__(self, uuid, configs, *args, **kwargs):
+        super().__init__(uuid, configs, *args, **kwargs)
 
     def __call__(self, browser_options, driver_init, *args, **kwargs):
         if not self._driver:
@@ -67,13 +37,13 @@ class BaseDriverWrapper():
         return self._with_delay(self._driver)
 
     @property
-    def name(self):
+    def browser(self):
         if (self._driver):
             return self._driver.capabilities["browserName"]
         return None
 
     @property
-    def version(self):
+    def browser_version(self):
         if (self._driver):
             return self._driver.capabilities["browserVersion"]
         return None
@@ -132,6 +102,28 @@ class BaseDriverWrapper():
         wait_ = self._waits.get(time, new_wait(time))
         return wait_.until(until_func(**kwargs))
 
+    def select(self, element, value, using):
+        # send_keys to scroll element into view
+        element.send_keys("")
+        match using:
+            case 'text':
+                select = Select(element).select_by_visible_text
+                value = str(value)
+                log.debug('Selecting with visible text')
+            case 'value':
+                select = Select(element).select_by_value
+                value = str(value)
+                log.debug('Selecting using option value')
+            case 'index':
+                select = Select(element).select_by_index
+                value = int(value)
+                log.debug("Selecting using option index")
+            case _:
+                raise ValueError(
+                    f'Select method {using} is not a valid method.'
+                    )
+        select(value)
+
     def quit(self):
         if self._chain:
             self._chain.reset_actions()
@@ -142,7 +134,7 @@ class BaseDriverWrapper():
         self._driver = None
 
 
-class SafariDriverWrapper(BaseDriverWrapper):
+class SafariDriverWrapper(BaseBrowserDriverWrapper):
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
@@ -162,7 +154,7 @@ class SafariDriverWrapper(BaseDriverWrapper):
         return self._with_delay(self._driver)
 
 
-class ChromeDriverWrapper(BaseDriverWrapper):
+class ChromeDriverWrapper(BaseBrowserDriverWrapper):
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
@@ -171,7 +163,7 @@ class ChromeDriverWrapper(BaseDriverWrapper):
         return super().__call__(ChromeOptions, ChromeDriver, *args, **kwargs)
 
 
-class FirefoxDriverWrapper(BaseDriverWrapper):
+class FirefoxDriverWrapper(BaseBrowserDriverWrapper):
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
@@ -191,17 +183,10 @@ class FirefoxDriverWrapper(BaseDriverWrapper):
         return self._with_delay(self._driver)
 
 
-class EdgeDriverWrapper(BaseDriverWrapper):
+class EdgeDriverWrapper(BaseBrowserDriverWrapper):
     def __init__(self, uuid, configs,
                  *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
 
     def __call__(self, *args, **kwargs):
         return super().__call__(EdgeOptions, EdgeDriver, *args, **kwargs)
-
-
-class SupportedBrowsers(Enum):
-    CHROME = ChromeDriverWrapper
-    FIREFOX = FirefoxDriverWrapper
-    EDGE = EdgeDriverWrapper
-    SAFARI = SafariDriverWrapper

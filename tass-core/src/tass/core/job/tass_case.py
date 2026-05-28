@@ -30,10 +30,10 @@ class TassCase(TassItem):
                     (f"Step \"{step['uuid']}\": \"{step['title']}\" "
                      "failed assertion. Stopping test case.")
                      )
-                self.logger.warning("Failure message: %s", soft_fail.message)
+                self.logger.warning("Failure message: %s", soft_fail)
                 error = {
                     "status": "failed",
-                    "status_message": soft_fail.message
+                    "status_message": soft_fail
                     }
                 # TODO: Do not update step. Convert to step result object/dict
                 step.update(error)
@@ -44,10 +44,10 @@ class TassCase(TassItem):
                     (f"Step \"{step['uuid']}\": \"{step['title']}\" "
                      "failed assertion. Stopping test case.")
                      )
-                self.logger.warning("Failure message: %s", fail.message)
+                self.logger.warning("Failure message: %s", fail)
                 error = {
                     "status": "failed",
-                    "status_message": fail.message
+                    "status_message": fail
                     }
                 step.update(error)
                 self._errors.append(step)

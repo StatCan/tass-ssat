@@ -6,6 +6,9 @@ class TassException(Exception):
     def message(self):
         return self.args[0].format(*self.args[1:])
 
+    def __str__(self):
+        return self.message
+
 
 class TassUUIDException(TassException):
     def __init__(self, message, *args):

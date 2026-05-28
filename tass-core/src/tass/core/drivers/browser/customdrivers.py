@@ -1,6 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
-from ..log.logging import getLogger
+from ...log.logging import getLogger
 
 
 class TassDriverWait(WebDriverWait):

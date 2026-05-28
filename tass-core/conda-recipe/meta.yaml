@@ -1,6 +1,6 @@
 package:
   name: tass-core
-  version: 1.0.3
+  version: 1.1.0
 
 source:
   path: ../
@@ -15,15 +15,15 @@ requirements:
     - setuptools
     - pip
   run:
-    - python >=3.10
+    - python >=3.13
     - selenium >=4.35.0
     - openpyxl
     - packaging
     - jsonschema
 
-  extra:
-    authors:
-      - name: Dominic Parent
-        email: dominic.parent@statcan.gc.ca
-      - name: Tyler Desjardins
-        email: josephgillestyler.desjardins@statcan.gc.ca
+extra:
+  authors:
+    - name: Dominic Parent
+      email: dominic.parent@statcan.gc.ca
+    - name: Tyler Desjardins
+      email: josephgillestyler.desjardins@statcan.gc.ca
