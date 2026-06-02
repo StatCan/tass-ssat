@@ -1,5 +1,7 @@
 import importlib
 from tass.core.log.logging import getLogger
+from ..drivers.new_driver import new_driver
+
 
 
 log = getLogger(__name__)
@@ -52,9 +54,22 @@ def _import_module(module_name):
 
 
 class ActionManager():
-    def __init__(self, module):
+    def __init__(self, module, manager):
         self._log = getLogger(__class__.__name__)
         self._module = module
+        self._manager = manager
+        self._config = manager["config"]
+        self._driver = manager["driver"]
+
+    @property
+    def driver(self):
+        if not self._driver:
+            self._driver = new_driver(**self._config)
+        return self._driver
+
+    @driver.deleter
+    def driver(self):
+        del self._driver
 
     def action(self, command, *args, **kwargs):
         _action = getattr(self._module, command)

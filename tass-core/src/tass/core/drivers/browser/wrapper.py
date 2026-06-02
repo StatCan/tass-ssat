@@ -7,7 +7,7 @@ from selenium.webdriver import (
     SafariOptions
 )
 from ...log.logging import getLogger
-from ..wrapper import BaseDriverWrapper
+from ..wrapper import BaseSeleniumDriverWrapper
 from .customdrivers import TassDriverWait
 from .customdrivers import (
     ChromeDriver,
@@ -20,7 +20,7 @@ from .customdrivers import (
 log = getLogger(__name__)
 
 
-class BaseBrowserDriverWrapper(BaseDriverWrapper):
+class BaseBrowserDriverWrapper(BaseSeleniumDriverWrapper):
     def __init__(self, uuid, configs, *args, **kwargs):
         super().__init__(uuid, configs, *args, **kwargs)
 
@@ -123,6 +123,10 @@ class BaseBrowserDriverWrapper(BaseDriverWrapper):
                     f'Select method {using} is not a valid method.'
                     )
         select(value)
+
+    # TODO
+    def screenshot(self):
+        pass
 
     def quit(self):
         if self._chain:
