@@ -8,11 +8,9 @@ log = getLogger(__name__)
 
 class BaseDriverWrapper():
     def __init__(self, uuid, configs, *args, **kwargs):
-        self._waits = {}
         self._conf = self._set_defaults(configs)
-        self._driver = None
         self._uuid = uuid
-        self._chain = None
+
 
     def _set_defaults(self, configs):
         raise NotImplementedError(
@@ -39,6 +37,29 @@ class BaseDriverWrapper():
             log.debug("Delaying for %s seconds.", delay)
             time.sleep(delay)
         return driver
+
+    @property
+    def uuid(self):
+        return self._uuid
+
+
+class CoreDriverWrapper(BaseDriverWrapper):
+    def __init__(self, uuid, configs={}):
+        super().__init__(uuid, configs)
+
+    def _set_defaults(self, configs):
+        configs.setdefault("driver", {})
+
+    def __call__(self, *args, **kwargs):
+        return self._with_delay(self.__driver)
+
+
+class BaseSeleniumDriverWrapper(BaseDriverWrapper):
+    def __init__(self, uuid, configs, *args, **kwargs):
+        super().__init__(uuid, configs, *args, **kwargs)
+        self._chain = None
+        self._driver = None
+        self._waits = {}
 
     @property
     def alert_text(self):
@@ -74,6 +95,3 @@ class BaseDriverWrapper():
             alert.send_keys(text)
         return alert.dismiss()
 
-    @property
-    def uuid(self):
-        return self._uuid

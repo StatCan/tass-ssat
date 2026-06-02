@@ -1,5 +1,4 @@
 from ..action_manager import ActionManager
-from ...drivers.new_driver import new_driver
 from . import selenium as sel
 from . import selenium_wait as selwait
 from . import selenium_chain as selchain
@@ -33,14 +32,10 @@ def get_manager(browser_config, *args, **kwargs):
 
 class SeleniumActionManager(ActionManager):
     def __init__(self, manager, module=sel):
-        super().__init__(module)
-        self._manager = manager
+        super().__init__(module, manager)
 
     def action(self, command, *args, **kwargs):
-        if not self._manager['driver']:
-            self._manager['driver'] = new_driver(**self._manager['config'])
-        driver = self._manager['driver']
-        super().action(command, driver=driver, *args, **kwargs)
+        super().action(command, driver=self.driver, *args, **kwargs)
 
     def toJson(self):
         j = super().toJson()
@@ -51,6 +46,6 @@ class SeleniumActionManager(ActionManager):
         return j
 
     def quit(self):
-        if self._manager['driver']:
-            self._manager['driver'].quit()
-            self._manager['driver'] = None
+        if self.driver:
+            self.driver.quit()
+            del self.driver

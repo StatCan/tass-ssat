@@ -78,8 +78,6 @@ class TassCase(TassItem):
         self._quit_managers()
 
     def __init__(self, *, steps=[], managers, **kwargs):
-        # TODO: Remove browser from here. browser is not needed
-        # it should be attached to the Selenium manager.
         super().__init__(**kwargs)
         self._steps = steps
         self._start_time = 'not started'
@@ -134,7 +132,15 @@ class TassCase(TassItem):
                           action, params)
 
         if (action[0] in self._managers):
-            self._managers[action[0]].action(action[1], **params)
+            manager = self._managers[action[0]]
+            try:
+                manager.action(action[1], **params)
+            except Exception as e:
+                # TODO: execute on_failure functions
+                breakpoint()
+                from .hooks.on_failure_hooks import tasscase_hook_screenshot_on_failure
+                tasscase_hook_screenshot_on_failure(manager, self.uuid)
+                raise e
             return
 
         self.logger.warning("Action manager not found for: %s", action[0])
