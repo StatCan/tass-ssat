@@ -50,7 +50,6 @@ def _import_module(module_name):
     except ImportError as e:
         log.error(str(e))
         raise e
-        # TODO: log error
 
 
 class ActionManager():
