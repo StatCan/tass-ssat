@@ -5,6 +5,7 @@ from tass.core.exceptions.tass_errors import (
     TassAmbiguousUUID)
 from tass.core.log.logging import init_logger, getLogger
 from ..actions.action_manager import get_manager
+from ..job.hooks import find_hook
 from ..job.tass_files import TassJob
 
 
@@ -186,15 +187,45 @@ class Tass1_1Parser(Parser):
         job_raw = job['Job']
         tassjob = TassJob(path, _meta=meta, **job_raw)
 
+        loaded_hooks = {}
+
         for test in self._parse_tests(job["Tests"], job):
-            tassjob.add_test_case(test)
+            _ = tassjob.add_test_case(test)
+            self._parse_hooks(loaded_hooks, _, test, job)
 
         return tassjob
+
+    def _parse_hooks(self, hooks, tass, test, job):
+        _hooks = job["Hooks"] # All hooks for Job
+        test_hooks = test.get("hooks", {}) # Hooks for current test
+        
+        def _filter_hooks(name, level, timing):
+            for _h in _hooks:
+                if (_h["name"] == name
+                and _h["level"] == level
+                and _h["timing"] == timing):
+                    yield _h
+        for timing, hook_names in test_hooks.items():
+            for hook in hook_names:
+                    h = None
+                    if hook in hooks:
+                        h = hooks[hook]
+                    else:
+                        # find hook function
+                        find = next(_filter_hooks(hook, "case", timing), None)
+                        h = find_hook(**find)
+                        hooks[hook] = h
+                    if h:
+                        tass.register_on_failure_hook(h)
+        
 
     def _parse_tests(self, tests, job):
         for test in tests:
             _out = {}
             _out['uuid'] = test['uuid']
+            _ = test.get("hooks", None)
+            if _:
+                _out["hooks"] = _
             _out.update(self._parse_case(test['case'], job))
             _out.update(
                 self._parse_configurations(

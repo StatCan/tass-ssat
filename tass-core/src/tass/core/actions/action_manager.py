@@ -64,12 +64,14 @@ class ActionManager():
     @property
     def driver(self):
         if not self._driver:
-            self._driver = new_driver(**self._config)
+            if self._manager["driver"] is None:
+                self._manager["driver"] = new_driver(**self._config)
+            self._driver = self._manager["driver"]
         return self._driver
 
     @driver.deleter
     def driver(self):
-        del self._driver
+        self._driver = None
 
     def action(self, command, *args, **kwargs):
         _action = getattr(self._module, command)

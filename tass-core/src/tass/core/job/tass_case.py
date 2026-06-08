@@ -1,4 +1,5 @@
 from datetime import datetime
+from copy import deepcopy
 from .tass_items import TassItem
 from ..exceptions.assertion_errors import TassHardAssertionError
 from ..exceptions.assertion_errors import TassSoftAssertionError
@@ -14,16 +15,18 @@ class TassCase(TassItem):
         self.logger.info("Case: %s (%s) started @%s",
                          self.title, self.uuid, self._start_time)
         self._status = 'incomplete'
-        for step in self.steps:
+        for step, result in zip(self.steps, self._results):
+            if step["uuid"] != result["uuid"]:
+                raise RuntimeError("Unknown error occured. UUID mismatch detected.")
             self.logger.info("Executing > > > > %s", step['title'])
             self.logger.debug("Parameters > > > > %r", step)
             try:
                 # Executing the step, catching the custom exception
                 # reporting a failed step here.
-                self._execute_step(step)
+                self._execute_step(step, result)
                 self.logger.info("Step: %s completed successfully.",
                                  step['title'])
-                step.update({"status": "passed"})
+                result.update({"status": "passed"})
             except TassSoftAssertionError as soft_fail:
                 # TODO: Error message should be attached here.
                 self.logger.warning(
@@ -33,11 +36,11 @@ class TassCase(TassItem):
                 self.logger.warning("Failure message: %s", soft_fail)
                 error = {
                     "status": "failed",
-                    "status_message": soft_fail
+                    "status_message": str(soft_fail)
                     }
                 # TODO: Do not update step. Convert to step result object/dict
-                step.update(error)
-                self._errors.append(step)
+                result.update(error)
+                self._errors.append(result)
             except TassHardAssertionError as fail:
                 # TODO: Error message should be attached here.
                 self.logger.warning(
@@ -47,10 +50,10 @@ class TassCase(TassItem):
                 self.logger.warning("Failure message: %s", fail)
                 error = {
                     "status": "failed",
-                    "status_message": fail
+                    "status_message": str(fail)
                     }
-                step.update(error)
-                self._errors.append(step)
+                result.update(error)
+                self._errors.append(result)
                 break
             except Exception as e:
                 self.logger.warning(
@@ -65,8 +68,8 @@ class TassCase(TassItem):
                     "error": True,
                     "status_message": str(e)
                     }
-                step.update(error)
-                self._errors.append(step)
+                result.update(error)
+                self._errors.append(result)
                 break
 
         if (len(self._errors) > 0):
@@ -80,9 +83,11 @@ class TassCase(TassItem):
     def __init__(self, *, steps=[], managers, **kwargs):
         super().__init__(**kwargs)
         self._steps = steps
+        self._results = [step | {"status": "untested"} for step in steps]
         self._start_time = 'not started'
         self._status = 'untested'
         self._errors = []
+        self._on_failure_hooks = []
         self._managers = managers
 
     def __repr__(self):
@@ -116,11 +121,14 @@ class TassCase(TassItem):
             "start_time": self._start_time,
             "status": self._status,
             "errors": self._errors,
-            "steps": self._steps,
+            "steps": self._results,
             "managers": self._managers
         }
 
-    def _execute_step(self, step):
+    def register_on_failure_hook(self, hook):
+        self._on_failure_hooks.append(hook)
+
+    def _execute_step(self, step, result):
         raw = step.get('parameters', None)
         if (not isinstance(raw, dict)):
             params = dict(zip(it := iter(raw), it))
@@ -136,10 +144,8 @@ class TassCase(TassItem):
             try:
                 manager.action(action[1], **params)
             except Exception as e:
-                # TODO: execute on_failure functions
-                breakpoint()
-                from .hooks.on_failure_hooks import tasscase_hook_screenshot_on_failure
-                tasscase_hook_screenshot_on_failure(manager, self.uuid)
+                for hook in self._on_failure_hooks:
+                    hook(manager, result, self)
                 raise e
             return
 

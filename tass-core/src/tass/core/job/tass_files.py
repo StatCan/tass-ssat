@@ -42,6 +42,8 @@ class TassJob(TassFile):
         if _:
             self._test_cases.append(_)
 
+        return _
+
     @property
     def start_time(self):
         return self._start_time
