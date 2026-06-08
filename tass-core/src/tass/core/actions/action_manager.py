@@ -48,7 +48,7 @@ def _import_module(module_name):
         log.debug("attempting to import manager module from: %s", imp)
         return importlib.import_module(imp)
     except ImportError as e:
-        print(e)
+        log.error(str(e))
         raise e
         # TODO: log error
 
