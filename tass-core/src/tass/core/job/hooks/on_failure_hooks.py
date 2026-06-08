@@ -29,10 +29,10 @@ def prerequisite(capability):
 @prerequisite(capability="screenshot")
 def tass_case_hook_screenshot_on_failure(manager, result, test_case):
     driver = manager.driver
-    screenshotsfldr = pathlib.Path("screenshots").resolve()
-    # Sort png by browser config
-    screenshotsfldr = screenshotsfldr.joinpath("errors").resolve()
+    # Create errors screenshot folder
+    screenshotsfldr = pathlib.Path("screenshots").joinpath("errors").resolve()
     screenshotsfldr.mkdir(exist_ok=True, parents=True)
+    # Name screenshot using uuid and datestamp
     date_tag = datetime.now().strftime("%d-%m-%y--%H-%M-%S")
     name = test_case.uuid
     file_name = "_".join([name, date_tag])
@@ -47,6 +47,7 @@ def tass_case_hook_screenshot_on_failure(manager, result, test_case):
         status = driver().save_screenshot(out)
     
     if status:
+        # If succesful, output file path for png.
         log.debug("Screenshot saved successfully.")
         result["screenshot"] = out
     else:
