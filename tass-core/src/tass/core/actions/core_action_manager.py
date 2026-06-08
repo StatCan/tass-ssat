@@ -19,3 +19,6 @@ def get_manager(core_configs=None, *args, **kwargs):
 class CoreActionManager(ActionManager):
     def __init__(self, manager):
         super().__init__(core, manager)
+
+    def quit(self):
+        pass

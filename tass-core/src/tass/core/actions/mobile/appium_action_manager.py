@@ -42,14 +42,10 @@ def get_manager(mobile_configs, *args, **kwargs):
 
 class AppiumActionManager(ActionManager):
     def __init__(self, manager, module=app):
-        super().__init__(module)
-        self._manager = manager
+        super().__init__(module, manager)
 
     def action(self, command, *args, **kwargs):
-        if not self._manager['driver']:
-            self._manager['driver'] = new_driver(**self._manager['config'])
-        driver = self._manager['driver']
-        super().action(command, driver=driver, *args, **kwargs)
+        super().action(command, driver=self.driver, *args, **kwargs)
 
     def toJson(self):
         j = super().toJson()
@@ -60,6 +56,6 @@ class AppiumActionManager(ActionManager):
         return j
 
     def quit(self):
-        if self._manager['driver']:
-            self._manager['driver'].quit()
-            self._manager['driver'] = None
+        if self.driver:
+            self.driver.quit()
+            del self.driver
