@@ -222,11 +222,11 @@ class Tass1_1Parser(Parser):
     def _parse_tests(self, tests, job):
         for test in tests:
             _out = {}
-            _out['uuid'] = test['uuid']
             _ = test.get("hooks", None)
             if _:
                 _out["hooks"] = _
             _out.update(self._parse_case(test['case'], job))
+            _out['uuid'] = test['uuid']
             _out.update(
                 self._parse_configurations(
                     test['configurations'], job))
