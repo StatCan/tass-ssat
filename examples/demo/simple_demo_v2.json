@@ -1,5 +1,5 @@
 {
-    "schema-version": "1.0.0",
+    "schema-version": "1.1.0",
     "Job":
     {
         "uuid": "tr100101",
@@ -11,6 +11,11 @@
         {
             "uuid": "tr100101--uuid-tc-01--chrome001",
             "case": "uuid-tc-01",
+            "hooks": {
+                "on_failure": [
+                    "screenshot"
+                ]
+            },
             "configurations": [
                 {
                     "type": "browser",
@@ -21,12 +26,25 @@
         {
             "uuid": "tr100101--Uuid-tc-02--ffox002",
             "case": "Uuid-tc-02",
+            "hooks": {
+                "on_failure": [
+                    "screenshot"
+                ]
+            },
             "configurations": [
                 {
                     "type": "browser",
                     "uuid": "ffox002"
                 }
             ]
+        }
+    ],
+    "Hooks": [
+        {
+            "timing": "on_failure",
+            "module": "tass.core.job.hooks.on_failure_hooks",
+            "name": "screenshot",
+            "level": "case"
         }
     ],
     "Cases":

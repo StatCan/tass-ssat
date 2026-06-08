@@ -1,7 +1,9 @@
 import inspect
 import pathlib
+from functools import wraps
 from datetime import datetime
 from ...log.logging import getLogger
+from selenium.common.exceptions import WebDriverException
 
 
 log = getLogger(__name__)
@@ -9,6 +11,7 @@ log = getLogger(__name__)
 
 def prerequisite(capability):
     def decorator(func):
+        @wraps(func)
         def wrapper(manager, *args, **kwargs):
             _ = manager.driver
             capable = hasattr(_, capability)
@@ -24,14 +27,14 @@ def prerequisite(capability):
 
 
 @prerequisite(capability="screenshot")
-def tasscase_hook_screenshot_on_failure(manager, test_uuid):
+def tass_case_hook_screenshot_on_failure(manager, result, test_case):
     driver = manager.driver
     screenshotsfldr = pathlib.Path("screenshots").resolve()
     # Sort png by browser config
     screenshotsfldr = screenshotsfldr.joinpath("errors").resolve()
     screenshotsfldr.mkdir(exist_ok=True, parents=True)
     date_tag = datetime.now().strftime("%d-%m-%y--%H-%M-%S")
-    name = test_uuid  # Remove spaces from file name
+    name = test_case.uuid
     file_name = "_".join([name, date_tag])
     _file = screenshotsfldr.joinpath(file_name).with_suffix(".png")
     out = str(_file.resolve())
@@ -42,8 +45,9 @@ def tasscase_hook_screenshot_on_failure(manager, test_uuid):
     except WebDriverException as e:
         log.warning("Something went wrong, %s -- Trying again", e)
         status = driver().save_screenshot(out)
-
+    
     if status:
         log.debug("Screenshot saved successfully.")
+        result["screenshot"] = out
     else:
-        log.warning("Screenshot was not saved!")
+        log.warning("Screenshot was not saved! Hook failed.")
