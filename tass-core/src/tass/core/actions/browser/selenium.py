@@ -640,18 +640,18 @@ def screenshot(driver,
 
     out = str(_file.resolve())
     logger.info("Saving screenshot as: %s", out)
+    element = None
+
 
     try:
         if locator:
-            status = find(driver, locator, **kwargs).screenshot(out)
-        else:
-            status = driver().save_screenshot(out)
+            element = find(driver, locator, **kwargs)
+        status = driver.screenshot(out, element=element)
     except WebDriverException as e:
         logger.warning("Something went wrong, %s -- Trying again", e)
-        if locator:
-            status = find(driver, locator, **kwargs).screenshot(out)
-        else:
-            status = driver().save_screenshot(out)
+        if locator and not element:
+            element = find(driver, locator, **kwargs)
+        status = driver.screenshot(out, element=element)
 
     if status:
         logger.info("Screenshot saved successfully.")

@@ -1,7 +1,7 @@
 import time
 from appium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
-from ...log.logging import getLogger
+from ....log.logging import getLogger
 
 
 class TassMobileDriverWait(WebDriverWait):

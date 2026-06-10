@@ -2,8 +2,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.select import Select
 from appium.options.common import AppiumOptions
 from . import scripting
-from ...log.logging import getLogger
-from ..wrapper import BaseDriverWrapper
+from ....log.logging import getLogger
+from ..wrapper import BaseSeleniumDriverWrapper
 from .appium_service import TASSAppiumService
 from .customdrivers import TassMobileDriverWait
 from .customdrivers import (
@@ -15,7 +15,7 @@ from .customdrivers import (
 log = getLogger(__name__)
 
 
-class BaseMobileDriverWrapper(BaseDriverWrapper):
+class BaseMobileDriverWrapper(BaseSeleniumDriverWrapper):
 
     executor = scripting.MobileDriverScriptExecutor
 

@@ -10,6 +10,7 @@ class BaseDriverWrapper():
     def __init__(self, uuid, configs, *args, **kwargs):
         self._conf = self._set_defaults(configs)
         self._uuid = uuid
+        self._driver = None
 
 
     def _set_defaults(self, configs):
@@ -52,46 +53,3 @@ class CoreDriverWrapper(BaseDriverWrapper):
 
     def __call__(self, *args, **kwargs):
         return self._with_delay(self.__driver)
-
-
-class BaseSeleniumDriverWrapper(BaseDriverWrapper):
-    def __init__(self, uuid, configs, *args, **kwargs):
-        super().__init__(uuid, configs, *args, **kwargs)
-        self._chain = None
-        self._driver = None
-        self._waits = {}
-
-    @property
-    def alert_text(self):
-        log.debug("Getting alert text.")
-        return self.alert.text
-
-    @property
-    def alert(self):
-        log.debug("Getting alert.")
-        return self().switch_to.alert
-
-    def switch_window(self, handle):
-        log.debug("Switching to window handle: %s", handle)
-        self().switch_to.window(handle)
-        log.debug(
-            "Switched to window handle: %s",
-            handle
-            )
-
-    def accept_alert(self, text=None):
-        log.debug("Accepting alert.")
-        alert = self.alert
-        if text:
-            log.debug("Sending text to alert: %s", text)
-            alert.send_keys(text)
-        return alert.accept()
-
-    def dismiss_alert(self, text=None):
-        log.debug("Dismissing alert.")
-        alert = self.alert
-        if text:
-            log.debug("Sending text to alert: %s", text)
-            alert.send_keys(text)
-        return alert.dismiss()
-

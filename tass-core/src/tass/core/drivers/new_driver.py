@@ -1,7 +1,7 @@
 import importlib
 from enum import Enum
 from ..log.logging import getLogger
-from .browser import wrapper
+from .selenium.browser import wrapper
 
 log = getLogger(__name__)
 
@@ -25,6 +25,6 @@ class SupportedDrivers(Enum):
     SAFARI = wrapper.SafariDriverWrapper
     # Mobile drivers
     if importlib.util.find_spec("appium"):
-        from .mobile import wrapper as mobile_wrapper
+        from .selenium.mobile import wrapper as mobile_wrapper
         ANDROID = mobile_wrapper.AndroidDriverWrapper
         IOS = mobile_wrapper.IOSDriverWrapper
