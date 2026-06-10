@@ -6,7 +6,7 @@ from selenium.webdriver import (
     EdgeOptions,
     SafariOptions
 )
-from ...log.logging import getLogger
+from ....log.logging import getLogger
 from ..wrapper import BaseSeleniumDriverWrapper
 from .customdrivers import TassDriverWait
 from .customdrivers import (
@@ -123,10 +123,6 @@ class BaseBrowserDriverWrapper(BaseSeleniumDriverWrapper):
                     f'Select method {using} is not a valid method.'
                     )
         select(value)
-
-    # TODO
-    def screenshot(self):
-        pass
 
     def quit(self):
         if self._chain:

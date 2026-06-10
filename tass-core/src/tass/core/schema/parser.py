@@ -198,7 +198,7 @@ class Tass1_1Parser(Parser):
     def _parse_hooks(self, hooks, tass, test, job):
         _hooks = job["Hooks"] # All hooks for Job
         test_hooks = test.get("hooks", {}) # Hooks for current test
-        
+
         def _filter_hooks(name, level, timing):
             for _h in _hooks:
                 if (_h["name"] == name
@@ -217,7 +217,7 @@ class Tass1_1Parser(Parser):
                         hooks[hook] = h
                     if h:
                         tass.register_on_failure_hook(h)
-        
+
 
     def _parse_tests(self, tests, job):
         for test in tests:
