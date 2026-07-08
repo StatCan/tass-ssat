@@ -269,7 +269,9 @@ class Tass1_1Parser(Parser):
                 self.log.warning("No matching step configuration found.")
                 raise TassUUIDNotFound(uuid)
 
-            step_config.append(deepcopy(found[0]))
+            _ = deepcopy(found[0])
+            _["status"] = "incomplete"
+            step_config.append(_)
         return step_config
 
     def _parse_browser(self, browser, job):

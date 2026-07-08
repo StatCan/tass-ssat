@@ -662,15 +662,13 @@ def screenshot(driver,
 
 
 # / / / / / / / Assertions / / / / / / /
-def _fail(soft, message, exception=None, *args):
+def _fail(soft, message, reason=None, exception=None, *args):
     if (soft):
         raise TassSoftAssertionError(
-                "Soft Assertion failed: " + message,
-                exception, *args)
+                message, reason=reason, *args) from exception
     else:
         raise TassHardAssertionError(
-                "Hard Assertion failed: " + message,
-                exception, *args)
+                message, reason=reason, *args)  from exception
 
 
 def assert_alert_displayed(driver, text=None, soft=False):
@@ -709,11 +707,14 @@ def assert_alert_displayed(driver, text=None, soft=False):
             text_ok = text in alert.text
             if not text_ok:
                 _fail(soft,
-                      f"Alert text does not contain expected text: {text}")
+                    "assert_alert_displayed",
+                    reason = f"Alert text does not contain expected text: {text}")
             else:
                 logger.debug("Alert text contains expected text: %s", text)
     except WebDriverException as e:
-        _fail(soft, 'WebDriver exception raised', exception=e)
+        _fail(soft,
+            "assert_alert_displayed",
+            exception=e)
 
 
 def assert_page_is_open(driver, page=None, find=_find_element,
@@ -751,16 +752,20 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                              element)
             except WebDriverException as e:
                 logger.warning('Exception raised: %s', e)
-                _fail(soft, 'WebDriver exception raised', exception=e)
+                _fail(soft,
+                "assert_page_is_open",
+                exception=e)
 
         logger.info("Element found. Page is open")
 
         if (ele is None):
             _fail(soft,
-                  'Element {identifier} not found. Page is not open')
+                "assert_page_is_open",
+                reason='Element {identifier} not found.')
 
     def _title(driver, find, title, soft, normalize=False):
-        if (driver().title != title):
+        actual = driver().title
+        if (actual != title):
             ele = None
             if normalize:
                 ele_title = {
@@ -774,27 +779,35 @@ def assert_page_is_open(driver, page=None, find=_find_element,
                     }
             try:
                 ele = find(driver, ele_title, page=page)
+                actual = ele.text
                 logger.debug("Element: %s found, page is open.", ele_title)
             except WebDriverException:
                 try:
                     ele = find(driver, ele_title, page=page)
+                    actual = ele.text
                     logger.debug(
                         "Attempt 2 >> Element: %s found, page is open.",
                         ele_title
                         )
                 except WebDriverException as e:
                     logger.warning('Exception raised: %s', e)
+                    _fail(soft,
+                        "assert_page_is_open",
+                        exception=e)
             if not ele:
                 _fail(soft,
-                      'Expected title not found. Page is not open')
+                    "assert_page_is_open",
+                    reason=f'Expected title not found. Actual page title: {actual}')
 
         logger.info("Found expected title. Page is open")
 
     def _url(driver, url, soft):
-        logger.info('Current url: %s', driver().current_url)
-        if (driver().current_url != url):
+        actual = driver().current_url
+        logger.info('Current url: %s', actual)
+        if (actual != url):
             _fail(soft,
-                  'Expected url not open. Page is not open')
+                "assert_page_is_open",
+                reason=f'Expected url not open. Actual url: {actual}')
 
         logger.info("Found expected url. Page is open.")
     if (page is not None):
@@ -870,21 +883,17 @@ def assert_contains_text(driver, text, find=_find_element,
         actual_text = read_text(driver, find, **kwargs)
         logger.info("Element contains text: %s", actual_text)
         if exact and text != actual_text:
-            _fail(soft, "assert_text_contains, text is not exact match.")
+            _fail(soft, "assert_text_contains -- exact match",
+            reason=f"Actual text: {actual_text}")
         elif text not in actual_text:
-            _fail(soft, "assert_text_contains, text is not displayed.")
+            _fail(soft, "assert_text_contains -- partial match",
+            reason=f"Actual text: {actual_text}")
         else:
             logger.info("Element contains text: %s", text)
     except WebDriverException as e:
         logger.debug("Driver reporting error. %r", kwargs)
-        if (soft):
-            raise TassSoftAssertionError(
-                '''Soft Assertion failed: WebDriver Exception''',
-                e, *kwargs)
-        else:
-            raise TassHardAssertionError(
-                '''Hard Assertion failed: WebDriver Exception''',
-                e, *kwargs)
+        _fail(soft, "assert_text_contains",
+            exception=e)
 
 
 def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
@@ -917,17 +926,15 @@ def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
             logger.info("Element is displayed.")
             return
         else:
-            _fail(soft, "assert_displayed Element is not displayed.")
+            _fail(soft,
+                "assert_displayed",
+                reason="Element is not displayed.")
     except WebDriverException as e:
         logger.debug("Driver reporting error. %r", kwargs)
         if (soft):
-            raise TassSoftAssertionError(
-                '''Soft Assertion failed: WebDriver Exception''',
-                e, *kwargs)
-        else:
-            raise TassHardAssertionError(
-                '''Hard Assertion failed: WebDriver Exception''',
-                e, *kwargs)
+            _fail(soft,
+                "assert_displayed",
+                exception=e)
 
 
 def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
@@ -959,26 +966,15 @@ def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
         if not (_is_displayed(driver, find=find, **kwargs)):
             logger.info("Element is not displayed.")
             return
-        elif (soft):
-            raise TassSoftAssertionError(
-                '''Soft Assertion failed: assert_not_displayed
-                -> Element is displayed.''',
-                *kwargs)
         else:
-            raise TassHardAssertionError(
-                '''Hard Assertion failed: assert_not_displayed
-                ->  Element is displayed.''',
-                *kwargs)
+            _fail(soft,
+                "assert_not_displayed",
+                reason="Element is displayed.")
     except WebDriverException as e:
         logger.debug("Driver reporting error. %r", kwargs)
-        if (soft):
-            raise TassSoftAssertionError(
-                '''Soft Assertion failed: WebDriver Exception''',
-                e, *kwargs)
-        else:
-            raise TassHardAssertionError(
-                '''Hard Assertion failed: WebDriver Exception''',
-                e, *kwargs)
+        _fail(soft,
+            "assert_not_displayed",
+            exception=e)
 
 
 def assert_attribute_contains_value(driver, attribute, value,
@@ -1026,24 +1022,18 @@ def assert_attribute_contains_value(driver, attribute, value,
     try:
         if exact and value != actual_value:
             _fail(soft,
-                  ("assert_attribute_contains, "
-                   "attribute is not exact match. {%s=%s}"),
-                  attribute, value)
+                "assert_attribute_contains--exact match",
+                reason=f"attribute: {attribute} is not exact match: {actual_value}")
         elif value not in actual_value:
             _fail(soft,
-                  ("assert_attribute_contains, "
-                   "attribute does not match. {%s=%s}"),
-                  attribute, value)
+                "assert_attribute_contains--partial match", 
+                reason=f"attribute: {attribute} does not contain match: {actual_value}")
+
         else:
             logger.info("Element contains attribute: %s with value: %s",
                         attribute, value)
     except WebDriverException as e:
         logger.debug("Driver reporting error. %r", kwargs)
-        if (soft):
-            raise TassSoftAssertionError(
-                '''Soft Assertion failed: WebDriver Exception''',
-                e, *kwargs)
-        else:
-            raise TassHardAssertionError(
-                '''Hard Assertion failed: WebDriver Exception''',
-                e, *kwargs)
+        _fail(soft,
+            "assert_attribute_contains_value",
+            exception=e)

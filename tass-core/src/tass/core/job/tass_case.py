@@ -31,6 +31,9 @@ class TassCase(TassItem):
                      "failed assertion. Stopping test case.")
                      )
                 self.logger.warning("Failure message: %s", soft_fail)
+                self.logger.debug("ASSERT:::Soft assertion error raised. Msg: %s",
+                                    soft_fail,
+                                    exc_info=True)
                 error = {
                     "status": "failed",
                     "status_message": soft_fail
@@ -45,6 +48,9 @@ class TassCase(TassItem):
                      "failed assertion. Stopping test case.")
                      )
                 self.logger.warning("Failure message: %s", fail)
+                self.logger.debug("ASSERT:::Hard assertion error raised. Msg: %s",
+                    fail,
+                    exc_info=True)
                 error = {
                     "status": "failed",
                     "status_message": fail
@@ -53,17 +59,17 @@ class TassCase(TassItem):
                 self._errors.append(step)
                 break
             except Exception as e:
-                self.logger.warning(
+                self.logger.error(
                     (f"Step \"{step['uuid']}\": \"{step['title']}\" "
                      "failed. Stopping test case.")
                      )
-                self.logger.warning("Unexpected error raised. %s - Msg: %s",
+                self.logger.debug("TRACE:::Unexpected error raised. %s - Msg: %s",
                                     e.__class__.__name__,
-                                    e)
+                                    e,
+                                    exc_info=True)
                 error = {
                     "status": "failed",
-                    "error": True,
-                    "status_message": str(e)
+                    "status_message": e
                     }
                 step.update(error)
                 self._errors.append(step)
