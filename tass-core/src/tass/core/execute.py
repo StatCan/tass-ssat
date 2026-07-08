@@ -17,8 +17,11 @@ class TassEncoder(json.JSONEncoder):
         Serializable TASS classes should
         implement the toJson function.
         """
-        if (hasattr(obj, 'toJson')):
-            return obj.toJson()
+        if (isinstance(obj, object)):
+            if (hasattr(obj, 'toJson')):
+                return obj.toJson()
+            elif isinstance(obj, Exception):
+                return {"error": obj.__class__.__name__, "message": str(obj)}
         else:
             raise TypeError(
                 "Unserializable object {} of type {}".format(obj, type(obj))
