@@ -9,6 +9,8 @@ class TassException(Exception):
     def __str__(self):
         return self.message
 
+    def toJson(self):
+        return {"error": self.__class__.__name__, "message": self.message}
 
 class TassUUIDException(TassException):
     def __init__(self, message, *args):

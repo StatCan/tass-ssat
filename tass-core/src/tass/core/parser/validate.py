@@ -1,6 +1,6 @@
 from tass.core.log.logging import getLogger
 from packaging.version import Version
-from tass.core.schema import validator
+from tass.core.parser import validator
 
 
 log = getLogger(__name__)
