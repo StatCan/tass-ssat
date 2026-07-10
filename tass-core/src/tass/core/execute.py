@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from .schema.parse import parse
+from .parser.parse import parse
 from .log.logging import getLogger
 
 
@@ -22,10 +22,7 @@ class TassEncoder(json.JSONEncoder):
                 return obj.toJson()
             elif isinstance(obj, Exception):
                 return {"error": obj.__class__.__name__, "message": str(obj)}
-        else:
-            raise TypeError(
-                "Unserializable object {} of type {}".format(obj, type(obj))
-                )
+        return super().default(obj)
 
 
 def execute(file_path, no_validate):

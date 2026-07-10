@@ -84,8 +84,6 @@ class TassCase(TassItem):
         self._quit_managers()
 
     def __init__(self, *, steps=[], managers, **kwargs):
-        # TODO: Remove browser from here. browser is not needed
-        # it should be attached to the Selenium manager.
         super().__init__(**kwargs)
         self._steps = steps
         self._start_time = 'not started'
