@@ -9,7 +9,6 @@ class TassException(Exception):
     def __str__(self):
         return self.message
 
-
 class TassUUIDException(TassException):
     def __init__(self, message, *args):
         super().__init__(message, *args)

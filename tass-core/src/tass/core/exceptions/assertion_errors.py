@@ -8,14 +8,25 @@ class TassAssertionError(TassException):
 
     @property
     def reason(self):
-        return self._reason
+        return self._reason or self.__cause__
 
 
 class TassSoftAssertionError(TassAssertionError):
     def __init__(self, message, reason=None, *args):
-        super().__init__(message, reason, *args)
+        msg = None
+        if not reason:
+            msg = f"Soft assertion failed: {message}"
+        else:
+            msg = f"Soft assertion failed: {message} -- by reason of: {reason}"
+
+        super().__init__(msg, reason, *args)
 
 
 class TassHardAssertionError(TassAssertionError):
     def __init__(self, message, reason=None, *args):
-        super().__init__(message, reason, *args)
+        msg = None
+        if not reason:
+            msg = f"Hard assertion failed: {message}"
+        else:
+            msg = f"Hard assertion failed: {message} -- by reason of: {reason}"
+        super().__init__(msg, reason, *args)
