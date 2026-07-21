@@ -2,10 +2,14 @@
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.package-data]
+
+"tass.core.schemas" = ["*.json"]
+
 [project]
 name = "tass-core"
 
-version = "1.1.0"
+version = "1.1.1"
 
 authors = [
     {name = "Dominic Parent", email="dominic.parent@statcan.gc.ca"},

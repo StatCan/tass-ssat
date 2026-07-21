@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from .schema.parse import parse
+from .parser.parse import parse
 from .log.logging import getLogger
 
 
@@ -17,12 +17,12 @@ class TassEncoder(json.JSONEncoder):
         Serializable TASS classes should
         implement the toJson function.
         """
-        if (hasattr(obj, 'toJson')):
-            return obj.toJson()
-        else:
-            raise TypeError(
-                "Unserializable object {} of type {}".format(obj, type(obj))
-                )
+        if (isinstance(obj, object)):
+            if (hasattr(obj, 'toJson')):
+                return obj.toJson()
+            elif isinstance(obj, Exception):
+                return {"error": obj.__class__.__name__, "message": str(obj)}
+        return super().default(obj)
 
 
 def execute(file_path, no_validate):
