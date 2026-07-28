@@ -2,6 +2,7 @@ from datetime import datetime
 from .tass_items import TassFile
 from .tass_case import TassCase
 from ..log.logging import getLogger
+from ..context import Context
 
 
 class TassJob(TassFile):
@@ -68,6 +69,7 @@ class TassJob(TassFile):
         }
 
     def collect(self):
+        Context().run_id().value = self.uuid
         self._start_time = datetime.now().strftime("%d-%m-%Y--%H_%M_%S")
         self.logger.debug("Start time (%s): %s", self.uuid, self._start_time)
         self._status = "incomplete"
@@ -82,3 +84,4 @@ class TassJob(TassFile):
             self._status = "failed"
         else:
             self._status = "passed"
+        Context().run_id().reset()
