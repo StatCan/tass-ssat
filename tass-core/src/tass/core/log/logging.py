@@ -2,6 +2,7 @@ import logging
 import logging.config
 import logging.handlers
 from pathlib import Path
+from ..context import Context as Ctx
 
 
 class CustomTassFileLogger(logging.handlers.RotatingFileHandler):
@@ -15,12 +16,16 @@ DEFAULT_PATH = "./log"
 DEFAULT_NAME = "tass"
 
 
-def _DEFAULT_CONFIG(log_fldr, log_name):
+RUN_LOGGING_DISABLED = False
+TEST_LOGGING_DISABLED = False
+
+
+
+def _DEFAULT_CONFIG(log_fldr, log_name, log_level="INFO"):
     log = Path(log_fldr).joinpath(log_name).with_suffix(".log")
     debug = Path(log_fldr).joinpath(log_name+"-debug").with_suffix(".log")
     return {
         "version": 1,
-        "disable_existing_loggers": False,
         "formatters": {
             "simple": {
                 "format": "%(asctime)s - %(levelname)s >>> %(message)s",
@@ -35,12 +40,12 @@ def _DEFAULT_CONFIG(log_fldr, log_name):
             }
         },
         "handlers": {
-            "cli": {
+            "tass-cli": {
                 "class": "logging.StreamHandler",
-                "level": "INFO",
+                "level": log_level, # TODO: set by CMD arg?
                 "formatter": "simple"
             },
-            "info-file": {
+            "tass-info-file": {
                 "()": CustomTassFileLogger,
                 "delay": True,
                 "filename": f"{log}",
@@ -49,7 +54,7 @@ def _DEFAULT_CONFIG(log_fldr, log_name):
                 "level": "INFO",
                 "formatter": "simple"
             },
-            "debug-file": {
+            "tass-debug-file": {
                 "()": CustomTassFileLogger,
                 "delay": True,
                 "filename": f"{debug}",
@@ -61,27 +66,35 @@ def _DEFAULT_CONFIG(log_fldr, log_name):
         },
         "loggers": {
             "tass": {
-                "handlers": ["cli", "info-file", "debug-file"],
+                "propagate": False,
+                "handlers": ["tass-cli", "tass-info-file", "tass-debug-file"],
                 "level": "DEBUG"
             }
         }
     }
 
 
-def init_logger(file_name=DEFAULT_NAME, path=DEFAULT_PATH, config=None):
+def init_base_logger(file_name=DEFAULT_NAME, path=DEFAULT_PATH, config={}):
     # Create log folder
     _config = None
-    if not config:
-        _path = Path(path)
-        if not path.endswith("log"):
-            _path = _path.joinpath("log")
-        _path.resolve().mkdir(parents=True, exist_ok=True)
-        log_fldr = _path.resolve()
-        log_name = file_name
-        _config = _DEFAULT_CONFIG(log_fldr, log_name)
-    else:
-        _config = config
+    _path = Path(path)
+    if not path.endswith("log"):
+        _path = _path.joinpath("log")
+    _path.resolve().mkdir(parents=True, exist_ok=True)
+    log_fldr = _path.resolve()
+    log_name = file_name
+    _config = _DEFAULT_CONFIG(log_fldr, log_name)
+    _config.update(config)
     logging.config.dictConfig(_config)
+
+
+def init_run_logger():
+    # TODO: Create logger specific to the ongoing run.
+    pass
+
+def init_test_logger():
+    # TODO: Create logger specific to the ongoing run.
+    pass
 
 
 def getLogger(*name):

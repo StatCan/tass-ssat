@@ -3,7 +3,7 @@ from copy import deepcopy
 from tass.core.exceptions.tass_errors import (
     TassUUIDNotFound,
     TassAmbiguousUUID)
-from tass.core.log.logging import init_logger, getLogger
+from tass.core.log.logging import init_base_logger, getLogger
 from ..actions.action_manager import get_manager
 from ..job.tass_files import TassJob
 
@@ -30,7 +30,7 @@ class Tass1Parser(Parser):
     def _parse_job(self, path, job):
 
         meta = job.get("Meta", None)
-        init_logger(file_name=job["Job"]["uuid"], **job.get("Logger", {}))
+        init_base_logger(file_name=job["Job"]["uuid"], **job.get("Logger", {}))
         job_raw = job['Job']
         tassjob = TassJob(path, _meta=meta, **job_raw)
 
