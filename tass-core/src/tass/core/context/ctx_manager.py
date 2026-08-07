@@ -15,12 +15,31 @@ class TassContextManager(metaclass=Singleton):
         for var in self._vars.values():
             var.reset()
 
+    @property
+    def run_uuid(self):
+        return self.var("run_uuid", None)
+
+    @property
     def run_id(self):
         return self.var("run_id", None)
 
+    @property
+    def run_name(self):
+        return self.var("run_name", None)
+
+    @property
+    def test_uuid(self):
+        return self.var("test_uuid", None)
+
+    @property
     def test_id(self):
         return self.var("test_id", None)
 
+    @property
+    def test_name(self):
+        return self.var("test_name", None)
+
+    @property
     def driver(self, driver):
         _ = f"driver:{driver}"
         return self.var(_, None)

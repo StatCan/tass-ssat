@@ -7,8 +7,6 @@ from ..context import Context
 
 class TassJob(TassFile):
 
-    logger = getLogger(__name__)
-
     def __init__(self, path,
                  _meta=None,
                  **kwargs):
@@ -18,6 +16,7 @@ class TassJob(TassFile):
         self._test_cases = []
         self._has_error = False
         self._status = "untested"
+        self.logger = getLogger(__name__)
         if _meta:
             _meta.setdefault("results-path", "./results")
             _meta.setdefault("pages-path", "./pages")
@@ -69,9 +68,12 @@ class TassJob(TassFile):
         }
 
     def collect(self):
-        Context().run_id().value = self.uuid
+        Context().run_uuid.value = self.uuid
+        Context().run_name.value = self.title
+        Context().run_id.value = self.id
+        # init_run_logger(self.title)
         self._start_time = datetime.now().strftime("%d-%m-%Y--%H_%M_%S")
-        self.logger.debug("Start time (%s): %s", self.uuid, self._start_time)
+        self.logger.info("Start time (%s): %s", self.uuid, self._start_time)
         self._status = "incomplete"
         for case in self._test_cases:
 
@@ -84,4 +86,6 @@ class TassJob(TassFile):
             self._status = "failed"
         else:
             self._status = "passed"
-        Context().run_id().reset()
+        self.logger.info(f"Run completed at {datetime.now().strftime('%d-%m-%Y--%H_%M_%S')}")
+        self.logger.info(f"Status: {self._status}")
+        Context().run_id.reset()
