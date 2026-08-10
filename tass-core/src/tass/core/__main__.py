@@ -1,5 +1,4 @@
 import argparse
-from .log import logging
 from .execute import execute
 
 
@@ -30,7 +29,7 @@ if __name__ == '__main__':
                         choices=["INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL"],
                         default="INFO", dest="log_level",
                         type=str.upper)
-                        
+
     parser.add_argument('--verbose', '-v', action="store_const",
                         dest="log_level", const="DEBUG")
 
