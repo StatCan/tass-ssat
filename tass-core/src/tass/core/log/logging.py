@@ -71,6 +71,17 @@ class CustomTassFileHandler(logging.Handler):
             self._active[_id] = handler
         handler.emit(record)
 
+    def close_file(self, id):
+        _ = self._active.pop(id, None)
+        if _:
+            _.close()
+
+    def close(self):
+        for _ in self._active.values():
+            _.close()
+        self._active.clear()
+
+
 
 def _DEFAULT_CONFIG(log_fldr, log_name, log_level):
     log = Path(log_fldr).joinpath(log_name).with_suffix(".log")
@@ -180,3 +191,9 @@ def getLogger(*name):
     else:
         logger = logging.getLogger('.'.join(['tass', *name]))
     return logger
+
+def closeLoggerFile(id):
+    logger = getLogger("tass")
+    for _ in logger.handlers:
+        if isinstance(_, CustomTassFileHandler):
+            _.close_file(id)

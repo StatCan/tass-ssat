@@ -3,15 +3,11 @@ from .tass_items import TassItem
 from ..exceptions.assertion_errors import TassHardAssertionError
 from ..exceptions.assertion_errors import TassSoftAssertionError
 from ..log.logging import getLogger
-from ..context import Context
 
 
 class TassCase(TassItem):
 
     def execute_tass(self):
-        Context().test_uuid.value = self.uuid
-        Context().test_name.value = self.title
-        Context().test_id.value = self.id
         self._start_time = datetime.now().strftime("%d-%m-%Y--%H_%M_%S")
         self.logger.info("Case: %s (%s) started @%s",
                          self.title, self.uuid, self._start_time)
@@ -85,9 +81,7 @@ class TassCase(TassItem):
         self.logger.info("Case completed: %s-%s", self.title, self.uuid)
         self.logger.info("Status: %s", self._status)
         self._quit_managers()
-        Context().test_id.reset()
-        Context().test_uuid.reset()
-        Context().test_name.reset()
+
 
     def __init__(self, *, steps=[], managers, **kwargs):
         super().__init__(**kwargs)
