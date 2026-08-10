@@ -65,3 +65,4 @@ class TassContextVar():
     def reset(self):
         if self._token is not None:
             self._ctx.reset(self._token)
+            self._token = None

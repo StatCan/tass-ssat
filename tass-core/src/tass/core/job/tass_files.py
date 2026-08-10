@@ -89,3 +89,5 @@ class TassJob(TassFile):
         self.logger.info(f"Run completed at {datetime.now().strftime('%d-%m-%Y--%H_%M_%S')}")
         self.logger.info(f"Status: {self._status}")
         Context().run_id.reset()
+        Context().run_name.reset()
+        Context().run_uuid.reset()

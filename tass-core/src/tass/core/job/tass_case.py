@@ -86,6 +86,8 @@ class TassCase(TassItem):
         self.logger.info("Status: %s", self._status)
         self._quit_managers()
         Context().test_id.reset()
+        Context().test_uuid.reset()
+        Context().test_name.reset()
 
     def __init__(self, *, steps=[], managers, **kwargs):
         super().__init__(**kwargs)
