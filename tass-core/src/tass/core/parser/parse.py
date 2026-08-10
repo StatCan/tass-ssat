@@ -6,7 +6,7 @@ import json
 log = getLogger(__name__)
 
 
-def parse(path, validate_on=True):
+def parse(path, no_validate):
     log.info("Preparing job using file @: %s", path)
     try:
         f = open(path)
@@ -18,4 +18,4 @@ def parse(path, validate_on=True):
         job = json.load(f)
 
     # Validation and parsing step
-    return validate(job, validate_on).parse(path, job)
+    return validate(job, no_validate).parse(path, job)

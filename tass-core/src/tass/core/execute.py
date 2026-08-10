@@ -36,7 +36,6 @@ def execute(file_paths, no_validate, run_logging, test_logging, log_level):
                 run_logging,
                 test_logging,
                 log_level)
-
     log.info("\n\n <<<<<< TASS Starting >>>>>> \n\n")
     for file_path in file_paths:
         path = Path(file_path).resolve()

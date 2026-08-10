@@ -14,22 +14,24 @@ def version_check(version, spec):
     return Version(version) in SpecifierSet(spec)
 
 
-def validate(job, validate_on):
-    log.info("Validating job file.")
+def validate(job, no_validate):
+    log.info("Checking job file schema version.")
+    if "schema-version" not in job:
+        log.warning("Schema version is not specified. Using default schema.")
     schema_version = job.get('schema-version', DEFAULT_SCHEMA)
     log.info("Using schema version: %s", schema_version)
 
     if version_check(schema_version, "<1.1"):
-        log.info("Validating schema against schema version: 1.0.0")
         schema = validator.Tass1Validator()
     elif version_check(schema_version, "~=1.1"):
-        log.info("Validating schema against schema version: 1.1.0")
         schema = validator.Tass1_1Validator()
     else:
-        log.warning("Invalid schema version. Attempting default schema validation: {}", DEFAULT_SCHEMA)
+        log.warning("Invalid schema version. Attempting to use default schema: {}", DEFAULT_SCHEMA)
         schema = DEFAULT()
 
-    if validate_on:
+    if not no_validate:
         schema.validate(job)
-    log.info("Validation successful.")
+        log.info("Validation successful.")
+    else:
+        log.info("Skipping schema validation.")
     return schema.parser()
