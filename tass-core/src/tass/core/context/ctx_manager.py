@@ -1,4 +1,3 @@
-from contextvars import ContextVar
 from ..tools.singleton import Singleton
 
 
@@ -47,22 +46,21 @@ class TassContextManager(metaclass=Singleton):
 
 class TassContextVar():
     def __init__(self, name: str, default=None):
-        self._token = None
-        self._ctx = ContextVar(name, default=default)
+        self._name = name
+        self._value = default
+        self._default = default
 
     @property
-    def token(self):
-        return self._token
+    def name(self):
+        return self._name
 
     @property
     def value(self):
-        return self._ctx.get()
+        return self._value
 
     @value.setter
     def value(self, value):
-        self._token = self._ctx.set(value)
+        self._value = value
 
     def reset(self):
-        if self._token is not None:
-            self._ctx.reset(self._token)
-            self._token = None
+        self._value = self._default
