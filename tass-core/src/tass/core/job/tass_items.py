@@ -1,3 +1,4 @@
+from datetime import datetime
 
 
 class TassItem():
@@ -9,6 +10,7 @@ class TassItem():
         self._uuid = uuid
         self._build = build
         self._var = kwargs
+        self._id = f"{uuid}-{datetime.now()}"
 
     @property
     def title(self):
@@ -17,6 +19,10 @@ class TassItem():
     @property
     def uuid(self):
         return self._uuid
+
+    @property
+    def id(self):
+        return self._id
 
     @property
     def parent(self):
