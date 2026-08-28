@@ -1,6 +1,7 @@
 from ...log.logging import getLogger
-from ..browser import selenium_chain as selchain
-from . import appium as app
+from ...registry import appium, appchain
+from ..browser import selenium_chain as sc
+from .appium import _find_element_hide_keyboard
 
 
 #  For additional documentation, see selenium docs:
@@ -10,6 +11,8 @@ from . import appium as app
 logger = getLogger(__name__)
 
 
+@appium.command("perform")
+@appchain.command("perform")
 def perform(driver, **kwargs):
     """Perform all collected actions.
 
@@ -21,9 +24,11 @@ def perform(driver, **kwargs):
             The RemoteWebDriver object that is connected
             to the open browser.
     """
-    selchain.perform(driver, **kwargs)
+    sc.perform(driver, **kwargs)
 
 
+@appium.command("reset")
+@appchain.command("reset")
 def reset(driver, **kwargs):
     """Reset stored actions in the Action Chain
 
@@ -36,12 +41,17 @@ def reset(driver, **kwargs):
             to the open browser.
 
     """
-    selchain.reset(driver, **kwargs)
+    sc.reset(driver, **kwargs)
 
 
+# To prevent command collision
+# Calling chain commands from selenium namespace
+# Must be preceeded by "chain_"
+@appium.command("chain_click")
+@appchain.command("click")
 def click(driver,
           locator=None,
-          find=app._find_element_hide_keyboard,
+          find=_find_element_hide_keyboard,
           **kwargs):
     """Add a click action to the action queue.
 
@@ -61,13 +71,15 @@ def click(driver,
             Additional values to be used when locating a web element.
 
     """
-    selchain.click(driver, locator=locator, find=find, **kwargs)
+    sc.click(driver, locator=locator, find=find, **kwargs)
 
 
+@appium.command("chain_write")
+@appchain.command("write")
 def write(driver,
           locator=None,
           text='',
-          find=app._find_element_hide_keyboard,
+          find=_find_element_hide_keyboard,
           **kwargs):
     """Add a send_keys action to the action queue.
 
@@ -88,15 +100,17 @@ def write(driver,
             Additional values to be used when locating a web element.
 
     """
-    selchain.write(driver, locator=locator,
+    sc.write(driver, locator=locator,
                    text=text, find=find,
                    **kwargs)
 
 
+@appium.command("chain_move_mouse")
+@appchain.command("move_mouse")
 def move_mouse(driver, locator=None,
                xoffset=0,
                yoffset=0,
-               find=app._find_element_hide_keyboard,
+               find=_find_element_hide_keyboard,
                **kwargs):
     """Move the mouse pointer to the designated location.
 
@@ -122,15 +136,17 @@ def move_mouse(driver, locator=None,
             Additional values to be used when locating a web element.
     """
 
-    selchain.move_mouse(driver, locator=locator,
+    sc.move_mouse(driver, locator=locator,
                         xoffset=xoffset,
                         yoffset=yoffset,
                         find=find,
                         **kwargs)
 
 
+@appium.command("chain_drag_and_drop")
+@appchain.command("drag_and_drop")
 def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
-                  find=app._find_element_hide_keyboard, **kwargs):
+                  find=_find_element_hide_keyboard, **kwargs):
     """Drag element and drop.
 
     Add a drag and drop action to the Action Chains queue.
@@ -158,16 +174,18 @@ def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
             Additional values to be used when locating a web element.
     """
 
-    selchain.drag_and_drop(driver, locator, target=target,
+    sc.drag_and_drop(driver, locator, target=target,
                            xoffset=xoffset,
                            yoffset=yoffset,
                            find=find,
                            **kwargs)
 
 
+@appium.command("chain_scroll")
+@appchain.command("scroll")
 def scroll(driver, locator=None, deltax=0, deltay=0,
            xoffset=None, yoffset=None,
-           find=app._find_element_hide_keyboard,
+           find=_find_element_hide_keyboard,
            **kwargs):
     """Scroll the open page.
 
@@ -207,7 +225,7 @@ def scroll(driver, locator=None, deltax=0, deltay=0,
 
     """
 
-    selchain.scroll(driver, locator=locator,
+    sc.scroll(driver, locator=locator,
                     deltax=deltax, deltay=deltay,
                     xoffset=xoffset, yoffset=yoffset,
                     find=find,

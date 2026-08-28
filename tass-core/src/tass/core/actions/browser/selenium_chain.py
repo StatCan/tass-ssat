@@ -1,5 +1,6 @@
 from ...log.logging import getLogger
-from . import selenium as sel
+from .selenium import _find_element
+from ...registry import selenium, selchain
 from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from selenium.common.exceptions import WebDriverException
 
@@ -10,6 +11,8 @@ from selenium.common.exceptions import WebDriverException
 logger = getLogger(__name__)
 
 
+@selenium.command("perform")
+@selchain.command("perform")
 def perform(driver, **kwargs):
     """Perform all collected actions.
 
@@ -25,6 +28,8 @@ def perform(driver, **kwargs):
     driver.chain().perform()
 
 
+@selenium.command("reset")
+@selchain.command("reset")
 def reset(driver, **kwargs):
     """Reset stored actions in the Action Chain
 
@@ -41,7 +46,12 @@ def reset(driver, **kwargs):
     logger.info("Chained steps reset.")
 
 
-def click(driver, locator=None, find=sel._find_element, **kwargs):
+# To prevent command collision
+# Calling chain commands from selenium namespace
+# Must be preceeded by "chain_"
+@selenium.command("chain_click")
+@selchain.command("click")
+def click(driver, locator=None, find=_find_element, **kwargs):
     """Add a click action to the action queue.
 
     Add a click action to the action queue. If a locator is
@@ -71,7 +81,9 @@ def click(driver, locator=None, find=sel._find_element, **kwargs):
     driver.chain().click(ele)
 
 
-def write(driver, locator=None, find=sel._find_element, text='', **kwargs):
+@selenium.command("chain_write")
+@selchain.command("write")
+def write(driver, locator=None, find=_find_element, text='', **kwargs):
     """Add a send_keys action to the action queue.
 
     Add a send_keys action to the action queue. If a locator is
@@ -110,10 +122,12 @@ def write(driver, locator=None, find=sel._find_element, text='', **kwargs):
         driver.chain().send_keys(text)
 
 
+@selenium.command("chain_move_mouse")
+@selchain.command("move_mouse")
 def move_mouse(driver, locator=None,
                xoffset=0,
                yoffset=0,
-               find=sel._find_element, **kwargs):
+               find=_find_element, **kwargs):
     """Move the mouse pointer to the designated location.
 
     Add a move_mouse action to the Action Chain queue. Providing an
@@ -168,8 +182,10 @@ def move_mouse(driver, locator=None,
         driver.chain().move_by_offset(xoffset, yoffset)
 
 
+@selenium.command("chain_drag_and_drop")
+@selchain.command("drag_and_drop")
 def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
-                  find=sel._find_element, **kwargs):
+                  find=_find_element, **kwargs):
     """Drag element and drop.
 
     Add a drag and drop action to the Action Chains queue.
@@ -222,8 +238,10 @@ def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
         driver.chain().drag_and_drop(source, ele)
 
 
+@selenium.command("chain_scroll")
+@selchain.command("scroll")
 def scroll(driver, locator=None, deltax=0, deltay=0,
-           xoffset=None, yoffset=None, find=sel._find_element, **kwargs):
+           xoffset=None, yoffset=None, find=_find_element, **kwargs):
     """Scroll the open page.
 
     Add a scroll page action to the Action Chains queue.

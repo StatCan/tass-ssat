@@ -1,10 +1,11 @@
-from . import appium as app
+from ...registry import appium, appwait
 import selenium.webdriver.support.expected_conditions as EC
 from ...log.logging import getLogger
 
 logger = getLogger(__name__)
 
-
+@appium.command("wait_element_clickable")
+@appwait.command("wait_element_clickable")
 def wait_element_clickable(driver, locator,
                            locator_args=None,
                            action=None, **kwargs):
@@ -44,12 +45,14 @@ def wait_element_clickable(driver, locator,
                     action[1])
         # TODO: Rework this to perform ANY action not just selenium
         # TODO: Alternate: Create generic wait until condition in core?
-        return getattr(app, action[1])(driver,
+        return appium.get(action[1])(driver,
                                        find=_wait,
                                        locator=locator,
                                        **kwargs)
 
 
+@appium.command("wait_element_visible")
+@appwait.command("wait_element_visible")
 def wait_element_visible(driver, locator,
                          locator_args=None,
                          action=None, **kwargs):
@@ -89,7 +92,7 @@ def wait_element_visible(driver, locator,
         # TODO: Alternate: Create generic wait until condition in core?
         logger.info("Waiting for element before appium action: %s",
                     action[1])
-        return getattr(app, action[1])(driver,
+        return appium.get(action[1])(driver,
                                        find=_wait,
                                        locator=locator,
                                        **kwargs)

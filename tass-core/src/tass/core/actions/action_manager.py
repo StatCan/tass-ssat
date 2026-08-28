@@ -1,64 +1,39 @@
-import importlib
 from tass.core.log.logging import getLogger
+from .pool import ExecutorPool
+from..registry import module_registry
+
 
 
 log = getLogger(__name__)
 
-modules = {
-    "selenium":  # For Backwards Compatibility
-    'tass.core.actions.browser.selenium_action_manager',
-    "core":  # For Backwards Compatibility
-    'tass.core.actions.core_action_manager',
-    "selwait":  # For Backwards Compatibility
-    'tass.core.actions.browser.selenium_action_manager',
-    "selchain":  # For Backwards Compatibility
-    'tass.core.actions.browser.selenium_action_manager',
-    "browser":
-    'tass.core.actions.browser.selenium_action_manager',
-    "mobile":
-    'tass.core.actions.mobile.appium_action_manager'
-}
+execpool = ExecutorPool()
 
 
-def get_manager(module_name, *args, **kwargs):
-    # Try to import the required module
-    log.debug("Trying to import %s", module_name)
-    module = _import_module(module_name)
+class ActionExecutor():
+    def action(self, namespace, command, *args, **kwargs):
+        raise NotImplementedError('action function not implemented')
 
-    log.debug("Getting manager: %s", module)
-    manager = module.get_manager(*args, **kwargs)
-    log.debug("Created action manager of type: %s", manager.__class__.__name__)
-    return manager
-
-
-def _import_module(module_name):
-    # If using a standard module, import path is prepared above.
-    if module_name in modules:
-        imp = modules[module_name]
-        log.debug("Built-in action manager found")
-    else:
-        # If using custom module, attempt direct import.
-        imp = module_name
-        log.debug("No built-in manager found.")
-
-    try:
-        # Try to import the specified module action manager
-        log.debug("attempting to import manager module from: %s", imp)
-        return importlib.import_module(imp)
-    except ImportError as e:
-        print(e)
-        raise e
-        # TODO: log error
+    def quit(self):
+        # Method called at the end of every case
+        # include any cleanup/resetting required
+        # to make each case encapsulated.
+        raise NotImplementedError('quit function not implemented')
 
 
 class ActionManager():
-    def __init__(self, module):
-        self._log = getLogger(__class__.__name__)
-        self._module = module
+    def __init__(self):
+        self._executors = {}
 
-    def action(self, command, *args, **kwargs):
-        _action = getattr(self._module, command)
-        return _action(*args, **kwargs)
+    def get(self, alias: str):
+        # TODO: catch key errors
+        return self._executors[alias]
+
+    def action(self, namespace, command, *args, **kwargs):
+        if namespace in self._executors:
+            self._executors[namespace].action(namespace, command, *args, **kwargs)
+            return
+        else:
+            module_registry.resolve(namespace, command)(*args, **kwargs)
 
     def toJson(self):
         return {
@@ -67,7 +42,12 @@ class ActionManager():
             }
 
     def quit(self):
-        # Method called at the end of every case
-        # include any cleanup/resetting required
-        # to make each case encapsulated.
-        raise NotImplementedError('quit function not implemented')
+        for executor in self._executors.values():
+            executor.quit()
+
+    @classmethod
+    def register_all(cls, managers) -> ActionManager:
+        m = cls()
+        for manager in managers:
+            m._executors.update(execpool.get(**manager))
+        return m

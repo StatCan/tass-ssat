@@ -1,5 +1,5 @@
 import unittest
-import tass.core.actions.core as core
+from tass.core.actions.core import core
 import time
 
 

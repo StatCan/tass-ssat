@@ -3,6 +3,7 @@ from datetime import datetime
 from ..browser import selenium as sel
 from ...tools.page_reader import PageReader
 from ...log.logging import getLogger
+from ...registry import appium as app
 from selenium.common.exceptions import WebDriverException
 
 #  For additional documentation, see selenium docs:
@@ -59,6 +60,7 @@ def locate(page, locator, locator_args):
     return _loc
 
 
+@app.command("click")
 def click(driver,
           pointer_type=None,
           find=_find_element_hide_keyboard,
@@ -116,6 +118,7 @@ def click(driver,
         logger.debug("Element clicked")
 
 
+@app.command("write")
 def write(driver, find=_find_element_hide_keyboard, text='', **kwargs):
     """Send a string to an element in the DOM
 
@@ -148,6 +151,7 @@ def write(driver, find=_find_element_hide_keyboard, text='', **kwargs):
     sel.write(driver, find=find, text=text, **kwargs)
 
 
+@app.command("write_stored_value")
 def write_stored_value(driver,
                        find=_find_element_hide_keyboard,
                        text_key='',
@@ -178,6 +182,7 @@ def write_stored_value(driver,
     sel.write_stored_value(driver, find=find, text_key=text_key, **kwargs)
 
 
+@app.command("select_dropdown")
 def select_dropdown(driver,
                     value,
                     using,
@@ -219,6 +224,7 @@ def select_dropdown(driver,
     sel.select_dropdown(driver, value, using, find=find, **kwargs)
 
 
+@app.command("clear")
 def clear(driver, find=_find_element_hide_keyboard, **kwargs):
     """Clear the value of a text input element in the DOM
 
@@ -244,6 +250,7 @@ def clear(driver, find=_find_element_hide_keyboard, **kwargs):
     sel.clear(driver, find=find, **kwargs)
 
 
+@app.command("load_url")
 def load_url(driver, url):
     """Load the provided URL in the current browser window
 
@@ -260,6 +267,7 @@ def load_url(driver, url):
     sel.load_url(driver, url)
 
 
+@app.command("load_file")
 def load_file(driver, relative_path):
     """Load the provided file in the current browser window
 
@@ -276,6 +284,7 @@ def load_file(driver, relative_path):
     sel.load_file(driver, relative_path)
 
 
+@app.command("load_page")
 def load_page(driver, page, url_key='url', use_local=False):
     """Load a page using the URL provided in the POM
 
@@ -301,6 +310,7 @@ def load_page(driver, page, url_key='url', use_local=False):
     sel.load_page(driver, page, url_key=url_key, use_local=use_local)
 
 
+@app.command("read_attribute")
 def read_attribute(driver,
                    attribute,
                    find=_find_element_hide_keyboard,
@@ -336,6 +346,7 @@ def read_attribute(driver,
     return sel.read_attribute(driver, attribute, find=find, **kwargs)
 
 
+@app.command("read_css")
 def read_css(driver, attribute, find=_find_element_hide_keyboard, **kwargs):
     """Read the value of a css attribute for an element in the DOM
 
@@ -369,6 +380,7 @@ def read_css(driver, attribute, find=_find_element_hide_keyboard, **kwargs):
     return sel.read_css(driver, attribute, find=find, **kwargs)
 
 
+@app.command("read_text")
 def read_text(driver, find=_find_element_hide_keyboard, **kwargs):
     """Read the text value for an element in the DOM
 
@@ -395,6 +407,7 @@ def read_text(driver, find=_find_element_hide_keyboard, **kwargs):
     return sel.read_text(driver, find=find, **kwargs)
 
 
+@app.command("switch_frame")
 def switch_frame(driver, frame, page=None, find=_find_element_hide_keyboard):
     """Change the active frame by name or element
 
@@ -420,6 +433,7 @@ def switch_frame(driver, frame, page=None, find=_find_element_hide_keyboard):
     sel.switch_frame(driver, frame, page=page, find=find)
 
 
+@app.command("switch_window")
 def switch_window(driver, title=None, page=None):
     """Change to the next tab/window or switch to one wih a matching title.
 
@@ -440,6 +454,7 @@ def switch_window(driver, title=None, page=None):
     sel.switch_window(driver, title=title, page=page)
 
 
+@app.command("close")
 def close(driver):
     """ Closes the currently open browser tab or window.
 
@@ -455,6 +470,7 @@ def close(driver):
     sel.close(driver)
 
 
+@app.command("quit")
 def quit(driver):
     """ Closes the current browser session.
 
@@ -471,6 +487,7 @@ def quit(driver):
     sel.quit(driver)
 
 
+@app.command("handle_alert")
 def handle_alert(driver, handle=True, text=None):
     """ Handle an expected browser alert.
 
@@ -492,6 +509,7 @@ def handle_alert(driver, handle=True, text=None):
     sel.handle_alert(driver, handle=handle, text=text)
 
 
+@app.command("screenshot")
 def screenshot(driver,
                name="screenshot",
                locator=None,
@@ -538,6 +556,8 @@ def screenshot(driver,
 
 
 # / / / / / / / Assertions / / / / / / /
+# TODO: If the appium command only calls the selenium command, does it need to be added to the registry?
+@app.command("assert_alert_displayed")
 def assert_alert_displayed(driver, text=None, soft=False):
     """ Assert that an alert is currently displayed in the browser.
 
@@ -558,7 +578,7 @@ def assert_alert_displayed(driver, text=None, soft=False):
     """
     sel.assert_alert_displayed(driver, text=text, soft=soft)
 
-
+@app.command("assert_page_is_open")
 def assert_page_is_open(driver, page=None, find=_find_element_hide_keyboard,
                         soft=False, page_id=None):
     """Assert the given page is open using the described method
@@ -587,6 +607,7 @@ def assert_page_is_open(driver, page=None, find=_find_element_hide_keyboard,
                             page_id=page_id)
 
 
+@app.command("assert_contains_text")
 def assert_contains_text(driver, text, find=_find_element_hide_keyboard,
                          soft=False, exact=False, **kwargs):
     """Assert the given text is displayed in the element.
@@ -612,6 +633,7 @@ def assert_contains_text(driver, text, find=_find_element_hide_keyboard,
                              soft=soft, exact=exact, **kwargs)
 
 
+@app.command("assert_displayed")
 def assert_displayed(driver,
                      find=_find_element_hide_keyboard,
                      soft=False,
@@ -643,6 +665,7 @@ def assert_displayed(driver,
     sel.assert_displayed(driver, find=find, soft=soft, **kwargs)
 
 
+@app.command("assert_not_displayed")
 def assert_not_displayed(driver,
                          find=_find_element_hide_keyboard,
                          soft=False,
@@ -674,6 +697,7 @@ def assert_not_displayed(driver,
     sel.assert_not_displayed(driver, find=find, soft=soft, **kwargs)
 
 
+@app.command("assert_attribute_contains_value")
 def assert_attribute_contains_value(driver,
                                     attribute,
                                     value,

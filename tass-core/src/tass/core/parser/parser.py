@@ -4,7 +4,6 @@ from tass.core.exceptions.tass_errors import (
     TassUUIDNotFound,
     TassAmbiguousUUID)
 from tass.core.log.logging import getLogger
-from ..actions.action_manager import get_manager
 from ..job.tass_files import TassJob
 
 
@@ -86,6 +85,7 @@ class Tass1Parser(Parser):
             if k in registered_configuration_parsers:
                 parser = registered_configuration_parsers[k]
                 parser(v)
+                configuration["uuid"] = v
 
         return configuration
 
@@ -142,11 +142,14 @@ class Tass1Parser(Parser):
 
         def sel_managers(_manager, _c):
             browser_configs = _c['driver']
-            manager = get_manager(_manager, browser_configs)
+            manager = {
+                "module_name": _manager,
+                "uuid": browser_configs["uuid"],
+                "browser_config": browser_configs}
             return manager
 
         def core_manager(_manager, _c):
-            manager = get_manager(_manager)
+            manager = {"module_name": "core", "uuid": "core"}
             return manager
 
         parsers = {
@@ -158,13 +161,12 @@ class Tass1Parser(Parser):
 
         steps = c['steps']
         _managers = set([step['action'][0] for step in steps])
-        managers = {}
+        managers = []
         for manager in _managers:
             if (manager in parsers
                and manager not in managers):
-
                 m = parsers[manager](manager, c)
-                managers.update(m)
+                managers.append(m)
         return {"managers": managers}
 
 
@@ -181,7 +183,6 @@ class Tass1_1Parser(Parser):
     def _parse_job(self, path, job):
 
         meta = job.get("Meta", None)
-        init_logger(file_name=job["Job"]["uuid"], **job.get("Logger", {}))
         job_raw = job['Job']
         tassjob = TassJob(path, _meta=meta, **job_raw)
 
@@ -226,6 +227,7 @@ class Tass1_1Parser(Parser):
             _browser = self._parse_browser(uuid, job)
             conf = {
                 "module_name": "browser",
+                "uuid": _browser["uuid"],
                 "browser_config": _browser
             }
             configurations.append(conf)
@@ -234,6 +236,7 @@ class Tass1_1Parser(Parser):
             _mobile = self._parse_mobile(uuid, job)
             conf = {
                 "module_name": "mobile",
+                "uuid": _mobile["uuid"],
                 "mobile_configs": _mobile
             }
             configurations.append(conf)
@@ -268,7 +271,7 @@ class Tass1_1Parser(Parser):
                 self.log.warning("No matching step configuration found.")
                 raise TassUUIDNotFound(uuid)
 
-            _ = deepcopy(found[0])
+            _ = deepcopy(found[0]) 
             _["status"] = "incomplete"
             step_config.append(_)
         return step_config
@@ -305,13 +308,12 @@ class Tass1_1Parser(Parser):
 
     def _parse_managers(self, c, job):
         manager_configs = c["configs"]
-        modules_added = []
-        managers = {}
+        added_managers = []
+        managers = []
         for manager in manager_configs:
-            if (manager["module_name"] not in modules_added):
-                m = get_manager(**manager)
-                managers.update(m)
-                modules_added.append(manager["module_name"])
+            if (manager["module_name"] not in added_managers):
+                added_managers.append(manager["module_name"])
+                managers.append(manager)
         self.log.info(f"Found managers for {c['uuid']}")
-        self.log.info(managers.keys())
         return {"managers": managers}
+        

@@ -1,12 +1,13 @@
-from ..tools.valuestore import ValueStore
-from ..tools.secrets import Secrets
-from ..log.logging import getLogger
+from ...tools.valuestore import ValueStore
+from ...tools.secrets import Secrets
+from ...log.logging import getLogger
+from ...registry import core as c
 import time
 
 
 logger = getLogger(__name__)
 
-
+@c.command("store_value")
 def store_value(key, value):
     """Store value for later access.
 
@@ -26,6 +27,7 @@ def store_value(key, value):
     ValueStore().add_to_dict(key, value)
 
 
+@c.command("read_value")
 def read_value(key):
     """Retrieve a previously stored value.
 
@@ -46,6 +48,7 @@ def read_value(key):
         return None
 
 
+@c.command("add_data_source")
 def add_data_source(config_path):
     """Add a new data source from a configuration file.
 
@@ -62,6 +65,7 @@ def add_data_source(config_path):
     secrets.add_source(config_path)
 
 
+@c.command("update_data_entry")
 def update_data_entry(key, new_value, stored_filter=None, **secret):
     """Update an existing data entry in memory.
 
@@ -95,6 +99,7 @@ def update_data_entry(key, new_value, stored_filter=None, **secret):
     secrets.update_data_entry(entry, key, new_value)
 
 
+@c.command("save_data_source")
 def save_data_source(source):
     """Save the specified source to file.
 
@@ -107,6 +112,7 @@ def save_data_source(source):
     secrets.save_source_changes(source)
 
 
+@c.command("store_secret_value")
 def store_secret_value(key, value_key, stored_filter=None, **secret):
     """Store a value from an entry.
 
@@ -147,6 +153,7 @@ def store_secret_value(key, value_key, stored_filter=None, **secret):
     store.add_to_dict(key, data.get(value_key))
 
 
+@c.command("wait")
 def wait(wait_time, unit="s"):
     """Delay execution for the given time.
 
