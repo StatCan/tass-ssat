@@ -1,13 +1,13 @@
 import selenium.webdriver.support.expected_conditions as EC
 from ...log.logging import getLogger
 from .selenium import locate
-from ...registry import selenium, selwait
+from ...registry import SeleniumBroker, SeleniumWaitBroker
 
 logger = getLogger(__name__)
 
 
-@selenium.command("wait_element_clickable")
-@selwait.command("wait_element_clickable")
+@SeleniumBroker.command(name="wait_element_clickable")
+@SeleniumWaitBroker.command(name="wait_element_clickable")
 def wait_element_clickable(driver, locator,
                            locator_args=None,
                            action=None, **kwargs):
@@ -47,14 +47,14 @@ def wait_element_clickable(driver, locator,
                     action[1])
         # TODO: Rework this to perform ANY action not just selenium
         # TODO: Alternate: Create generic wait until condition in core?
-        return selenium.get(action[1])(driver,
+        return SeleniumBroker.get(action[1])(driver,
                                        find=_wait,
                                        locator=locator,
                                        **kwargs)
 
 
-@selenium.command("wait_element_visible")
-@selwait.command("wait_element_visible")
+@SeleniumBroker.command(name="wait_element_visible")
+@SeleniumWaitBroker.command(name="wait_element_visible")
 def wait_element_visible(driver, locator,
                          locator_args=None,
                          action=None, **kwargs):
@@ -94,7 +94,7 @@ def wait_element_visible(driver, locator,
         # TODO: Alternate: Create generic wait until condition in core?
         logger.info("Waiting for element before selenium action: %s",
                     action[1])
-        return selenium.get(action[1])(driver,
+        return SeleniumBroker.get(action[1])(driver,
                                        find=_wait,
                                        locator=locator,
                                        **kwargs)

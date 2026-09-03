@@ -1,6 +1,6 @@
 from ....action_manager import ActionExecutor
 from ....drivers.new_driver import new_driver
-from ....registry import module_registry as executor
+from ....registry import CommandBrokers as executor
 
 
 def get_manager(mobile_configs, *args, **kwargs):

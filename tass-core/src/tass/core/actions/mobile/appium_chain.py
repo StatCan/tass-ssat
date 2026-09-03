@@ -1,5 +1,5 @@
 from ...log.logging import getLogger
-from ...registry import appium, appchain
+from ...registry import AppiumBroker, AppiumChainBroker
 from ..browser import selenium_chain as sc
 from .appium import _find_element_hide_keyboard
 
@@ -11,8 +11,8 @@ from .appium import _find_element_hide_keyboard
 logger = getLogger(__name__)
 
 
-@appium.command("perform")
-@appchain.command("perform")
+@AppiumBroker.command(name="perform")
+@AppiumChainBroker.command(name="perform")
 def perform(driver, **kwargs):
     """Perform all collected actions.
 
@@ -27,8 +27,8 @@ def perform(driver, **kwargs):
     sc.perform(driver, **kwargs)
 
 
-@appium.command("reset")
-@appchain.command("reset")
+@AppiumBroker.command(name="reset")
+@AppiumChainBroker.command(name="reset")
 def reset(driver, **kwargs):
     """Reset stored actions in the Action Chain
 
@@ -47,8 +47,8 @@ def reset(driver, **kwargs):
 # To prevent command collision
 # Calling chain commands from selenium namespace
 # Must be preceeded by "chain_"
-@appium.command("chain_click")
-@appchain.command("click")
+@AppiumBroker.command(name="chain_click")
+@AppiumChainBroker.command(name="click")
 def click(driver,
           locator=None,
           find=_find_element_hide_keyboard,
@@ -74,8 +74,8 @@ def click(driver,
     sc.click(driver, locator=locator, find=find, **kwargs)
 
 
-@appium.command("chain_write")
-@appchain.command("write")
+@AppiumBroker.command(name="chain_write")
+@AppiumChainBroker.command(name="write")
 def write(driver,
           locator=None,
           text='',
@@ -105,8 +105,8 @@ def write(driver,
                    **kwargs)
 
 
-@appium.command("chain_move_mouse")
-@appchain.command("move_mouse")
+@AppiumBroker.command(name="chain_move_mouse")
+@AppiumChainBroker.command(name="move_mouse")
 def move_mouse(driver, locator=None,
                xoffset=0,
                yoffset=0,
@@ -143,8 +143,8 @@ def move_mouse(driver, locator=None,
                         **kwargs)
 
 
-@appium.command("chain_drag_and_drop")
-@appchain.command("drag_and_drop")
+@AppiumBroker.command(name="chain_drag_and_drop")
+@AppiumChainBroker.command(name="drag_and_drop")
 def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
                   find=_find_element_hide_keyboard, **kwargs):
     """Drag element and drop.
@@ -181,8 +181,8 @@ def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
                            **kwargs)
 
 
-@appium.command("chain_scroll")
-@appchain.command("scroll")
+@AppiumBroker.command(name="chain_scroll")
+@AppiumChainBroker.command(name="scroll")
 def scroll(driver, locator=None, deltax=0, deltay=0,
            xoffset=None, yoffset=None,
            find=_find_element_hide_keyboard,

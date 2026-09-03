@@ -1,6 +1,6 @@
 from ...action_manager import ActionExecutor
 from ....drivers.new_driver import new_driver
-from ....registry import module_registry as executor
+from ....registry import CommandBrokers as executor
 
 
 def get_manager(browser_config, *args, **kwargs):
@@ -31,7 +31,7 @@ class SeleniumActionExecutor(ActionExecutor):
         if not self._manager['driver']:
             self._manager['driver'] = new_driver(**self._manager['config'])
         driver = self._manager['driver']
-        executor.resolve(namespace, command)(driver, *args, **kwargs)
+        executor.resolve(namespace, command)(driver=driver, *args, **kwargs)
 
     def toJson(self):
         j = super().toJson()

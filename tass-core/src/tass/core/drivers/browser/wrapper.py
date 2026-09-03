@@ -33,7 +33,7 @@ class BaseBrowserDriverWrapper(BaseDriverWrapper):
             self._driver.implicitly_wait(
                 self._conf['driver'].get('implicit_wait', 5)
                 )
-        log.debug("Driver %s initialized.", self._uuid)
+            log.debug("Driver %s initialized.", self._uuid)
         return self._with_delay(self._driver)
 
     @property
@@ -151,6 +151,7 @@ class SafariDriverWrapper(BaseBrowserDriverWrapper):
             if '--start-maximized' in self._conf['browser']['arguments']:
                 driver.maximize_window()
             self._driver = driver
+            log.debug("Driver %s initialized.", self._uuid)
         return self._with_delay(self._driver)
 
 
@@ -180,6 +181,7 @@ class FirefoxDriverWrapper(BaseBrowserDriverWrapper):
             if '--start-maximized' in self._conf['browser']['arguments']:
                 driver.maximize_window()
             self._driver = driver
+            log.debug("Driver %s initialized.", self._uuid)
         return self._with_delay(self._driver)
 
 

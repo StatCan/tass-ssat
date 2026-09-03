@@ -1,11 +1,12 @@
-from ...registry import appium, appwait
+from ...registry import AppiumBroker, AppiumWaitBroker
+from .appium import locate
 import selenium.webdriver.support.expected_conditions as EC
 from ...log.logging import getLogger
 
 logger = getLogger(__name__)
 
-@appium.command("wait_element_clickable")
-@appwait.command("wait_element_clickable")
+@AppiumBroker.command(name="wait_element_clickable")
+@AppiumWaitBroker.command(name="wait_element_clickable")
 def wait_element_clickable(driver, locator,
                            locator_args=None,
                            action=None, **kwargs):
@@ -32,7 +33,7 @@ def wait_element_clickable(driver, locator,
             of the dictionary will vary based on the find function used.
     """
     def _wait(driver, locator, locator_args=None, page=None, time=None):
-        mark = tuple(app.locate(page, locator, locator_args).values())
+        mark = tuple(locate(page, locator, locator_args).values())
         logger.debug("Waiting for element to be clickable: %s", mark)
         return driver.wait_until(EC.element_to_be_clickable, time=time,
                                  mark=mark)
@@ -45,14 +46,14 @@ def wait_element_clickable(driver, locator,
                     action[1])
         # TODO: Rework this to perform ANY action not just selenium
         # TODO: Alternate: Create generic wait until condition in core?
-        return appium.get(action[1])(driver,
+        return AppiumBroker.get(action[1])(driver=driver,
                                        find=_wait,
                                        locator=locator,
                                        **kwargs)
 
 
-@appium.command("wait_element_visible")
-@appwait.command("wait_element_visible")
+@AppiumBroker.command(name="wait_element_visible")
+@AppiumWaitBroker.command(name="wait_element_visible")
 def wait_element_visible(driver, locator,
                          locator_args=None,
                          action=None, **kwargs):
@@ -79,7 +80,7 @@ def wait_element_visible(driver, locator,
             of the dictionary will vary based on the find function used.
     """
     def _wait(driver, locator, locator_args=None, time=None, page=None):
-        mark = tuple(app.locate(page, locator, locator_args).values())
+        mark = tuple(locate(page, locator, locator_args).values())
         logger.debug("Waiting for element to be visible: %s", mark)
         return driver.wait_until(EC.visibility_of_element_located, time=time,
                                  locator=mark)
@@ -92,7 +93,7 @@ def wait_element_visible(driver, locator,
         # TODO: Alternate: Create generic wait until condition in core?
         logger.info("Waiting for element before appium action: %s",
                     action[1])
-        return appium.get(action[1])(driver,
+        return AppiumBroker.get(action[1])(driver=driver,
                                        find=_wait,
                                        locator=locator,
                                        **kwargs)

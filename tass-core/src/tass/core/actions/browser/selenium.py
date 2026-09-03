@@ -7,13 +7,15 @@ from ...tools.page_reader import PageReader
 from ...exceptions.assertion_errors import TassHardAssertionError
 from ...exceptions.assertion_errors import TassSoftAssertionError
 from ...log.logging import getLogger
-from ...registry import selenium as sel
+from ...registry import SeleniumBroker
 
 #  For additional documentation, see selenium docs:
 #  https://www.selenium.dev/selenium/docs/api/py/webdriver_remote/selenium.webdriver.remote.webelement.html
 
 
 logger = getLogger(__name__)
+
+RETRY_EXC = [WebDriverException]
 
 
 def locate(page, locator, locator_args):
@@ -62,7 +64,7 @@ def _switch_to_alert(driver):
         logger.warning("No alert present to switch to.")
         raise e
 
-@sel.command("click")
+@SeleniumBroker.command(retry_exc=RETRY_EXC)
 def click(driver, find=_find_element, **kwargs):
     """Click an element in the DOM
 
@@ -85,15 +87,11 @@ def click(driver, find=_find_element, **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    try:
-        find(driver, **kwargs).click()
-        logger.debug("Element clicked.")
-    except WebDriverException as e:
-        logger.warning("Something went wrong, %s -- Trying again", e)
-        find(driver, **kwargs).click()
-        logger.debug("Attempt 2 >> Element clicked.")
+    find(driver, **kwargs).click()
+    logger.debug("Element clicked.")
 
-@sel.command("write")
+
+@SeleniumBroker.command(retry_exc=RETRY_EXC)
 def write(driver, find=_find_element, text='', **kwargs):
     """Send a string to an element in the DOM
 
@@ -132,7 +130,7 @@ def write(driver, find=_find_element, text='', **kwargs):
         logger.debug("Attempt 2 >> Typed: '%s'", text)
 
 
-@sel.command("write_stored_value")
+@SeleniumBroker.command(retry_exc=RETRY_EXC)
 def write_stored_value(driver, find=_find_element, text_key='', **kwargs):
     """Send a stored string to an element in the DOM
 
@@ -162,7 +160,7 @@ def write_stored_value(driver, find=_find_element, text_key='', **kwargs):
     write(driver, find=find, text=text, **kwargs)
 
 
-@sel.command("select_dropdown")
+@SeleniumBroker.command(retry_exc=RETRY_EXC)
 def select_dropdown(driver, value, using, find=_find_element, **kwargs):
     """Select an option from a dropdown using text, value, or index in the DOM
 
@@ -207,7 +205,7 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
                      value, using)
 
 
-@sel.command("clear")
+@SeleniumBroker.command(retry_exc=RETRY_EXC)
 def clear(driver, find=_find_element, **kwargs):
     """Clear the value of a text input element in the DOM
 
@@ -239,7 +237,7 @@ def clear(driver, find=_find_element, **kwargs):
         logger.debug("Attempt 2 >> Element cleared.")
 
 
-@sel.command("load_url")
+@SeleniumBroker.command(retry_exc=RETRY_EXC)
 def load_url(driver, url):
     """Load the provided URL in the current browser window
 
@@ -257,7 +255,7 @@ def load_url(driver, url):
     logger.debug("Loaded url in browser: %s", url)
 
 
-@sel.command("load_file")
+@SeleniumBroker.command(retry_exc=RETRY_EXC)
 def load_file(driver, relative_path):
     """Load the provided file in the current browser window
 
@@ -277,7 +275,7 @@ def load_file(driver, relative_path):
     logger.debug("Loaded local file in browser.")
 
 
-@sel.command("load_page")
+@SeleniumBroker.command(retry_exc=RETRY_EXC)
 def load_page(driver, page, url_key='url', use_local=False):
     """Load a page using the URL provided in the POM
 
@@ -308,7 +306,7 @@ def load_page(driver, page, url_key='url', use_local=False):
         load_url(driver, url)
 
 
-@sel.command("read_attribute")
+@SeleniumBroker.command(retry_exc=RETRY_EXC)
 def read_attribute(driver, attribute, find=_find_element, **kwargs):
     """Read the value of an attribute for an element in the DOM
 
@@ -351,7 +349,7 @@ def read_attribute(driver, attribute, find=_find_element, **kwargs):
     return attr
 
 
-@sel.command("read_css")
+@SeleniumBroker.command(retry_exc=RETRY_EXC)
 def read_css(driver, attribute, find=_find_element, **kwargs):
     """Read the value of a css attribute for an element in the DOM
 
@@ -395,7 +393,7 @@ def read_css(driver, attribute, find=_find_element, **kwargs):
     return prop
 
 
-@sel.command("read_text")
+@SeleniumBroker.command(retry_exc=RETRY_EXC)
 def read_text(driver, find=_find_element, **kwargs):
     """Read the text value for an element in the DOM
 
@@ -430,7 +428,7 @@ def read_text(driver, find=_find_element, **kwargs):
     return text
 
 
-@sel.command("switch_frame")
+@SeleniumBroker.command(retry_exc=RETRY_EXC)
 def switch_frame(driver, frame, page=None, find=_find_element):
     """Change the active frame by name or element
 
@@ -482,7 +480,7 @@ def switch_frame(driver, frame, page=None, find=_find_element):
         logger.debug("Attempt 2 >> Switched active frame to: %s", frame)
 
 
-@sel.command("switch_window")
+@SeleniumBroker.command(retry_exc=RETRY_EXC)
 def switch_window(driver, title=None, page=None):
     """Change to the next tab/window or switch to one wih a matching title.
 
@@ -543,7 +541,7 @@ def switch_window(driver, title=None, page=None):
     raise ValueError('No other window/tab with title: {}'.format(title))
 
 
-@sel.command("close")
+@SeleniumBroker.command(retry_exc=RETRY_EXC)
 def close(driver):
     """ Closes the currently open browser tab or window.
 
@@ -565,7 +563,7 @@ def close(driver):
         logger.info("Closed currently active tab/window.")
 
 
-@sel.command("quit")
+@SeleniumBroker.command(retry_exc=RETRY_EXC)
 def quit(driver):
     """ Closes the current browser session.
 
@@ -588,7 +586,7 @@ def quit(driver):
         logger.info("Driver exited browser session.")
 
 
-@sel.command("handle_alert")
+@SeleniumBroker.command(retry_exc=RETRY_EXC)
 def handle_alert(driver, handle=True, text=None):
     """ Handle an expected browser alert.
 
@@ -632,7 +630,7 @@ def handle_alert(driver, handle=True, text=None):
             driver.dismiss_alert(text=text)
 
 
-@sel.command("screenshot")
+@SeleniumBroker.command(retry_exc=RETRY_EXC)
 def screenshot(driver,
                name="screenshot",
                locator=None,
@@ -687,7 +685,7 @@ def _fail(soft, message, reason=None, exception=None, *args):
                 message, reason=reason, *args)  from exception
 
 
-@sel.command("assert_alert_displayed")
+@SeleniumBroker.command
 def assert_alert_displayed(driver, text=None, soft=False):
     """ Assert that an alert is currently displayed in the browser.
 
@@ -734,7 +732,7 @@ def assert_alert_displayed(driver, text=None, soft=False):
             exception=e)
 
 
-@sel.command("assert_page_is_open")
+@SeleniumBroker.command(name="assert_page_is_open")
 def assert_page_is_open(driver, page=None, find=_find_element,
                         soft=False, page_id=None):
     """Assert the given page is open using the described method
@@ -875,7 +873,7 @@ def assert_page_is_open(driver, page=None, find=_find_element,
         raise ValueError('Either page or page_id must not be None')
 
 
-@sel.command("assert_contains_text")
+@SeleniumBroker.command(name="assert_contains_text")
 def assert_contains_text(driver, text, find=_find_element,
                          soft=False, exact=False, **kwargs):
     """Assert the given text is displayed in the element.
@@ -915,7 +913,7 @@ def assert_contains_text(driver, text, find=_find_element,
             exception=e)
 
 
-@sel.command("assert_displayed")
+@SeleniumBroker.command(name="assert_displayed")
 def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
     """Assert the given element is displayed. Can be a soft or hard check
 
@@ -957,7 +955,7 @@ def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
                 exception=e)
 
 
-@sel.command("assert_not_displayed")
+@SeleniumBroker.command(name="assert_not_displayed")
 def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
     """Assert the given element is not displayed. Can be a soft of hard check
 
@@ -998,7 +996,7 @@ def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
             exception=e)
 
 
-@sel.command("assert_attribute_contains_value")
+@SeleniumBroker.command(name="assert_attribute_contains_value")
 def assert_attribute_contains_value(driver, attribute, value,
                                     find=_find_element, soft=False,
                                     exact=False, **kwargs):
