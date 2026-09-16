@@ -1,6 +1,5 @@
 import argparse
 from .execute import execute
-import tass.core.actions
 
 
 def main(file_paths, no_validate, run_logging, test_logging, log_level):

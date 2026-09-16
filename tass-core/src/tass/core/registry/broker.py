@@ -31,11 +31,9 @@ class FinderBroker(BaseBroker):
         return decorator 
 
     def get(self, name):
-        _ = super().get(name)
-        if not _:
+        if not self.registry:
             import_module(self._path)
-            return super().get(name)
-        return _       
+        return super().get(name)
 
 
 class CommandBroker(BaseBroker):
