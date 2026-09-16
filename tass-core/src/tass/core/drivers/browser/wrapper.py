@@ -100,7 +100,14 @@ class BaseBrowserDriverWrapper(BaseDriverWrapper):
             time = self._conf['driver'].get('explicit_wait', 20)
 
         wait_ = self._waits.get(time, new_wait(time))
-        return wait_.until(until_func(**kwargs))
+        try:
+            self._driver.implicitly_wait(0)
+            return wait_.until(until_func(**kwargs))
+        finally:
+            self._driver.implicitly_wait(
+                self._conf['driver'].get('implicit_wait', 5)
+                )
+
 
     def select(self, element, value, using):
         # send_keys to scroll element into view
@@ -147,7 +154,7 @@ class SafariDriverWrapper(BaseBrowserDriverWrapper):
             driver = SafariDriver(options=options, *args, **kwargs)
 
             # set driver settings
-            driver .implicitly_wait(self._conf['driver'].get('implicit_wait'))
+            driver.implicitly_wait(self._conf['driver'].get('implicit_wait'))
             if '--start-maximized' in self._conf['browser']['arguments']:
                 driver.maximize_window()
             self._driver = driver
@@ -177,7 +184,7 @@ class FirefoxDriverWrapper(BaseBrowserDriverWrapper):
             driver = FirefoxDriver(options=options, *args, **kwargs)
 
             # set driver settings
-            driver .implicitly_wait(self._conf['driver'].get('implicit_wait'))
+            driver.implicitly_wait(self._conf['driver'].get('implicit_wait'))
             if '--start-maximized' in self._conf['browser']['arguments']:
                 driver.maximize_window()
             self._driver = driver

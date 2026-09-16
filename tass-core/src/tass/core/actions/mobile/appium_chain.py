@@ -1,7 +1,6 @@
 from ...log.logging import getLogger
 from ...registry import AppiumBroker, AppiumChainBroker
 from ..browser import selenium_chain as sc
-from .appium import _find_element_hide_keyboard
 
 
 #  For additional documentation, see selenium docs:
@@ -11,8 +10,10 @@ from .appium import _find_element_hide_keyboard
 logger = getLogger(__name__)
 
 
-@AppiumBroker.command(name="perform")
-@AppiumChainBroker.command(name="perform")
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
+@AppiumChainBroker.command
+@AppiumChainBroker.find_with(finder="find_element")
 def perform(driver, **kwargs):
     """Perform all collected actions.
 
@@ -27,8 +28,10 @@ def perform(driver, **kwargs):
     sc.perform(driver, **kwargs)
 
 
-@AppiumBroker.command(name="reset")
-@AppiumChainBroker.command(name="reset")
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
+@AppiumChainBroker.command
+@AppiumChainBroker.find_with(finder="find_element")
 def reset(driver, **kwargs):
     """Reset stored actions in the Action Chain
 
@@ -48,10 +51,12 @@ def reset(driver, **kwargs):
 # Calling chain commands from selenium namespace
 # Must be preceeded by "chain_"
 @AppiumBroker.command(name="chain_click")
-@AppiumChainBroker.command(name="click")
-def click(driver,
+@AppiumBroker.find_with(finder="find_element")
+@AppiumChainBroker.command
+@AppiumChainBroker.find_with(finder="find_element")
+def click(driver, *,
+          find,
           locator=None,
-          find=_find_element_hide_keyboard,
           **kwargs):
     """Add a click action to the action queue.
 
@@ -71,15 +76,17 @@ def click(driver,
             Additional values to be used when locating a web element.
 
     """
-    sc.click(driver, locator=locator, find=find, **kwargs)
+    sc.click(driver, find, locator, **kwargs)
 
 
 @AppiumBroker.command(name="chain_write")
-@AppiumChainBroker.command(name="write")
-def write(driver,
+@AppiumBroker.find_with(finder="find_element")
+@AppiumChainBroker.command
+@AppiumChainBroker.find_with(finder="find_element")
+def write(driver, *,
+          find,
           locator=None,
           text='',
-          find=_find_element_hide_keyboard,
           **kwargs):
     """Add a send_keys action to the action queue.
 
@@ -100,17 +107,20 @@ def write(driver,
             Additional values to be used when locating a web element.
 
     """
-    sc.write(driver, locator=locator,
-                   text=text, find=find,
-                   **kwargs)
+    sc.write(driver, find,
+             locator,
+             text,
+             **kwargs)
 
 
 @AppiumBroker.command(name="chain_move_mouse")
-@AppiumChainBroker.command(name="move_mouse")
-def move_mouse(driver, locator=None,
+@AppiumBroker.find_with(finder="find_element")
+@AppiumChainBroker.command
+@AppiumChainBroker.find_with(finder="find_element")
+def move_mouse(driver, *,
+               find, locator=None,
                xoffset=0,
                yoffset=0,
-               find=_find_element_hide_keyboard,
                **kwargs):
     """Move the mouse pointer to the designated location.
 
@@ -136,17 +146,20 @@ def move_mouse(driver, locator=None,
             Additional values to be used when locating a web element.
     """
 
-    sc.move_mouse(driver, locator=locator,
-                        xoffset=xoffset,
-                        yoffset=yoffset,
-                        find=find,
+    sc.move_mouse(driver, find, locator,
+                        xoffset,
+                        yoffset,
                         **kwargs)
 
 
 @AppiumBroker.command(name="chain_drag_and_drop")
-@AppiumChainBroker.command(name="drag_and_drop")
-def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
-                  find=_find_element_hide_keyboard, **kwargs):
+@AppiumBroker.find_with(finder="find_element")
+@AppiumChainBroker.command
+@AppiumChainBroker.find_with(finder="find_element")
+def drag_and_drop(driver, *, find,
+                  locator, target=None,
+                  xoffset=0, yoffset=0,
+                  **kwargs):
     """Drag element and drop.
 
     Add a drag and drop action to the Action Chains queue.
@@ -174,18 +187,20 @@ def drag_and_drop(driver, locator, target=None, xoffset=0, yoffset=0,
             Additional values to be used when locating a web element.
     """
 
-    sc.drag_and_drop(driver, locator, target=target,
-                           xoffset=xoffset,
-                           yoffset=yoffset,
-                           find=find,
+    sc.drag_and_drop(driver, find, locator, target,
+                           xoffset,
+                           yoffset,
                            **kwargs)
 
 
 @AppiumBroker.command(name="chain_scroll")
-@AppiumChainBroker.command(name="scroll")
-def scroll(driver, locator=None, deltax=0, deltay=0,
+@AppiumBroker.find_with(finder="find_element")
+@AppiumChainBroker.command
+@AppiumChainBroker.find_with(finder="find_element")
+def scroll(driver, *, find,
+           locator=None,
+           deltax=0, deltay=0,
            xoffset=None, yoffset=None,
-           find=_find_element_hide_keyboard,
            **kwargs):
     """Scroll the open page.
 
@@ -225,8 +240,7 @@ def scroll(driver, locator=None, deltax=0, deltay=0,
 
     """
 
-    sc.scroll(driver, locator=locator,
-                    deltax=deltax, deltay=deltay,
-                    xoffset=xoffset, yoffset=yoffset,
-                    find=find,
+    sc.scroll(driver, find, locator,
+                    deltax, deltay,
+                    xoffset, yoffset,
                     **kwargs)

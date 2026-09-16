@@ -9,12 +9,43 @@ from importlib import import_module
 logger = getLogger(__name__)
 
 
-class CommandBroker(Registry):
-    def __init__(self, fallback, path: str, default_retries: int=0):
+class BaseBroker(Registry):
+    def __init__(self):
+        super().__init__()
+
+class FinderBroker(BaseBroker):
+    def __init__(self, module: str):
+        super().__init__()
+        self._path = module
+    
+    def finder(self, fn=None, *, name):
+        def decorator(fn):
+            unwrapped = inspect.unwrap(fn)
+            _name = name or unwrapped.__name__
+            @wraps(fn)
+            def wrapper(*args, **kwargs):
+                return fn(*args, **kwargs)
+            return self.register(wrapper, _name)
+        if fn:
+            return decorator(fn)
+        return decorator 
+
+    def get(self, name):
+        _ = super().get(name)
+        if not _:
+            import_module(self._path)
+            return super().get(name)
+        return _       
+
+
+class CommandBroker(BaseBroker):
+    def __init__(self, fallback, 
+                 path: str,
+                 default_retries: int=0):
         super().__init__()
         self._path = path
         self._fallback = fallback
-        self._default_retries = default_retries
+        self._default_retries = default_retries      
 
     # Decorator for callable tass commands.
     def command(self, fn=None, *,
@@ -47,7 +78,7 @@ class CommandBroker(Registry):
                 for k in discarded:
                     logger.warning("Invalid parameter: %s removed from: %s", k, unwrapped.__name__)
                 return self._with_retry(fn, retry_override, retry_exc, *args, **filtered)
-            self._register(wrapper, _name)
+            self.register(wrapper, _name)
             return wrapper
         if fn:
             return decorator(fn)
@@ -87,13 +118,11 @@ class CommandBroker(Registry):
                     discarded.append(k)
             return filtered, discarded
 
-    def _register(self, fn, name):
+    def register(self, fn, name):
         if name in self._registry:
             # TODO: Raise error on duplicates
             pass
-        self._registry[name] = fn
-        logger.debug("%s registered: %s", self.__class__.__name__, name)
-        return fn
+        return super().register(fn, name)
 
     @property
     def fallback(self):
@@ -114,14 +143,36 @@ class CommandBroker(Registry):
         return fn
 
 
+class SeleniumCommandBroker(CommandBroker):
+    def __init__(self, fallback, 
+                 path: str,
+                 default_retries: int=0,
+                 finder: FinderBroker=None):
+        super().__init__(fallback, path, default_retries)
+        self._finder = finder
+
+    # Decorator to define finding function
+    def find_with(self, fn=None, *,
+                  finder: str):
+        default_finder = finder
+        def decorator(fn):
+            @wraps(fn)
+            def wrapper(*args, **kwargs):
+                if not callable(kwargs.get("find", None)):
+                    fkey = kwargs.pop("find", default_finder)
+                    kwargs["find"] = self._finder.get(fkey)
+                return fn(*args, **kwargs)
+            return wrapper
+        if fn:
+            return decorator(fn)
+        return decorator 
+
 class CommandBrokerRegistry(Registry):
-    def register(self, name: str, fallback: str, command_module: str, **broker):
+    def register(self, name: str, fallback: str, command_module: str, broker: type[CommandBroker], **kwargs):
         if name in self._registry:
             return self.get(name)
-        registry = CommandBroker(fallback, command_module, **broker)
-        self._registry[name] = registry
-        logger.debug("%s module registered as: %s", command_module, name)
-        return registry
+        registry = broker(fallback, command_module, **kwargs)
+        return super().register(registry, name)
 
     def get(self, name):
         rx = super().get(name)

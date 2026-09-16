@@ -3,6 +3,7 @@ import pathlib
 from sys import platform
 
 import tass.core.actions.browser.selenium as selenium
+from tass.core.actions.locate.selenium_locate import locate
 from tass.core.tools.page_reader import PageReader
 from tass.core.exceptions.assertion_errors import (
     TassAssertionError,
@@ -237,7 +238,7 @@ class TestSeleniumLocateActions(TestSelenium):
         args = ["locator", "formatting", "implementation"]
         expected = "//testing/locator/formatting/implementation"
 
-        loc_out = selenium.locate(None, locator, args)
+        loc_out = locate(None, locator, args)
 
         self.assertEqual(loc_out['value'], expected)
 
@@ -265,7 +266,7 @@ class TestSeleniumLocateActions(TestSelenium):
 
             args = ["Color"]
             locator = "btnColor"
-            loc_out = selenium.locate(["custom", "test"], locator, args)
+            loc_out = locate(["custom", "test"], locator, args)
             self.assertEqual(loc_out['value'], 'btnColor')
 
             args = ["Red"]
@@ -273,7 +274,7 @@ class TestSeleniumLocateActions(TestSelenium):
                                     "custom",
                                     "test",
                                     "btnColor")
-            loc_out = selenium.locate(["custom", "test"], locator, args)
+            loc_out = locate(["custom", "test"], locator, args)
             self.assertEqual(loc_out['value'], 'btnRed')
         finally:
             PageReader.reset()
@@ -321,7 +322,7 @@ class TestSeleniumBasicActions(TestSelenium):
                 driver = self.start_driver(browser)
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
-                    selenium.click(driver,
+                    selenium.click(driver=driver,
                                    locator={"by": "id", "value": "btnColor"})
                     until = EC.presence_of_element_located
                     wait = driver.wait_until
@@ -344,7 +345,7 @@ class TestSeleniumBasicActions(TestSelenium):
                     driver().get(url)
                     text = 'Selenium Test Type'
                     selenium.write(
-                        driver, text=text,
+                        driver=driver, text=text,
                         locator={"by": "id", "value": "nameField"})
                     self.assertEqual(
                         driver()
@@ -369,7 +370,7 @@ class TestSeleniumBasicActions(TestSelenium):
                         .find_element('id', 'nameField')
                         .get_attribute('value'), text)
                     selenium.clear(
-                        driver,
+                        driver=driver,
                         locator={"by": "id", "value": "nameField"})
                     self.assertEqual(
                         driver()
@@ -391,7 +392,7 @@ class TestSeleniumReadOnlyActions(TestSelenium):
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     self.assertEqual(selenium.read_attribute(
-                            driver, attribute='name',
+                            driver=driver, attribute='name',
                             locator={"by": "id", "value": "btn2"}), 'button2')
             finally:
                 if driver:
@@ -406,7 +407,7 @@ class TestSeleniumReadOnlyActions(TestSelenium):
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     self.assertEqual(selenium.read_css(
-                            driver, attribute='width',
+                            driver=driver, attribute='width',
                             locator={"by": "id", "value": "btn1"}), '300px')
             finally:
                 if driver:
@@ -424,7 +425,7 @@ class TestSeleniumWindowControlActions(TestSelenium):
                 with self.subTest(browser=browser[1].__name__):
 
                         driver().get(url)
-                        selenium.switch_frame(driver, frame='FrameA')
+                        selenium.switch_frame(driver=driver, frame='FrameA')
                         btnName = driver().find_element(
                             *('id', 'btnColor')).get_attribute('name')
                         self.assertEqual(btnName, 'buttonAlpha')
@@ -444,7 +445,7 @@ class TestSeleniumWindowControlActions(TestSelenium):
                         'by': 'xpath',
                         'value': '//iframe[@title="Iframe 2"]'
                         }
-                    selenium.switch_frame(driver, frame={
+                    selenium.switch_frame(driver=driver, frame={
                                         'locator': locator
                                         })
                     btnName = driver().find_element(
@@ -466,7 +467,7 @@ class TestSeleniumWindowControlActions(TestSelenium):
                     driver().switch_to.new_window('tab')
                     driver().get(url_0)
                     self.assertEqual(driver().title, 'Page One')
-                    selenium.switch_window(driver)
+                    selenium.switch_window(driver=driver)
                     self.assertEqual(driver().title, 'Google')
             finally:
                 if driver:
@@ -485,7 +486,7 @@ class TestSeleniumWindowControlActions(TestSelenium):
                     driver().get(url_1)
                     self.assertEqual(driver().title, 'Google')
                     driver().close()
-                    selenium.switch_window(driver)
+                    selenium.switch_window(driver=driver)
                     self.assertEqual(driver().title, 'Page One')
             finally:
                 if driver:
@@ -509,11 +510,11 @@ class TestSeleniumWindowControlActions(TestSelenium):
                     driver().switch_to.new_window('tab')
                     driver().get(url_0)
                     self.assertEqual(driver().title, pageOne)
-                    selenium.switch_window(driver, google)
+                    selenium.switch_window(driver=driver, title=google)
                     self.assertEqual(driver().title, google)
-                    selenium.switch_window(driver, statcan)
+                    selenium.switch_window(driver=driver, title=statcan)
                     self.assertEqual(driver().title, statcan)
-                    selenium.switch_window(driver, pageOne)
+                    selenium.switch_window(driver=driver, title=pageOne)
                     self.assertEqual(driver().title, pageOne)
             finally:
                 if driver:
@@ -567,11 +568,11 @@ class TestSeleniumWindowControlActions(TestSelenium):
                     driver().switch_to.new_window('tab')
                     driver().get(page_1['url'])
                     self.assertEqual(driver().title, page_1['title'])
-                    selenium.switch_window(driver, page=('custom', 'google'))
+                    selenium.switch_window(driver=driver, page=('custom', 'google'))
                     self.assertEqual(driver().title, google['title'])
-                    selenium.switch_window(driver, page=('custom', 'statcan'))
+                    selenium.switch_window(driver=driver, page=('custom', 'statcan'))
                     self.assertEqual(driver().title, statcan['title'])
-                    selenium.switch_window(driver, page=('custom', 'page1'))
+                    selenium.switch_window(driver=driver, page=('custom', 'page1'))
                     self.assertEqual(driver().title, page_1['title'])
 
             finally:
@@ -591,7 +592,7 @@ class TestSeleniumDropdownActions(TestSelenium):
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     locator = {'by': 'id', 'value': 'dropdown'}
-                    selenium.select_dropdown(driver, 'AA', 'text',
+                    selenium.select_dropdown(driver=driver, value='AA', using='text',
                                              locator=locator)
                     sel = Select(driver().find_element('id', 'dropdown'))
                     self.assertEqual(sel.first_selected_option.text, 'AA')
@@ -608,7 +609,7 @@ class TestSeleniumDropdownActions(TestSelenium):
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     locator = {'by': 'id', 'value': 'dropdown'}
-                    selenium.select_dropdown(driver, 'last', 'value',
+                    selenium.select_dropdown(driver=driver, value='last', using='value',
                                              locator=locator)
                     sel = Select(driver().find_element('id', 'dropdown'))
                     self.assertEqual(sel.first_selected_option.text, 'AA')
@@ -625,7 +626,7 @@ class TestSeleniumDropdownActions(TestSelenium):
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     locator = {'by': 'id', 'value': 'dropdown'}
-                    selenium.select_dropdown(driver, 3, 'index',
+                    selenium.select_dropdown(driver=driver, value=3, using='index',
                                              locator=locator)
                     sel = Select(driver().find_element('id', 'dropdown'))
                     self.assertEqual(sel.first_selected_option.text, 'AA')
@@ -647,8 +648,8 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     try:
                         selenium.assert_contains_text(
-                            driver,
-                            text,
+                            driver=driver,
+                            text=text,
                             locator={"by": "id", "value": "nextBtn"})
                     except TassAssertionError as e:
                         self.fail(e.message)
@@ -667,8 +668,8 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     try:
                         selenium.assert_contains_text(
-                            driver,
-                            text,
+                            driver=driver,
+                            text=text,
                             locator={"by": "id", "value": "nextBtn"})
                     except TassAssertionError as e:
                         self.fail(e.message)
@@ -687,8 +688,8 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
                         selenium.assert_contains_text(
-                            driver,
-                            text, soft=True,
+                            driver=driver,
+                            text=text, soft=True,
                             locator={"by": "id", "value": "nextBtn"})
             finally:
                 if driver:
@@ -705,8 +706,8 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
                         selenium.assert_contains_text(
-                            driver,
-                            text,
+                            driver=driver,
+                            text=text,
                             locator={"by": "id", "value": "nextBtn"})
             finally:
                 if driver:
@@ -723,8 +724,8 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     try:
                         selenium.assert_contains_text(
-                            driver,
-                            text,
+                            driver=driver,
+                            text=text,
                             locator={"by": "id", "value": "nextBtn"},
                             exact=True)
                     except TassAssertionError as e:
@@ -744,8 +745,8 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
                         selenium.assert_contains_text(
-                            driver,
-                            text, soft=True,
+                            driver=driver,
+                            text=text, soft=True,
                             locator={"by": "id", "value": "nextBtn"},
                             exact=True)
             finally:
@@ -763,8 +764,8 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
                         selenium.assert_contains_text(
-                            driver,
-                            text,
+                            driver=driver,
+                            text=text,
                             locator={"by": "id", "value": "nextBtn"},
                             exact=True)
             finally:
@@ -781,7 +782,7 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     try:
                         selenium.assert_displayed(
-                            driver,
+                            driver=driver,
                             locator={"by": "id", "value": "btn1"})
                     except TassAssertionError as e:
                         self.fail(e.message)
@@ -799,7 +800,7 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
                         selenium.assert_displayed(
-                            driver,
+                            driver=driver,
                             locator={"by": "id", "value": "btn-x"})
 
             finally:
@@ -816,7 +817,7 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     try:
                         selenium.assert_displayed(
-                            driver, soft=True,
+                            driver=driver, soft=True,
                             locator={"by": "id", "value": "btn1"})
                     except TassAssertionError as e:
                         self.fail(e.message)
@@ -834,7 +835,7 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
                         selenium.assert_displayed(
-                            driver, soft=True,
+                            driver=driver, soft=True,
                             locator={"by": "id", "value": "btn-x"})
 
             finally:
@@ -851,7 +852,7 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     try:
                         selenium.assert_not_displayed(
-                            driver,
+                            driver=driver,
                             locator={"by": "id", "value": "btn-x"})
                     except TassAssertionError as e:
                         self.fail(e.message)
@@ -869,7 +870,7 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
                         selenium.assert_not_displayed(
-                            driver,
+                            driver=driver,
                             locator={"by": "id", "value": "btn1"})
 
             finally:
@@ -886,7 +887,7 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     try:
                         selenium.assert_not_displayed(
-                            driver, soft=True,
+                            driver=driver, soft=True,
                             locator={"by": "id", "value": "btn-x"})
                     except TassAssertionError as e:
                         self.fail(e.message)
@@ -904,7 +905,7 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
                         selenium.assert_not_displayed(
-                            driver, soft=True,
+                            driver=driver, soft=True,
                             locator={"by": "id", "value": "btn1"})
 
             finally:
@@ -922,7 +923,7 @@ class TestSeleniumAssertActions(TestSelenium):
                             'method': 'title'}
                     with self.assertRaises(TassSoftAssertionError):
                         selenium.assert_page_is_open(
-                            driver, soft=True, page_id=page)
+                            driver=driver, soft=True, page_id=page)
 
             finally:
                 if driver:
@@ -939,7 +940,7 @@ class TestSeleniumAssertActions(TestSelenium):
                             'method': 'normalize-title'}
                     with self.assertRaises(TassSoftAssertionError):
                         selenium.assert_page_is_open(
-                            driver, soft=True, page_id=page)
+                            driver=driver, soft=True, page_id=page)
 
             finally:
                 if driver:
@@ -957,7 +958,7 @@ class TestSeleniumAssertActions(TestSelenium):
                             'method': 'url'}
                     with self.assertRaises(TassSoftAssertionError):
                         selenium.assert_page_is_open(
-                            driver, soft=True, page_id=page)
+                            driver=driver, soft=True, page_id=page)
 
             finally:
                 if driver:
@@ -980,7 +981,7 @@ class TestSeleniumAssertActions(TestSelenium):
                         }
                     with self.assertRaises(TassSoftAssertionError):
                         selenium.assert_page_is_open(
-                            driver, page_id=page,
+                            driver=driver, page_id=page,
                             soft=True)
 
             finally:
@@ -999,7 +1000,7 @@ class TestSeleniumAssertActions(TestSelenium):
                             'method': 'title'}
                     try:
                         selenium.assert_page_is_open(
-                            driver, soft=True, page_id=page)
+                            driver=driver, soft=True, page_id=page)
                     except TassAssertionError as e:
                         self.fail(e.message)
             finally:
@@ -1018,7 +1019,7 @@ class TestSeleniumAssertActions(TestSelenium):
                             'method': 'normalize-title'}
                     try:
                         selenium.assert_page_is_open(
-                            driver, soft=True, page_id=page)
+                            driver=driver, soft=True, page_id=page)
                     except TassAssertionError as e:
                         self.fail(e.message)
             finally:
@@ -1035,7 +1036,7 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     try:
                         selenium.assert_page_is_open(
-                            driver, soft=True, page_id={
+                            driver=driver, soft=True, page_id={
                                                     'identifier': url,
                                                     'method': 'url'})
                     except TassAssertionError as e:
@@ -1055,7 +1056,7 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     try:
                         selenium.assert_page_is_open(
-                            driver, page_id={
+                            driver=driver, page_id={
                                         'identifier': {
                                             'by': 'id',
                                             'value': 'btnColor'
@@ -1079,7 +1080,7 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
                         selenium.assert_page_is_open(
-                            driver, page_id={
+                            driver=driver, page_id={
                                         'identifier': 'Page One1',
                                         'method': 'title'})
 
@@ -1097,7 +1098,7 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
                         selenium.assert_page_is_open(
-                            driver, page_id={
+                            driver=driver, page_id={
                                         'identifier': 'Page FAIL',
                                         'method': 'normalize-title'})
 
@@ -1117,7 +1118,7 @@ class TestSeleniumAssertActions(TestSelenium):
                             'method': 'url'}
                     with self.assertRaises(TassHardAssertionError):
                         selenium.assert_page_is_open(
-                            driver, page_id=page)
+                            driver=driver, page_id=page)
 
             finally:
                 if driver:
@@ -1133,7 +1134,7 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
                         selenium.assert_page_is_open(
-                            driver, page_id={
+                            driver=driver, page_id={
                                         'identifier': {
                                             'by': 'id',
                                             'value': 'noElement'
@@ -1155,7 +1156,7 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     try:
                         selenium.assert_page_is_open(
-                            driver, page_id={
+                            driver=driver, page_id={
                                         'identifier': 'Page One',
                                         'method': 'title'})
                     except TassAssertionError as e:
@@ -1174,7 +1175,7 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     try:
                         selenium.assert_page_is_open(
-                            driver, page_id={
+                            driver=driver, page_id={
                                                     'identifier': url,
                                                     'method': 'url'})
                     except TassAssertionError as e:
@@ -1194,7 +1195,7 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     try:
                         selenium.assert_page_is_open(
-                            driver, page_id={
+                            driver=driver, page_id={
                                         'identifier': {
                                             'by': 'id',
                                             'value': 'btnColor'
@@ -1220,9 +1221,9 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     try:
                         selenium.assert_attribute_contains_value(
-                            driver,
-                            attribute,
-                            value,
+                            driver=driver,
+                            attribute=attribute,
+                            value=value,
                             locator={"by": "xpath", "value": "//title"})
                     except TassAssertionError as e:
                         self.fail(e.message)
@@ -1243,9 +1244,9 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     try:
                         selenium.assert_attribute_contains_value(
-                            driver,
-                            attribute,
-                            value,
+                            driver=driver,
+                            attribute=attribute,
+                            value=value,
                             locator={"by": "xpath", "value": "//title"})
                     except TassAssertionError as e:
                         self.fail(e.message)
@@ -1265,9 +1266,9 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
                         selenium.assert_attribute_contains_value(
-                            driver,
-                            attribute,
-                            value,
+                            driver=driver,
+                            attribute=attribute,
+                            value=value,
                             soft=True,
                             locator={"by": "xpath", "value": "//title"})
             finally:
@@ -1286,9 +1287,9 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
                         selenium.assert_attribute_contains_value(
-                            driver,
-                            attribute,
-                            value,
+                            driver=driver,
+                            attribute=attribute,
+                            value=value,
                             locator={"by": "xpath", "value": "//title"})
             finally:
                 if driver:
@@ -1306,9 +1307,9 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     try:
                         selenium.assert_attribute_contains_value(
-                            driver,
-                            attribute,
-                            value,
+                            driver=driver,
+                            attribute=attribute,
+                            value=value,
                             locator={"by": "xpath", "value": "//title"},
                             exact=True)
                     except TassAssertionError as e:
@@ -1329,9 +1330,9 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
                         selenium.assert_attribute_contains_value(
-                            driver,
-                            attribute,
-                            value,
+                            driver=driver,
+                            attribute=attribute,
+                            value=value,
                             soft=True,
                             locator={"by": "xpath", "value": "//title"},
                             exact=True)
@@ -1351,9 +1352,9 @@ class TestSeleniumAssertActions(TestSelenium):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
                         selenium.assert_attribute_contains_value(
-                            driver,
-                            attribute,
-                            value,
+                            driver=driver,
+                            attribute=attribute,
+                            value=value,
                             locator={"by": "xpath", "value": "//title"},
                             exact=True)
             finally:
@@ -1375,7 +1376,7 @@ class SeleniumScreenshotActions(TestSelenium):
                     try:
                         out = pathlib.Path(
                             selenium.screenshot(
-                                driver,
+                                driver=driver,
                                 name=name
                                 )).resolve()
                         self.assertTrue(out.exists() and out.is_file())
@@ -1399,7 +1400,7 @@ class SeleniumScreenshotActions(TestSelenium):
                     try:
                         out = pathlib.Path(
                             selenium.screenshot(
-                                driver,
+                                driver=driver,
                                 name=name,
                                 locator=locator
                                 )).resolve()
@@ -1424,7 +1425,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver)
+                    selenium.handle_alert(driver=driver)
                     self.assertIsNotNone(driver().title)
             finally:
                 if driver:
@@ -1440,7 +1441,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver, handle=1)
+                    selenium.handle_alert(driver=driver, handle=1)
                     self.assertIsNotNone(driver().title)
             finally:
                 if driver:
@@ -1456,7 +1457,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver, handle='accept')
+                    selenium.handle_alert(driver=driver, handle='accept')
                     self.assertIsNotNone(driver().title)
             finally:
                 if driver:
@@ -1472,7 +1473,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver, handle=False)
+                    selenium.handle_alert(driver=driver, handle=False)
                     self.assertIsNotNone(driver().title)
             finally:
                 if driver:
@@ -1488,7 +1489,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver, handle=0)
+                    selenium.handle_alert(driver=driver, handle=0)
                     self.assertIsNotNone(driver().title)
             finally:
                 if driver:
@@ -1504,7 +1505,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver, handle='dismiss')
+                    selenium.handle_alert(driver=driver, handle='dismiss')
                     self.assertIsNotNone(driver().title)
             finally:
                 if driver:
@@ -1520,7 +1521,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.confirm('testing')"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver)
+                    selenium.handle_alert(driver=driver)
                     self.assertIsNotNone(driver().title)
             finally:
                 if driver:
@@ -1536,7 +1537,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.confirm('testing')"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver, handle='dismiss')
+                    selenium.handle_alert(driver=driver, handle='dismiss')
                     self.assertIsNotNone(driver().title)
             finally:
                 if driver:
@@ -1553,7 +1554,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     alertScript = "window.promptResponse = prompt('testing')"
                     promptScript = "return window.promptResponse"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver, text="abc")
+                    selenium.handle_alert(driver=driver, text="abc")
                     self.assertIsNotNone(driver().title)
                     response = driver().execute_script(promptScript)
                     self.assertEqual(response, "abc")
@@ -1572,7 +1573,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     alertScript = "window.promptResponse = prompt('testing')"
                     promptScript = "return window.promptResponse"
                     driver().execute_script(alertScript)
-                    selenium.handle_alert(driver,
+                    selenium.handle_alert(driver=driver,
                                         handle='dismiss',
                                         text="abc")
                     self.assertIsNotNone(driver().title)
@@ -1591,7 +1592,7 @@ class TestSeleniumAlertActions(TestSelenium):
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassSoftAssertionError):
-                        selenium.assert_alert_displayed(driver,soft=True)
+                        selenium.assert_alert_displayed(driver=driver, soft=True)
             finally:
                 if driver:
                     driver.quit()
@@ -1605,7 +1606,7 @@ class TestSeleniumAlertActions(TestSelenium):
                 with self.subTest(browser=browser[1].__name__):
                     driver().get(url)
                     with self.assertRaises(TassHardAssertionError):
-                        selenium.assert_alert_displayed(driver, soft=False)
+                        selenium.assert_alert_displayed(driver=driver, soft=False)
             finally:
                 if driver:
                     driver.quit()
@@ -1620,7 +1621,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
                     driver().execute_script(alertScript)
-                    selenium.assert_alert_displayed(driver, text="testing")
+                    selenium.assert_alert_displayed(driver=driver, text="testing")
             finally:
                 if driver:
                     driver.quit()
@@ -1635,7 +1636,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     driver().get(url)
                     alertScript = "window.alert('testing')"
                     driver().execute_script(alertScript)
-                    selenium.assert_alert_displayed(driver, text="test")
+                    selenium.assert_alert_displayed(driver=driver, text="test")
             finally:
                 if driver:
                     driver.quit()
@@ -1651,7 +1652,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     alertScript = "window.alert('testing')"
                     driver().execute_script(alertScript)
                     with self.assertRaises(TassSoftAssertionError):
-                        selenium.assert_alert_displayed(driver, text="FAIL", soft=True)
+                        selenium.assert_alert_displayed(driver=driver, text="FAIL", soft=True)
             finally:
                 if driver:
                     driver.quit()
@@ -1667,7 +1668,7 @@ class TestSeleniumAlertActions(TestSelenium):
                     alertScript = "window.alert('testing')"
                     driver().execute_script(alertScript)
                     with self.assertRaises(TassHardAssertionError):
-                        selenium.assert_alert_displayed(driver, text="FAIL")
+                        selenium.assert_alert_displayed(driver=driver, text="FAIL")
             finally:
                 if driver:
                     driver.quit()

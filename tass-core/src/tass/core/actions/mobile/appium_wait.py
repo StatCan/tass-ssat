@@ -1,13 +1,15 @@
 from ...registry import AppiumBroker, AppiumWaitBroker
-from .appium import locate
-import selenium.webdriver.support.expected_conditions as EC
 from ...log.logging import getLogger
 
 logger = getLogger(__name__)
+DOCS = ""
 
-@AppiumBroker.command(name="wait_element_clickable")
-@AppiumWaitBroker.command(name="wait_element_clickable")
-def wait_element_clickable(driver, locator,
+
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="wait_element_clickable")
+@AppiumWaitBroker.command
+@AppiumWaitBroker.find_with(finder="wait_element_clickable")
+def wait_element_clickable(driver, *, find, locator,
                            locator_args=None,
                            action=None, **kwargs):
     """Wait until element is visible and enabled.
@@ -32,29 +34,28 @@ def wait_element_clickable(driver, locator,
             Dictionary containing additional parameters. Contents
             of the dictionary will vary based on the find function used.
     """
-    def _wait(driver, locator, locator_args=None, page=None, time=None):
-        mark = tuple(locate(page, locator, locator_args).values())
-        logger.debug("Waiting for element to be clickable: %s", mark)
-        return driver.wait_until(EC.element_to_be_clickable, time=time,
-                                 mark=mark)
-
+    logger.warning("selenium_wait functions are deprecated and will be removed in a future version. Consider using the 'find' argument with basic selenium commands")
+    logger.warning("See for details: %s", DOCS)
     if (action is None):
         logger.info("Waiting for element before continuing...")
-        _wait(driver, locator, locator_args, **kwargs)
+        find(driver, locator, locator_args, **kwargs)
     else:
-        logger.info("Waiting for element before appium action: %s",
+        logger.info("Waiting for element before selenium action: %s",
                     action[1])
         # TODO: Rework this to perform ANY action not just selenium
         # TODO: Alternate: Create generic wait until condition in core?
         return AppiumBroker.get(action[1])(driver=driver,
-                                       find=_wait,
-                                       locator=locator,
-                                       **kwargs)
+                                             find=find,
+                                             locator=locator,
+                                             locator_args=locator_args,
+                                             **kwargs)
 
 
-@AppiumBroker.command(name="wait_element_visible")
-@AppiumWaitBroker.command(name="wait_element_visible")
-def wait_element_visible(driver, locator,
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="wait_element_visible")
+@AppiumWaitBroker.command
+@AppiumWaitBroker.find_with(finder="wait_element_visible")
+def wait_element_visible(driver, *, find, locator,
                          locator_args=None,
                          action=None, **kwargs):
     """Wait until element is visible.
@@ -79,21 +80,18 @@ def wait_element_visible(driver, locator,
             Dictionary containing additional parameters. Contents
             of the dictionary will vary based on the find function used.
     """
-    def _wait(driver, locator, locator_args=None, time=None, page=None):
-        mark = tuple(locate(page, locator, locator_args).values())
-        logger.debug("Waiting for element to be visible: %s", mark)
-        return driver.wait_until(EC.visibility_of_element_located, time=time,
-                                 locator=mark)
-
+    logger.warning("selenium_wait functions are deprecated and will be removed in a future version. Consider using the 'find' argument with basic selenium commands")
+    logger.warning("See for details: %s", DOCS)
     if (action is None):
         logger.info("Waiting for element before continuing...")
-        _wait(driver, locator, locator_args, **kwargs)
+        find(driver, locator, locator_args, **kwargs)
     else:
         # TODO: Rework this to perform ANY action not just selenium
         # TODO: Alternate: Create generic wait until condition in core?
-        logger.info("Waiting for element before appium action: %s",
+        logger.info("Waiting for element before selenium action: %s",
                     action[1])
         return AppiumBroker.get(action[1])(driver=driver,
-                                       find=_wait,
-                                       locator=locator,
-                                       **kwargs)
+                                             find=find,
+                                             locator=locator,
+                                             locator_args=locator_args,
+                                             **kwargs)

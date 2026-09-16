@@ -8,8 +8,10 @@ class Registry():
     def __init__(self):
         self._registry = {}
 
-    def register(self, fn, name):
-        raise NotImplementedError("register function is not implemented.")
+    def register(self, registrant, name):
+        self._registry[name] = registrant
+        logger.debug("%s registered: %s", self.__class__.__name__, name)
+        return registrant
     
     def get(self, name):
         return self._registry.get(name, None)

@@ -8,6 +8,7 @@ from ...exceptions.assertion_errors import TassHardAssertionError
 from ...exceptions.assertion_errors import TassSoftAssertionError
 from ...log.logging import getLogger
 from ...registry import SeleniumBroker
+from ..impl import selcmds
 
 #  For additional documentation, see selenium docs:
 #  https://www.selenium.dev/selenium/docs/api/py/webdriver_remote/selenium.webdriver.remote.webelement.html
@@ -17,55 +18,9 @@ logger = getLogger(__name__)
 
 RETRY_EXC = [WebDriverException]
 
-
-def locate(page, locator, locator_args):
-    logger.debug("Locator: %s -- Args: %s", locator, locator_args)
-    if (isinstance(locator, str)):
-        logger.debug("Getting locator (%s) from POM: %s", locator, page)
-        _loc = PageReader().get_element(*page, locator)
-    elif isinstance(locator, dict):
-        logger.debug("Locator provided directly...")
-        _loc = locator
-    else:
-        msg = "Locator type not supported. Type: {}".format(type(locator))
-        logger.error(msg)
-        raise TypeError(msg)
-
-    if locator_args:
-        logger.debug("Filling in blanks in locator using: %s", locator_args)
-        # scenario converter shold convert locator args to a list by default
-        _loc['value'] = _loc['value'].format(*locator_args)
-
-    logger.debug("Using locator: %s", _loc)
-    return _loc
-
-
-def _find_element(driver, locator, locator_args=None, page=None):
-    logger.debug("Searching for element...")
-    return driver().find_element(**locate(page, locator, locator_args))
-
-
-def _is_displayed(driver, find=_find_element, **kwargs):
-    try:
-        display = find(driver, **kwargs).is_displayed()
-        logger.debug("Found element, displayed=%s", display)
-        return display
-    except WebDriverException as e:
-        logger.warning("Something went wrong, %s -- Trying again", e)
-        display = find(driver, **kwargs).is_displayed()
-        logger.debug("Attempt 2 >> Found element, displayed=%s", display)
-        return display
-
-
-def _switch_to_alert(driver):
-    try:
-        return driver.alert
-    except NoAlertPresentException as e:
-        logger.warning("No alert present to switch to.")
-        raise e
-
 @SeleniumBroker.command(retry_exc=RETRY_EXC)
-def click(driver, find=_find_element, **kwargs):
+@SeleniumBroker.find_with(finder="find_element")
+def click(driver, *, find, **kwargs):
     """Click an element in the DOM
 
     Execute the selenium click function against the locator
@@ -87,12 +42,12 @@ def click(driver, find=_find_element, **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    find(driver, **kwargs).click()
-    logger.debug("Element clicked.")
+    return selcmds._click(driver, find, **kwargs)
 
 
 @SeleniumBroker.command(retry_exc=RETRY_EXC)
-def write(driver, find=_find_element, text='', **kwargs):
+@SeleniumBroker.find_with(finder="find_element")
+def write(driver, *, find, text='', **kwargs):
     """Send a string to an element in the DOM
 
     Execute the selenium send_keys(str) function against the locator
@@ -121,17 +76,12 @@ def write(driver, find=_find_element, text='', **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    try:
-        find(driver, **kwargs).send_keys(text)
-        logger.debug("Typed: '%s'", text)
-    except WebDriverException as e:
-        logger.warning("Something went wrong, %s -- Trying again", e)
-        find(driver, **kwargs).send_keys(text)
-        logger.debug("Attempt 2 >> Typed: '%s'", text)
+    return selcmds._write(driver, find, text, **kwargs)
 
 
 @SeleniumBroker.command(retry_exc=RETRY_EXC)
-def write_stored_value(driver, find=_find_element, text_key='', **kwargs):
+@SeleniumBroker.find_with(finder="find_element")
+def write_stored_value(driver, *, find, text_key='', **kwargs):
     """Send a stored string to an element in the DOM
 
     Execute the selenium send_keys(str) function against the locator
@@ -155,13 +105,12 @@ def write_stored_value(driver, find=_find_element, text_key='', **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    from .. import core
-    text = core.read_value(text_key)
-    write(driver, find=find, text=text, **kwargs)
+    return selcmds._write_stored_value(driver, find, text_key, **kwargs)
 
 
 @SeleniumBroker.command(retry_exc=RETRY_EXC)
-def select_dropdown(driver, value, using, find=_find_element, **kwargs):
+@SeleniumBroker.find_with(finder="find_element")
+def select_dropdown(driver, *, find, value, using, **kwargs):
     """Select an option from a dropdown using text, value, or index in the DOM
 
     Execute the selenium Select.select_by_* function
@@ -195,18 +144,12 @@ def select_dropdown(driver, value, using, find=_find_element, **kwargs):
             requires: locator.
 
     """
-    try:
-        driver.select(find(driver, **kwargs), value, using)
-        logger.debug("Dropdown selected: '%s' -- using: '%s'", value, using)
-    except WebDriverException as e:
-        logger.warning("Something went wrong, %s -- Trying again", e)
-        driver.select(find(driver, **kwargs), value, using)
-        logger.debug("Attempt 2 >> Dropdown selected: '%s' -- using: '%s'",
-                     value, using)
+    return selcmds._select_dropdown(driver, find, value, using, **kwargs)
 
 
 @SeleniumBroker.command(retry_exc=RETRY_EXC)
-def clear(driver, find=_find_element, **kwargs):
+@SeleniumBroker.find_with(finder="find_element")
+def clear(driver, *, find, **kwargs):
     """Clear the value of a text input element in the DOM
 
     Execute the selenium clear function against the locator
@@ -228,13 +171,7 @@ def clear(driver, find=_find_element, **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    try:
-        find(driver, **kwargs).clear()
-        logger.debug("Element cleared.")
-    except WebDriverException as e:
-        logger.warning("Something went wrong, %s -- Trying again", e)
-        find(driver, **kwargs).clear()
-        logger.debug("Attempt 2 >> Element cleared.")
+    return selcmds._clear(driver, find, **kwargs)
 
 
 @SeleniumBroker.command(retry_exc=RETRY_EXC)
@@ -251,8 +188,7 @@ def load_url(driver, url):
         url:
             The url to be loaded. Must be complete and correctly formatted.
     """
-    driver().get(url)
-    logger.debug("Loaded url in browser: %s", url)
+    return selcmds._load_url(driver, url)
 
 
 @SeleniumBroker.command(retry_exc=RETRY_EXC)
@@ -269,10 +205,7 @@ def load_file(driver, relative_path):
         relative_path:
             The file path to be loaded. Must be relative to the root directory.
     """
-    url = pathlib.Path(relative_path).resolve().as_uri()
-    logger.debug("Looking for file to open at: %s", url)
-    driver().get(url)
-    logger.debug("Loaded local file in browser.")
+    return selcmds._load_file(driver, relative_path)
 
 
 @SeleniumBroker.command(retry_exc=RETRY_EXC)
@@ -298,16 +231,12 @@ def load_page(driver, page, url_key='url', use_local=False):
             case the provided url is treated like a relative file path
             instead of a web URL.
     """
-    url = PageReader().get_url(*page, url_key)
-    logger.debug("Read url from POM: %s", url)
-    if (use_local):
-        load_file(driver, url)
-    else:
-        load_url(driver, url)
+    return selcmds._load_page(driver, page, url_key, use_local)
 
 
 @SeleniumBroker.command(retry_exc=RETRY_EXC)
-def read_attribute(driver, attribute, find=_find_element, **kwargs):
+@SeleniumBroker.find_with(finder="find_element")
+def read_attribute(driver, *, find, attribute, **kwargs):
     """Read the value of an attribute for an element in the DOM
 
     Execute the selenium get_attribute function against the locator
@@ -336,21 +265,12 @@ def read_attribute(driver, attribute, find=_find_element, **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    attribute = str(attribute)
-    try:
-        attr = find(driver, **kwargs).get_attribute(attribute)
-        logger.debug("Element has attribute: '%s'='%s'", attribute, attr)
-    except WebDriverException as e:
-        logger.warning("Something went wrong, %s -- Trying again", e)
-        attr = find(driver, **kwargs).get_attribute(attribute)
-        logger.debug("Attempt 2 >> Element has attribute: '%s'='%s'",
-                     attribute, attr)
-
-    return attr
+    return selcmds._read_attribute(driver, find, attribute, **kwargs)
 
 
 @SeleniumBroker.command(retry_exc=RETRY_EXC)
-def read_css(driver, attribute, find=_find_element, **kwargs):
+@SeleniumBroker.find_with(finder="find_element")
+def read_css(driver, *, find, attribute, **kwargs):
     """Read the value of a css attribute for an element in the DOM
 
     Execute the selenium value_of_css function against the locator
@@ -380,21 +300,12 @@ def read_css(driver, attribute, find=_find_element, **kwargs):
             requires: locator.
     """
 
-    attribute = str(attribute)
-    try:
-        prop = find(driver, **kwargs).value_of_css_property(attribute)
-        logger.debug("Element has CSS property: '%s'='%s'", attribute, prop)
-    except WebDriverException as e:
-        logger.warning("Something went wrong, %s -- Trying again", e)
-        prop = find(driver, **kwargs).value_of_css_property(attribute)
-        logger.debug("Attempt 2 >> Element has CSS property: '%s'='%s'",
-                     attribute, prop)
-
-    return prop
+    return selcmds._read_css(driver, find, attribute, **kwargs)
 
 
 @SeleniumBroker.command(retry_exc=RETRY_EXC)
-def read_text(driver, find=_find_element, **kwargs):
+@SeleniumBroker.find_with(finder="find_element")
+def read_text(driver, *, find, **kwargs):
     """Read the text value for an element in the DOM
 
     Get the text value of the element with the locator
@@ -417,19 +328,12 @@ def read_text(driver, find=_find_element, **kwargs):
             requires: locator.
     """
 
-    try:
-        text = find(driver, **kwargs).text
-        logger.info("Element has text: '%s'", text)
-    except WebDriverException as e:
-        logger.warning("Something went wrong, %s -- Trying again", e)
-        text = find(driver, **kwargs).text
-        logger.info("Attempt 2 >> Element has text: '%s'", text)
-
-    return text
+    return selcmds._read_text(driver, find, **kwargs)
 
 
 @SeleniumBroker.command(retry_exc=RETRY_EXC)
-def switch_frame(driver, frame, page=None, find=_find_element):
+@SeleniumBroker.find_with(finder="find_element")
+def switch_frame(driver, *, find, frame, page=None):
     """Change the active frame by name or element
 
     Execute the selenium switch_to.frame function against the locator
@@ -451,33 +355,8 @@ def switch_frame(driver, frame, page=None, find=_find_element):
             and 'value' as a locator.
 
     """
-    try:
-        if page:
-            _frame = PageReader().get_element(*page, frame)
-            logger.debug("Found frame in POM.")
-            switch_frame(driver, _frame, page=None, find=find)
-        elif (isinstance(frame, str)):
-            driver().switch_to.frame(frame)
-            logger.debug("Switched active frame to: %s", frame)
-        else:
-            element = find(driver, page=page, **frame)
-            driver().switch_to.frame(element)
-            logger.debug("Switched active frame to element: %r", element)
-    except WebDriverException as e:
-        logger.warning("Something went wrong, %s -- Trying again", e)
-        if page:
-            _frame = PageReader().get_element(*page, frame)
-            logger.debug("Attempt 2 >> Found frame in POM.")
-            switch_frame(driver, _frame, page=None, find=find)
-        elif (isinstance(frame, str)):
-            driver().switch_to.frame(frame)
-            logger.debug("Attempt 2 >> Switched active frame to: %s", frame)
-        else:
-            driver().switch_to.frame(find(driver, **frame))
-            logger.debug("Attempt 2 >> Switched active frame to element: %r",
-                         element)
-
-        logger.debug("Attempt 2 >> Switched active frame to: %s", frame)
+    return selcmds._switch_frame(driver, find, frame, page)
+    
 
 
 @SeleniumBroker.command(retry_exc=RETRY_EXC)
@@ -500,45 +379,7 @@ def switch_window(driver, title=None, page=None):
     """
     # TODO: Keep track of window handles to avoid loop?
     # TODO: Handle switching from closed tabs
-    handles = driver().window_handles
-    if len(handles) == 1:
-        logger.info("Only one window/tab open. Switching to that window.")
-        driver.switch_window(handles[0])
-        return
-    if len(handles) < 1:
-        logger.warning("No windows open. Cannot switch.")
-        return
-    if (page):
-        switch_window(driver,
-                      title=PageReader().get_page_title(*page),
-                      page=None)
-        return
-    cur_handle = None
-    try:
-        cur_handle = driver().current_window_handle
-        logger.debug("Current window handle: %s -- title: %s",
-                     cur_handle, driver().title)
-    except NoSuchWindowException:
-        logger.info(
-            "Current window closed or missing. Switching to other tab/window"
-            )
-    if (title is None):
-        logger.info("Switching to next tab or window...")
-        for handle in handles:
-            # TODO: Handle switching if only 1 tab/window
-            if (handle != cur_handle):
-                driver.switch_window(handle)
-                return
-    elif (isinstance(title, str)):
-        for handle in handles:
-            if (handle == cur_handle):
-                continue
-            else:
-                driver.switch_window(handle)
-                if (driver().title == title):
-                    return
-
-    raise ValueError('No other window/tab with title: {}'.format(title))
+    return selcmds._switch_window(driver, title, page)
 
 
 @SeleniumBroker.command(retry_exc=RETRY_EXC)
@@ -554,13 +395,7 @@ def close(driver):
             The RemoteWebDriver object that is connected
             to the open browser.
     """
-    try:
-        driver().close()
-        logger.info("Closed currently active tab/window.")
-    except WebDriverException as e:
-        logger.warning("Something went wrong, %s -- Trying again", e)
-        driver().close()
-        logger.info("Closed currently active tab/window.")
+    return selcmds._close(driver)
 
 
 @SeleniumBroker.command(retry_exc=RETRY_EXC)
@@ -577,13 +412,7 @@ def quit(driver):
             to the open browser.
     """
 
-    try:
-        driver.quit()
-        logger.info("Driver exited browser session.")
-    except WebDriverException as e:
-        logger.warning("Something went wrong, %s -- Trying again", e)
-        driver.quit()
-        logger.info("Driver exited browser session.")
+    return selcmds._quit(driver)
 
 
 @SeleniumBroker.command(retry_exc=RETRY_EXC)
@@ -605,84 +434,20 @@ def handle_alert(driver, handle=True, text=None):
             alert. A value of None will provide default
             behaviour of 'accept'
     """
-    alert_accept = None
-    if handle and isinstance(handle, str):
-        if handle.lower() == 'accept':
-            alert_accept = True
-        elif handle.lower() == 'dismiss':
-            alert_accept = False
-        else:
-            logger.warning(f"Invalid handle function: {handle}")
-            logger.warning("Will use default function.")
-            alert_accept = True
-    else:
-        alert_accept = bool(handle)
-    try:
-        if alert_accept:
-            driver.accept_alert(text=text)
-        else:
-            driver.dismiss_alert(text=text)
-    except WebDriverException as e:
-        logger.warning("Something went wrong, %s -- Trying again", e)
-        if alert_accept:
-            driver.accept_alert(text=text)
-        else:
-            driver.dismiss_alert(text=text)
+    return selcmds._handle_alert(driver, handle, text)
 
 
 @SeleniumBroker.command(retry_exc=RETRY_EXC)
+@SeleniumBroker.find_with(finder="find_element")
 def screenshot(driver,
+               find,
                name="screenshot",
                locator=None,
-               find=_find_element,
                **kwargs):
-    screenshotsfldr = pathlib.Path("screenshots").resolve()
-    # Sort png by browser config
-    driverfldr = [driver.os, driver.browser, driver.browser_version]
-    screenshotsfldr = screenshotsfldr.joinpath(*driverfldr).resolve()
-    screenshotsfldr.mkdir(exist_ok=True, parents=True)
-    date_tag = datetime.now().strftime("%d-%m-%y--%H-%M-%S")
-    name = name.replace(" ", "_")  # Remove spaces from file name
-    file_name = "_".join([name, date_tag])
-    _file = screenshotsfldr.joinpath(file_name).with_suffix(".png")
-    count = 0
-
-    while _file.exists():
-        count += 1
-        file_name = "".join([name, date_tag, f"({count})"])
-        _file = _file.with_stem(file_name)
-
-    out = str(_file.resolve())
-    logger.info("Saving screenshot as: %s", out)
-
-    try:
-        if locator:
-            status = find(driver, locator, **kwargs).screenshot(out)
-        else:
-            status = driver().save_screenshot(out)
-    except WebDriverException as e:
-        logger.warning("Something went wrong, %s -- Trying again", e)
-        if locator:
-            status = find(driver, locator, **kwargs).screenshot(out)
-        else:
-            status = driver().save_screenshot(out)
-
-    if status:
-        logger.info("Screenshot saved successfully.")
-    else:
-        logger.warning("Screenshot was not saved!")
-
-    return out
+    return selcmds._screenshot(driver, find, name, locator, **kwargs)
 
 
 # / / / / / / / Assertions / / / / / / /
-def _fail(soft, message, reason=None, exception=None, *args):
-    if (soft):
-        raise TassSoftAssertionError(
-                message, reason=reason, *args) from exception
-    else:
-        raise TassHardAssertionError(
-                message, reason=reason, *args)  from exception
 
 
 @SeleniumBroker.command
@@ -704,36 +469,12 @@ def assert_alert_displayed(driver, text=None, soft=False):
             current test stops upon returning. If false, error is
             recorded and execution can continue. The default is False.
     """
-    def _check_alert(driver):
-        _ = None
-        try:
-            _ = _switch_to_alert(driver)
-            logger.debug("Alert with text: '%s' is displayed.", _.text)
-        except WebDriverException as e:
-            logger.warning("Something went wrong, %s -- Trying again", e)
-            _ = _switch_to_alert(driver)
-            logger.debug("Alert with text: '%s' is displayed.", _.text)
-        return _
-
-    try:
-        alert = _check_alert(driver)
-        logger.debug("Alert found.")
-        if text and isinstance(text, str):
-            text_ok = text in alert.text
-            if not text_ok:
-                _fail(soft,
-                    "assert_alert_displayed",
-                    reason = f"Alert text does not contain expected text: {text}")
-            else:
-                logger.debug("Alert text contains expected text: %s", text)
-    except WebDriverException as e:
-        _fail(soft,
-            "assert_alert_displayed",
-            exception=e)
+    return selcmds._assert_alert_displayed(driver, text, soft)
 
 
-@SeleniumBroker.command(name="assert_page_is_open")
-def assert_page_is_open(driver, page=None, find=_find_element,
+@SeleniumBroker.command
+@SeleniumBroker.find_with(finder="find_element")
+def assert_page_is_open(driver, *, find, page=None,
                         soft=False, page_id=None):
     """Assert the given page is open using the described method
 
@@ -756,125 +497,12 @@ def assert_page_is_open(driver, page=None, find=_find_element,
             given above.
 
     """
-    def _element(driver, find, element, page, soft):
-        ele = None
-        try:
-            ele = find(driver, element, page=page)
-            logger.debug("Element: %s found, page is open.", element)
-        except WebDriverException:
-            try:
-                ele = find(driver, element, page=page)
-                logger.debug("Attempt 2 >> Element: %s found, page is open.",
-                             element)
-            except WebDriverException as e:
-                logger.warning('Exception raised: %s', e)
-                _fail(soft,
-                "assert_page_is_open",
-                exception=e)
-
-        logger.info("Element found. Page is open")
-
-        if (ele is None):
-            _fail(soft,
-                "assert_page_is_open",
-                reason='Element {identifier} not found.')
-
-    def _title(driver, find, title, soft, normalize=False):
-        actual = driver().title
-        if (actual != title):
-            ele = None
-            if normalize:
-                ele_title = {
-                    "by": "xpath",
-                    "value": f"//title[normalize-space(text())='{title}']"
-                    }
-            else:
-                ele_title = {
-                    "by": "xpath",
-                    "value": f"//title[text()='{title}']"
-                    }
-            try:
-                ele = find(driver, ele_title, page=page)
-                actual = ele.text
-                logger.debug("Element: %s found, page is open.", ele_title)
-            except WebDriverException:
-                try:
-                    ele = find(driver, ele_title, page=page)
-                    actual = ele.text
-                    logger.debug(
-                        "Attempt 2 >> Element: %s found, page is open.",
-                        ele_title
-                        )
-                except WebDriverException as e:
-                    logger.warning('Exception raised: %s', e)
-                    _fail(soft,
-                        "assert_page_is_open",
-                        exception=e)
-            if not ele:
-                _fail(soft,
-                    "assert_page_is_open",
-                    reason=f'Expected title not found. Actual page title: {actual}')
-
-        logger.info("Found expected title. Page is open")
-
-    def _url(driver, url, soft):
-        actual = driver().current_url
-        logger.info('Current url: %s', actual)
-        if (actual != url):
-            _fail(soft,
-                "assert_page_is_open",
-                reason=f'Expected url not open. Actual url: {actual}')
-
-        logger.info("Found expected url. Page is open.")
-    if (page is not None):
-        page_id = PageReader().get_page_id(*page)
-
-        match page_id.get('method', 'element'):
-            case 'element':
-                _element(driver,
-                         find,
-                         page_id['identifier'],
-                         page,
-                         soft)
-            case 'normalize-title':
-                title = page_id['identifier']
-                _title(driver, find, title, soft, normalize=True)
-            case 'title':
-                title = page_id.get('identifier',
-                                    PageReader().get_page_title(*page))
-                _title(driver, find, title, soft)
-            case 'url':
-                url = page_id.get('identifier', PageReader().get_url(*page))
-                _url(driver, url, soft)
-            case _:
-                raise ValueError(
-                    f"Method, {page_id.get('method')} not supported")
-    elif (page_id is not None):
-        match page_id.get('method', 'element'):
-            case 'element':
-                _element(driver,
-                         find,
-                         page_id['identifier'],
-                         None,
-                         soft)
-            case 'normalize-title':
-                title = page_id['identifier']
-                _title(driver, find, title, soft, normalize=True)
-            case 'title':
-                title = page_id['identifier']
-                _title(driver, find, title, soft)
-            case 'url':
-                url = page_id['identifier']
-                _url(driver, url, soft)
-            case _:
-                raise ValueError(
-                    f"Method, {page_id.get('method')} not supported")
-    elif (page is None and page_id is None):
-        raise ValueError('Either page or page_id must not be None')
+    return selcmds._assert_page_is_open(driver, find, page, soft, page_id)
 
 
-@SeleniumBroker.command(name="assert_contains_text")
-def assert_contains_text(driver, text, find=_find_element,
+@SeleniumBroker.command
+@SeleniumBroker.find_with(finder="find_element")
+def assert_contains_text(driver, *, find, text,
                          soft=False, exact=False, **kwargs):
     """Assert the given text is displayed in the element.
        Can be soft, or hard check.
@@ -895,26 +523,12 @@ def assert_contains_text(driver, text, find=_find_element,
             or the default _find_element function.
 
     """
-    actual_text = None
-    try:
-        actual_text = read_text(driver, find, **kwargs)
-        logger.info("Element contains text: %s", actual_text)
-        if exact and text != actual_text:
-            _fail(soft, "assert_text_contains -- exact match",
-            reason=f"Actual text: {actual_text}")
-        elif text not in actual_text:
-            _fail(soft, "assert_text_contains -- partial match",
-            reason=f"Actual text: {actual_text}")
-        else:
-            logger.info("Element contains text: %s", text)
-    except WebDriverException as e:
-        logger.debug("Driver reporting error. %r", kwargs)
-        _fail(soft, "assert_text_contains",
-            exception=e)
+    return selcmds._assert_contains_text(driver, find, text, soft, exact, **kwargs)
 
 
-@SeleniumBroker.command(name="assert_displayed")
-def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
+@SeleniumBroker.command
+@SeleniumBroker.find_with(finder="find_element")
+def assert_displayed(driver, *, find, soft=False, **kwargs):
     """Assert the given element is displayed. Can be a soft or hard check
 
     Execute the selenium is_displayed function against the locator
@@ -939,24 +553,12 @@ def assert_displayed(driver, find=_find_element, soft=False, **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    try:
-        if (_is_displayed(driver, find=find, **kwargs)):
-            logger.info("Element is displayed.")
-            return
-        else:
-            _fail(soft,
-                "assert_displayed",
-                reason="Element is not displayed.")
-    except WebDriverException as e:
-        logger.debug("Driver reporting error. %r", kwargs)
-        if (soft):
-            _fail(soft,
-                "assert_displayed",
-                exception=e)
+    return selcmds._assert_displayed(driver, find, soft, **kwargs)
 
 
-@SeleniumBroker.command(name="assert_not_displayed")
-def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
+@SeleniumBroker.command
+@SeleniumBroker.find_with(finder="find_element")
+def assert_not_displayed(driver, *, find, soft=False, **kwargs):
     """Assert the given element is not displayed. Can be a soft of hard check
 
     Execute the selenium is_displayed function against the locator
@@ -981,24 +583,13 @@ def assert_not_displayed(driver, find=_find_element, soft=False, **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    try:
-        if not (_is_displayed(driver, find=find, **kwargs)):
-            logger.info("Element is not displayed.")
-            return
-        else:
-            _fail(soft,
-                "assert_not_displayed",
-                reason="Element is displayed.")
-    except WebDriverException as e:
-        logger.debug("Driver reporting error. %r", kwargs)
-        _fail(soft,
-            "assert_not_displayed",
-            exception=e)
+    return selcmds._assert_not_displayed(driver, find, soft, **kwargs)
 
 
-@SeleniumBroker.command(name="assert_attribute_contains_value")
-def assert_attribute_contains_value(driver, attribute, value,
-                                    find=_find_element, soft=False,
+@SeleniumBroker.command
+@SeleniumBroker.find_with(finder="find_element")
+def assert_attribute_contains_value(driver, *, find, attribute, value,
+                                     soft=False,
                                     exact=False, **kwargs):
     """ Assert that the given element contains the specified
     value for the given attribute.
@@ -1036,24 +627,4 @@ def assert_attribute_contains_value(driver, attribute, value,
             requires: locator.
 
     """
-    actual_value = read_attribute(driver, attribute, find, **kwargs)
-    logger.info("Element contains attribute: %s", actual_value)
-    value = str(value)
-    try:
-        if exact and value != actual_value:
-            _fail(soft,
-                "assert_attribute_contains--exact match",
-                reason=f"attribute: {attribute} is not exact match: {actual_value}")
-        elif value not in actual_value:
-            _fail(soft,
-                "assert_attribute_contains--partial match", 
-                reason=f"attribute: {attribute} does not contain match: {actual_value}")
-
-        else:
-            logger.info("Element contains attribute: %s with value: %s",
-                        attribute, value)
-    except WebDriverException as e:
-        logger.debug("Driver reporting error. %r", kwargs)
-        _fail(soft,
-            "assert_attribute_contains_value",
-            exception=e)
+    return selcmds._assert_attribute_contains_value(driver, find, attribute, value, soft, exact, **kwargs)
