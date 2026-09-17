@@ -12,7 +12,7 @@ def locate(page, locator, locator_args):
         _loc = PageReader().get_element(*page, locator)
     elif isinstance(locator, dict):
         logger.debug("Locator provided directly...")
-        _loc = locator
+        _loc = locator.copy()
     else:
         msg = "Locator type not supported. Type: {}".format(type(locator))
         logger.error(msg)
@@ -22,6 +22,18 @@ def locate(page, locator, locator_args):
         logger.debug("Filling in blanks in locator using: %s", locator_args)
         # scenario converter shold convert locator args to a list by default
         _loc['value'] = _loc['value'].format(*locator_args)
+
+    if _loc['by'].lower() == "id" or _loc['by'].lower() == "name":
+        # Convert ID and Name locator methods to xpath for compatibility.
+        logger.warning(
+            (
+                "Locator By methods: ID and NAME may not be supported."
+                " Consider updating."
+            )
+        )
+        _loc['value'] = f"//*[@{_loc['by']}='{_loc['value']}']"
+        _loc['by'] = "xpath"
+        logger.warning("Converting to simple xpath. %s", _loc['value'])
 
     logger.debug("Using locator: %s", _loc)
     return _loc

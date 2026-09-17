@@ -62,10 +62,10 @@ class TestAppiumWait(TestAppium):
                     self.close_nav(driver)
                     locator = self.btn_disabled_page['elements']['btn']
                     with self.assertRaises(TimeoutException):
-                        appwait.wait_element_clickable(driver, locator, action=['appium', 'read_attribute'], attribute='value')
+                        appwait.wait_element_clickable(driver, locator=locator, action=['appium', 'read_attribute'], attribute='value')
                     element = driver().find_element(**self.btn_disabled_page['elements']['select'])
                     driver.select(element, 'enabled', 'value')
-                    _ = appwait.wait_element_clickable(driver, locator, action=['appium', 'read_attribute'], attribute='value')
+                    _ = appwait.wait_element_clickable(driver, locator=locator, action=['appium', 'read_attribute'], attribute='value')
                     self.assertIsNotNone(_)
                 finally:
                     if driver:
@@ -81,13 +81,13 @@ class TestAppiumWait(TestAppium):
                     self.close_nav(driver)
                     locator = self.btn_disabled_page['elements']['hidden']
                     with self.assertRaises(TimeoutException):
-                        appwait.wait_element_visible(driver, locator, action=['appium', 'read_attribute'], attribute='value')
+                        appwait.wait_element_visible(driver, locator=locator, action=['appium', 'read_attribute'], attribute='value')
                     element = driver().find_element(**self.btn_disabled_page['elements']['select'])
                     driver.select(element, 'enabled', 'value')
                     driver().find_element(**self.btn_disabled_page['elements']['btn']).click()
                     self.close_nav(driver)
                     locator = self.btn_disabled_page['elements']['click-confirm']
-                    _ = appwait.wait_element_clickable(driver, locator, action=['appium', 'read_attribute'], attribute='class')
+                    _ = appwait.wait_element_clickable(driver, locator=locator, action=['appium', 'read_attribute'], attribute='class')
                     self.assertIsNotNone(_)
                 finally:
                     if driver:

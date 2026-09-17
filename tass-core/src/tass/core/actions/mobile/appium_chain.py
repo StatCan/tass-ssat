@@ -1,6 +1,6 @@
 from ...log.logging import getLogger
 from ...registry import AppiumBroker, AppiumChainBroker
-from ..browser import selenium_chain as sc
+from ..impl import _appium_chain as ac
 
 
 #  For additional documentation, see selenium docs:
@@ -25,7 +25,7 @@ def perform(driver, **kwargs):
             The RemoteWebDriver object that is connected
             to the open browser.
     """
-    sc.perform(driver, **kwargs)
+    ac._perform(driver, **kwargs)
 
 
 @AppiumBroker.command
@@ -44,7 +44,7 @@ def reset(driver, **kwargs):
             to the open browser.
 
     """
-    sc.reset(driver, **kwargs)
+    ac._reset(driver, **kwargs)
 
 
 # To prevent command collision
@@ -76,7 +76,7 @@ def click(driver, *,
             Additional values to be used when locating a web element.
 
     """
-    sc.click(driver, find, locator, **kwargs)
+    ac._click(driver, find, locator, **kwargs)
 
 
 @AppiumBroker.command(name="chain_write")
@@ -107,7 +107,7 @@ def write(driver, *,
             Additional values to be used when locating a web element.
 
     """
-    sc.write(driver, find,
+    ac._write(driver, find,
              locator,
              text,
              **kwargs)
@@ -146,7 +146,7 @@ def move_mouse(driver, *,
             Additional values to be used when locating a web element.
     """
 
-    sc.move_mouse(driver, find, locator,
+    ac._move_mouse(driver, find, locator,
                         xoffset,
                         yoffset,
                         **kwargs)
@@ -187,7 +187,7 @@ def drag_and_drop(driver, *, find,
             Additional values to be used when locating a web element.
     """
 
-    sc.drag_and_drop(driver, find, locator, target,
+    ac._drag_and_drop(driver, find, locator, target,
                            xoffset,
                            yoffset,
                            **kwargs)
@@ -240,7 +240,7 @@ def scroll(driver, *, find,
 
     """
 
-    sc.scroll(driver, find, locator,
+    ac._scroll(driver, find, locator,
                     deltax, deltay,
                     xoffset, yoffset,
                     **kwargs)

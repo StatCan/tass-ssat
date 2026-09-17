@@ -153,7 +153,7 @@ def select_dropdown(driver, *,
             requires: locator.
 
     """
-    app._select_dropdown(driver, value, using, find=find, **kwargs)
+    app._select_dropdown(driver, find, value, using, **kwargs)
 
 
 @AppiumBroker.command
@@ -180,7 +180,7 @@ def clear(driver, *, find, **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    app._clear(driver, find=find, **kwargs)
+    app._clear(driver, find, **kwargs)
 
 
 @AppiumBroker.command
@@ -371,7 +371,6 @@ def switch_frame(driver, *, find, frame, page=None):
 
 
 @AppiumBroker.command
-@AppiumBroker.find_with(finder="find_element")
 def switch_window(driver, *, title=None, page=None):
     """Change to the next tab/window or switch to one wih a matching title.
 
@@ -455,43 +454,7 @@ def screenshot(driver, *,
                locator=None,
                **kwargs):
 
-    screenshotsfldr = pathlib.Path("screenshots").resolve()
-    # Sort png by browser config
-    driverfldr = [driver.os, driver.device_name, driver.platform_version]
-    screenshotsfldr = screenshotsfldr.joinpath(*driverfldr).resolve()
-    screenshotsfldr.mkdir(exist_ok=True, parents=True)
-    date_tag = datetime.now().strftime("%d-%m-%y--%H-%M-%S")
-    name = name.replace(" ", "_")  # Remove spaces from file name
-    file_name = "_".join([name, date_tag])
-    _file = screenshotsfldr.joinpath(file_name).with_suffix(".png")
-    count = 0
-
-    while _file.exists():
-        count += 1
-        file_name = "".join([name, date_tag, f"({count})"])
-        _file = _file.with_stem(file_name)
-
-    out = str(_file.resolve())
-    logger.info("Saving screenshot as: %s", out)
-
-    try:
-        if locator:
-            status = find(driver, locator, **kwargs).screenshot(out)
-        else:
-            status = driver().save_screenshot(out)
-    except WebDriverException as e:
-        logger.warning("Something went wrong, %s -- Trying again", e)
-        if locator:
-            status = find(driver, locator, **kwargs).screenshot(out)
-        else:
-            status = driver().save_screenshot(out)
-
-    if status:
-        logger.info("Screenshot saved successfully.")
-    else:
-        logger.warning("Screenshot was not saved!")
-
-    return out
+    return app._screenshot(driver, find, name, locator, **kwargs)
 
 
 # / / / / / / / Assertions / / / / / / /
@@ -542,7 +505,7 @@ def assert_page_is_open(driver, *, find, page=None,
             given above.
 
     """
-    app._assert_page_is_open(driver, find, 
+    app._assert_page_is_open(driver, find,
                              page, soft,
                              page_id)
 
@@ -575,6 +538,7 @@ def assert_contains_text(driver, *, find, text,
 
 
 @AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
 def assert_displayed(driver, *,
                      find,
                      soft=False,
@@ -684,6 +648,6 @@ def assert_attribute_contains_value(driver, *,
             requires: locator.
 
     """
-    app._assert_attribute_contains_value(driver, find, attribute, 
+    app._assert_attribute_contains_value(driver, find, attribute,
                                          value, soft,
                                         exact, **kwargs)
