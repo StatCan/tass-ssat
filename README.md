@@ -15,6 +15,13 @@ functional on Linux. You can install the package from the
 the repository. Further documentation can be found at our [Github 
 Pages](https://statcan.github.io/tass-ssat/) website.
 
+## Selenium and Appium Locator Strategies (v1.2.0)
+
+As of version 1.2.0 of the TASS core framework, there has been a change to the
+Selenium and Appium locator strategies. Please read about the changes
+[here](./tass-core/README.md#selenium-and-appium-locator-strategies-v120).
+
+
 ## License/Copyright
 
 The code and all files in this repository are licensed under the Apache
@@ -49,6 +56,12 @@ valider son fonctionnement sur Linux. SSAT peut être installé de la
 page de [publication](https://github.com/StatCan/tass-ssat/releases) 
 de Github. Il y a plus de documentation sur notre site [Github 
 Pages](https://statcan.github.io/tass-ssat/).
+
+## Stratégies de localisation de Selenium et Appium (v1.2.0)
+
+À partir de la version 1.2.0 de l'application SSAT, un changement a été apporté à la
+stratégies de localisation de Selenium et d’Appium. Veuillez prendre connaissance des changements
+[ici](./tass-core/README.md#selenium-and-appium-locator-strategies-v120).
 
 ## Licence/Droit d'auteur
 
