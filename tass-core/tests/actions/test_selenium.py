@@ -267,7 +267,7 @@ class TestSeleniumLocateActions(TestSelenium):
             args = ["Color"]
             locator = "btnColor"
             loc_out = locate(["custom", "test"], locator, args)
-            self.assertEqual(loc_out['value'], 'btnColor')
+            self.assertEqual(loc_out['value'], "//*[@id='btnColor']")
 
             args = ["Red"]
             locator = PageReader().get_element(
@@ -275,7 +275,7 @@ class TestSeleniumLocateActions(TestSelenium):
                                     "test",
                                     "btnColor")
             loc_out = locate(["custom", "test"], locator, args)
-            self.assertEqual(loc_out['value'], "//*[@id='btnColor']")
+            self.assertEqual(loc_out['value'], "//*[@id='btnRed']")
         finally:
             PageReader.reset()
 
