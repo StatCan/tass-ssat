@@ -278,7 +278,7 @@ class TestAppiumStartupActions(TestAppium):
         for device, driver in self.appium_starter(self.drivers):
             try:
                 with self.subTest(device=device[1].__name__):
-                    appium.load_url(driver, url)
+                    appium.load_url(driver, url=url)
                     self.assertEqual(driver().title, "Google")
             finally:
                 if driver:
@@ -532,7 +532,7 @@ class TestAppiumDropdownActions(TestAppium):
                     self.load_initial_url(driver, url)
                     self.close_nav(driver)
                     locator = self.pages['drpdnw-page']['elements']['select']
-                    appium.select_dropdown(driver, 'Python', 'text',
+                    appium.select_dropdown(driver, value='Python', using='text',
                                              locator=locator)
                     sel = Select(driver().find_element("xpath", f"//*[@id='{locator['value']}']"))
                     self.assertEqual(sel.first_selected_option.text, 'Python')
@@ -548,7 +548,7 @@ class TestAppiumDropdownActions(TestAppium):
                     self.load_initial_url(driver, url)
                     self.close_nav(driver)
                     locator = self.pages['drpdnw-page']['elements']['select']
-                    appium.select_dropdown(driver, '1', 'value',
+                    appium.select_dropdown(driver, value='1', using='value',
                                              locator=locator)
                     sel = Select(driver().find_element("xpath", f"//*[@id='{locator['value']}']"))
                     self.assertEqual(sel.first_selected_option.text, 'Python')
@@ -564,7 +564,7 @@ class TestAppiumDropdownActions(TestAppium):
                     self.load_initial_url(driver, url)
                     self.close_nav(driver)
                     locator = self.pages['drpdnw-page']['elements']['select']
-                    appium.select_dropdown(driver, 1, 'index',
+                    appium.select_dropdown(driver, value=1, using='index',
                                              locator=locator)
                     sel = Select(driver().find_element("xpath", f"//*[@id='{locator['value']}']"))
                     self.assertEqual(sel.first_selected_option.text, 'Python')
@@ -590,7 +590,7 @@ class TestAppiumAssertActions(TestAppium):
                     try:
                         appium.assert_contains_text(
                             driver,
-                            text,
+                            text=text,
                             locator=txt)
                     except TassAssertionError as e:
                         self.fail(e.message)
@@ -613,7 +613,7 @@ class TestAppiumAssertActions(TestAppium):
                     try:
                         appium.assert_contains_text(
                             driver,
-                            text,
+                            text=text,
                             locator=txt)
                     except TassAssertionError as e:
                         self.fail(e.message)
@@ -636,7 +636,7 @@ class TestAppiumAssertActions(TestAppium):
                     with self.assertRaises(TassSoftAssertionError):
                         appium.assert_contains_text(
                             driver,
-                            text,
+                            text=text,
                             soft=True,
                             locator=txt)
             finally:
@@ -658,7 +658,7 @@ class TestAppiumAssertActions(TestAppium):
                     with self.assertRaises(TassHardAssertionError):
                         appium.assert_contains_text(
                             driver,
-                            text,
+                            text=text,
                             locator=txt)
             finally:
                 if driver:
@@ -679,7 +679,7 @@ class TestAppiumAssertActions(TestAppium):
                     try:
                         appium.assert_contains_text(
                             driver,
-                            text,
+                            text=text,
                             locator=txt,
                             exact=True)
                     except TassAssertionError as e:
@@ -703,7 +703,7 @@ class TestAppiumAssertActions(TestAppium):
                     with self.assertRaises(TassSoftAssertionError):
                         appium.assert_contains_text(
                             driver,
-                            text,
+                            text=text,
                             soft=True,
                             locator=txt,
                             exact=True)
@@ -726,7 +726,7 @@ class TestAppiumAssertActions(TestAppium):
                     with self.assertRaises(TassHardAssertionError):
                         appium.assert_contains_text(
                             driver,
-                            text,
+                            text=text,
                             locator=txt,
                             exact=True)
             finally:
@@ -1077,8 +1077,8 @@ class TestAppiumAssertActions(TestAppium):
                     try:
                         appium.assert_attribute_contains_value(
                             driver,
-                            attribute,
-                            value,
+                            attribute=attribute,
+                            value=value,
                             locator=element)
                     except TassAssertionError as e:
                         self.fail(e.message)
@@ -1100,8 +1100,8 @@ class TestAppiumAssertActions(TestAppium):
                     try:
                         appium.assert_attribute_contains_value(
                             driver,
-                            attribute,
-                            value,
+                            attribute=attribute,
+                            value=value,
                             locator=element)
                     except TassAssertionError as e:
                         self.fail(e.message)
@@ -1123,8 +1123,8 @@ class TestAppiumAssertActions(TestAppium):
                     with self.assertRaises(TassSoftAssertionError):
                         appium.assert_attribute_contains_value(
                             driver,
-                            attribute,
-                            value,
+                            attribute=attribute,
+                            value=value,
                             soft=True,
                             locator=element)
             finally:
@@ -1145,8 +1145,8 @@ class TestAppiumAssertActions(TestAppium):
                     with self.assertRaises(TassHardAssertionError):
                         appium.assert_attribute_contains_value(
                             driver,
-                            attribute,
-                            value,
+                            attribute=attribute,
+                            value=value,
                             locator=element)
             finally:
                 if driver:
@@ -1166,8 +1166,8 @@ class TestAppiumAssertActions(TestAppium):
                     try:
                         appium.assert_attribute_contains_value(
                             driver,
-                            attribute,
-                            value,
+                            attribute=attribute,
+                            value=value,
                             exact=True,
                             locator=element)
                     except TassAssertionError as e:
@@ -1190,8 +1190,8 @@ class TestAppiumAssertActions(TestAppium):
                     with self.assertRaises(TassSoftAssertionError):
                         appium.assert_attribute_contains_value(
                             driver,
-                            attribute,
-                            value,
+                            attribute=attribute,
+                            value=value,
                             exact=True,
                             soft=True,
                             locator=element)
@@ -1213,8 +1213,8 @@ class TestAppiumAssertActions(TestAppium):
                     with self.assertRaises(TassHardAssertionError):
                         appium.assert_attribute_contains_value(
                             driver,
-                            attribute,
-                            value,
+                            attribute=attribute,
+                            value=value,
                             exact=True,
                             locator=element)
             finally:

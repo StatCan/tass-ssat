@@ -1,5 +1,6 @@
 from datetime import datetime
 from .tass_items import TassItem
+from ..actions.action_manager import ActionManager
 from ..exceptions.assertion_errors import TassHardAssertionError
 from ..exceptions.assertion_errors import TassSoftAssertionError
 from ..log.logging import getLogger
@@ -12,13 +13,14 @@ class TassCase(TassItem):
         self.logger.info("Case: %s (%s) started @%s",
                          self.title, self.uuid, self._start_time)
         self._status = 'incomplete'
+        manager = ActionManager.register_all(self._managers)
         for step in self.steps:
             self.logger.info("Executing > > > > %s", step['title'])
             self.logger.debug("Parameters > > > > %r", step)
             try:
                 # Executing the step, catching the custom exception
                 # reporting a failed step here.
-                self._execute_step(step)
+                self._execute_step(manager, step)
                 self.logger.info("Step: %s completed successfully.",
                                  step['title'])
                 step.update({"status": "passed"})
@@ -80,7 +82,7 @@ class TassCase(TassItem):
             self._status = 'passed'
         self.logger.info("Case completed: %s-%s", self.title, self.uuid)
         self.logger.info("Status: %s", self._status)
-        self._quit_managers()
+        manager.quit()
 
 
     def __init__(self, *, steps=[], managers, **kwargs):
@@ -127,7 +129,7 @@ class TassCase(TassItem):
             "managers": self._managers
         }
 
-    def _execute_step(self, step):
+    def _execute_step(self, manager, step):
         raw = step.get('parameters', None)
         if (not isinstance(raw, dict)):
             params = dict(zip(it := iter(raw), it))
@@ -138,8 +140,4 @@ class TassCase(TassItem):
         self.logger.debug("Action: %s -- Executed with: %r",
                           action, params)
 
-        if (action[0] in self._managers):
-            self._managers[action[0]].action(action[1], **params)
-            return
-
-        self.logger.warning("Action manager not found for: %s", action[0])
+        manager.action(*action, **params)

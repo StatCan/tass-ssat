@@ -1,11 +1,16 @@
 import selenium.webdriver.support.expected_conditions as EC
 from ...log.logging import getLogger
-from . import selenium as sel
+from ...registry import SeleniumBroker, SeleniumWaitBroker
+
 
 logger = getLogger(__name__)
+DOCS = ""
 
-
-def wait_element_clickable(driver, locator,
+@SeleniumBroker.command
+@SeleniumBroker.find_with(finder="wait_element_clickable")
+@SeleniumWaitBroker.command
+@SeleniumWaitBroker.find_with(finder="wait_element_clickable")
+def wait_element_clickable(driver, *, find, locator,
                            locator_args=None,
                            action=None, **kwargs):
     """Wait until element is visible and enabled.
@@ -30,27 +35,28 @@ def wait_element_clickable(driver, locator,
             Dictionary containing additional parameters. Contents
             of the dictionary will vary based on the find function used.
     """
-    def _wait(driver, locator, locator_args=None, page=None, time=None):
-        mark = tuple(sel.locate(page, locator, locator_args).values())
-        logger.debug("Waiting for element to be clickable: %s", mark)
-        return driver.wait_until(EC.element_to_be_clickable, time=time,
-                                 mark=mark)
-
+    logger.warning("selenium_wait functions are deprecated and will be removed in a future version. Consider using the 'find' argument with basic selenium commands")
+    logger.warning("See for details: %s", DOCS)
     if (action is None):
         logger.info("Waiting for element before continuing...")
-        _wait(driver, locator, locator_args, **kwargs)
+        find(driver, locator, locator_args, **kwargs)
     else:
         logger.info("Waiting for element before selenium action: %s",
                     action[1])
         # TODO: Rework this to perform ANY action not just selenium
         # TODO: Alternate: Create generic wait until condition in core?
-        return getattr(sel, action[1])(driver,
-                                       find=_wait,
-                                       locator=locator,
-                                       **kwargs)
+        return SeleniumBroker.get(action[1])(driver=driver,
+                                             find=find,
+                                             locator=locator,
+                                             locator_args=locator_args,
+                                             **kwargs)
 
 
-def wait_element_visible(driver, locator,
+@SeleniumBroker.command
+@SeleniumBroker.find_with(finder="wait_element_visible")
+@SeleniumWaitBroker.command
+@SeleniumWaitBroker.find_with(finder="wait_element_visible")
+def wait_element_visible(driver, *, find, locator,
                          locator_args=None,
                          action=None, **kwargs):
     """Wait until element is visible.
@@ -75,21 +81,18 @@ def wait_element_visible(driver, locator,
             Dictionary containing additional parameters. Contents
             of the dictionary will vary based on the find function used.
     """
-    def _wait(driver, locator, locator_args=None, time=None, page=None):
-        mark = tuple(sel.locate(page, locator, locator_args).values())
-        logger.debug("Waiting for element to be visible: %s", mark)
-        return driver.wait_until(EC.visibility_of_element_located, time=time,
-                                 locator=mark)
-
+    logger.warning("selenium_wait functions are deprecated and will be removed in a future version. Consider using the 'find' argument with basic selenium commands")
+    logger.warning("See for details: %s", DOCS)
     if (action is None):
         logger.info("Waiting for element before continuing...")
-        _wait(driver, locator, locator_args, **kwargs)
+        find(driver, locator, locator_args, **kwargs)
     else:
         # TODO: Rework this to perform ANY action not just selenium
         # TODO: Alternate: Create generic wait until condition in core?
         logger.info("Waiting for element before selenium action: %s",
                     action[1])
-        return getattr(sel, action[1])(driver,
-                                       find=_wait,
-                                       locator=locator,
-                                       **kwargs)
+        return SeleniumBroker.get(action[1])(driver=driver,
+                                             find=find,
+                                             locator=locator,
+                                             locator_args=locator_args,
+                                             **kwargs)
