@@ -1,8 +1,9 @@
 import pathlib
 from datetime import datetime
-from ..browser import selenium as sel
+from ..impl import _appium as app
 from ...tools.page_reader import PageReader
 from ...log.logging import getLogger
+from ...registry import AppiumBroker
 from selenium.common.exceptions import WebDriverException
 
 #  For additional documentation, see selenium docs:
@@ -12,56 +13,11 @@ from selenium.common.exceptions import WebDriverException
 logger = getLogger(__name__)
 
 
-def _find_element_hide_keyboard(driver,
-                                locator,
-                                locator_args=None,
-                                page=None,
-                                hide_keyboard=True,
-                                *args, **kwargs):
-    # Hide keyboard before locating element if True.
-    # Set to False to keep keyboard open.
-    if hide_keyboard and driver().is_keyboard_shown():
-        driver().hide_keyboard(*args, **kwargs)
-    return driver().find_element(**locate(page, locator, locator_args))
-
-
-def locate(page, locator, locator_args):
-    logger.debug("Locator: %s -- Args: %s", locator, locator_args)
-    if (isinstance(locator, str)):
-        logger.debug("Getting locator (%s) from POM: %s", locator, page)
-        _loc = PageReader().get_element(*page, locator)
-    elif isinstance(locator, dict):
-        logger.debug("Locator provided directly...")
-        _loc = locator.copy()
-    else:
-        msg = f"Locator type not supported. Type: {type(locator)}"
-        logger.error(msg)
-        raise TypeError(msg)
-
-    if locator_args:
-        logger.debug("Filling in blanks in locator using: %s", locator_args)
-        # scenario converter should convert locator args to a list by default
-        _loc['value'] = _loc['value'].format(*locator_args)
-
-    if _loc['by'].lower() == "id" or _loc['by'].lower() == "name":
-        # Convert ID and Name locator methods to xpath for compatibility.
-        logger.warning(
-            (
-                "Locator By methods: ID and NAME may not be supported."
-                " Consider updating."
-            )
-        )
-        _loc['value'] = f"//*[@{_loc['by']}='{_loc['value']}']"
-        _loc['by'] = "xpath"
-        logger.warning("Converting to simple xpath. %s", _loc['value'])
-
-    logger.debug("Using locator: %s", _loc)
-    return _loc
-
-
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
 def click(driver,
+          *, find,
           pointer_type=None,
-          find=_find_element_hide_keyboard,
           **kwargs):
     """Click an element in the DOM
 
@@ -88,35 +44,12 @@ def click(driver,
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    # JavaScript used to trigger a click (tap) event on the element
-    # Bypasses issues clicking edge case elements that may give wrong
-    # coordinates with default click.
-    _valid_pointers = ['pen', 'touch', 'mouse']
-    _pointer = pointer_type if pointer_type in _valid_pointers else 'touch'
-    options = (
-        "{'bubbles': true, 'pointerType': '"
-        f"{_pointer}"
-        "'}"
-    )
-    script = (
-        # Scroll element to center of view
-        "arguments[0].scrollIntoView({'block': 'center'});"
-        # Fire click event
-        f"arguments[0].dispatchEvent(new PointerEvent('click', {options}))"
-    )
-    try:
-        ele = find(driver, **kwargs)
-
-        driver().execute_script(script, ele)
-        logger.debug("Element clicked")
-    except WebDriverException as e:
-        logger.warning("Something went wrong, %s -- Trying again", e)
-        ele = find(driver, **kwargs)
-        driver().execute_script(script, ele)
-        logger.debug("Element clicked")
+    app._click(driver, find, pointer_type, **kwargs)
 
 
-def write(driver, find=_find_element_hide_keyboard, text='', **kwargs):
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
+def write(driver, *, find, text='', **kwargs):
     """Send a string to an element in the DOM
 
     Execute the selenium send_keys(str) function against the locator
@@ -145,11 +78,13 @@ def write(driver, find=_find_element_hide_keyboard, text='', **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    sel.write(driver, find=find, text=text, **kwargs)
+    app._write(driver, find, text, **kwargs)
 
 
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
 def write_stored_value(driver,
-                       find=_find_element_hide_keyboard,
+                       *, find,
                        text_key='',
                        **kwargs):
     """Send a stored string to an element in the DOM
@@ -175,13 +110,15 @@ def write_stored_value(driver,
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    sel.write_stored_value(driver, find=find, text_key=text_key, **kwargs)
+    app._write_stored_value(driver, find, text_key, **kwargs)
 
 
-def select_dropdown(driver,
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
+def select_dropdown(driver, *,
+                    find,
                     value,
                     using,
-                    find=_find_element_hide_keyboard,
                     **kwargs):
     """Select an option from a dropdown using text, value, or index in the DOM
 
@@ -216,10 +153,12 @@ def select_dropdown(driver,
             requires: locator.
 
     """
-    sel.select_dropdown(driver, value, using, find=find, **kwargs)
+    app._select_dropdown(driver, find, value, using, **kwargs)
 
 
-def clear(driver, find=_find_element_hide_keyboard, **kwargs):
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
+def clear(driver, *, find, **kwargs):
     """Clear the value of a text input element in the DOM
 
     Execute the selenium clear function against the locator
@@ -241,10 +180,11 @@ def clear(driver, find=_find_element_hide_keyboard, **kwargs):
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    sel.clear(driver, find=find, **kwargs)
+    app._clear(driver, find, **kwargs)
 
 
-def load_url(driver, url):
+@AppiumBroker.command
+def load_url(driver, *, url):
     """Load the provided URL in the current browser window
 
     Execute the selenium get function. Requires a fully formed
@@ -257,10 +197,11 @@ def load_url(driver, url):
         url:
             The url to be loaded. Must be complete and correctly formatted.
     """
-    sel.load_url(driver, url)
+    app._load_url(driver, url)
 
 
-def load_file(driver, relative_path):
+@AppiumBroker.command
+def load_file(driver, *, relative_path):
     """Load the provided file in the current browser window
 
     Execute the selenium get function. Requires a file
@@ -273,10 +214,11 @@ def load_file(driver, relative_path):
         relative_path:
             The file path to be loaded. Must be relative to the root directory.
     """
-    sel.load_file(driver, relative_path)
+    app._load_file(driver, relative_path)
 
 
-def load_page(driver, page, url_key='url', use_local=False):
+@AppiumBroker.command
+def load_page(driver, *, page, url_key='url', use_local=False):
     """Load a page using the URL provided in the POM
 
         Execute the selenium get function against the URL or
@@ -298,12 +240,14 @@ def load_page(driver, page, url_key='url', use_local=False):
             case the provided url is treated like a relative file path
             instead of a web URL.
     """
-    sel.load_page(driver, page, url_key=url_key, use_local=use_local)
+    app._load_page(driver, page, url_key, use_local)
 
 
-def read_attribute(driver,
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
+def read_attribute(driver, *,
+                   find,
                    attribute,
-                   find=_find_element_hide_keyboard,
                    **kwargs):
     """Read the value of an attribute for an element in the DOM
 
@@ -333,10 +277,12 @@ def read_attribute(driver,
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    return sel.read_attribute(driver, attribute, find=find, **kwargs)
+    return app._read_attribute(driver, find, attribute, **kwargs)
 
 
-def read_css(driver, attribute, find=_find_element_hide_keyboard, **kwargs):
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
+def read_css(driver, *, find, attribute, **kwargs):
     """Read the value of a css attribute for an element in the DOM
 
     Execute the selenium value_of_css function against the locator
@@ -366,10 +312,12 @@ def read_css(driver, attribute, find=_find_element_hide_keyboard, **kwargs):
             requires: locator.
     """
 
-    return sel.read_css(driver, attribute, find=find, **kwargs)
+    return app._read_css(driver, find, attribute, **kwargs)
 
 
-def read_text(driver, find=_find_element_hide_keyboard, **kwargs):
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
+def read_text(driver, *, find, **kwargs):
     """Read the text value for an element in the DOM
 
     Get the text value of the element with the locator
@@ -392,10 +340,12 @@ def read_text(driver, find=_find_element_hide_keyboard, **kwargs):
             requires: locator.
     """
 
-    return sel.read_text(driver, find=find, **kwargs)
+    return app._read_text(driver, find, **kwargs)
 
 
-def switch_frame(driver, frame, page=None, find=_find_element_hide_keyboard):
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
+def switch_frame(driver, *, find, frame, page=None):
     """Change the active frame by name or element
 
     Execute the selenium switch_to.frame function against the locator
@@ -417,10 +367,11 @@ def switch_frame(driver, frame, page=None, find=_find_element_hide_keyboard):
             and 'value' as a locator.
 
     """
-    sel.switch_frame(driver, frame, page=page, find=find)
+    app._switch_frame(driver, find, frame, page)
 
 
-def switch_window(driver, title=None, page=None):
+@AppiumBroker.command
+def switch_window(driver, *, title=None, page=None):
     """Change to the next tab/window or switch to one wih a matching title.
 
     Execute the selenium switch_to.window function. If title
@@ -437,9 +388,10 @@ def switch_window(driver, title=None, page=None):
             The title must be an exact match in order for it to be
             found and switched to correctly.
     """
-    sel.switch_window(driver, title=title, page=page)
+    app._switch_window(driver, title, page)
 
 
+@AppiumBroker.command
 def close(driver):
     """ Closes the currently open browser tab or window.
 
@@ -452,9 +404,10 @@ def close(driver):
             The RemoteWebDriver object that is connected
             to the open browser.
     """
-    sel.close(driver)
+    app._close(driver)
 
 
+@AppiumBroker.command
 def quit(driver):
     """ Closes the current browser session.
 
@@ -468,10 +421,11 @@ def quit(driver):
             to the open browser.
     """
 
-    sel.quit(driver)
+    app._quit(driver)
 
 
-def handle_alert(driver, handle=True, text=None):
+@AppiumBroker.command
+def handle_alert(driver, *, handle=True, text=None):
     """ Handle an expected browser alert.
 
     Utilizing the Selenium Alert class, handle an expected
@@ -489,56 +443,24 @@ def handle_alert(driver, handle=True, text=None):
             alert. A value of None will provide default
             behaviour of 'accept'
     """
-    sel.handle_alert(driver, handle=handle, text=text)
+    app._handle_alert(driver, handle, text)
 
 
-def screenshot(driver,
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
+def screenshot(driver, *,
+               find,
                name="screenshot",
                locator=None,
-               find=_find_element_hide_keyboard,
                **kwargs):
 
-    screenshotsfldr = pathlib.Path("screenshots").resolve()
-    # Sort png by browser config
-    driverfldr = [driver.os, driver.device_name, driver.platform_version]
-    screenshotsfldr = screenshotsfldr.joinpath(*driverfldr).resolve()
-    screenshotsfldr.mkdir(exist_ok=True, parents=True)
-    date_tag = datetime.now().strftime("%d-%m-%y--%H-%M-%S")
-    name = name.replace(" ", "_")  # Remove spaces from file name
-    file_name = "_".join([name, date_tag])
-    _file = screenshotsfldr.joinpath(file_name).with_suffix(".png")
-    count = 0
-
-    while _file.exists():
-        count += 1
-        file_name = "".join([name, date_tag, f"({count})"])
-        _file = _file.with_stem(file_name)
-
-    out = str(_file.resolve())
-    logger.info("Saving screenshot as: %s", out)
-
-    try:
-        if locator:
-            status = find(driver, locator, **kwargs).screenshot(out)
-        else:
-            status = driver().save_screenshot(out)
-    except WebDriverException as e:
-        logger.warning("Something went wrong, %s -- Trying again", e)
-        if locator:
-            status = find(driver, locator, **kwargs).screenshot(out)
-        else:
-            status = driver().save_screenshot(out)
-
-    if status:
-        logger.info("Screenshot saved successfully.")
-    else:
-        logger.warning("Screenshot was not saved!")
-
-    return out
+    return app._screenshot(driver, find, name, locator, **kwargs)
 
 
 # / / / / / / / Assertions / / / / / / /
-def assert_alert_displayed(driver, text=None, soft=False):
+# TODO: If the appium command only calls the selenium command, does it need to be added to the registry?
+@AppiumBroker.command
+def assert_alert_displayed(driver, *, text=None, soft=False):
     """ Assert that an alert is currently displayed in the browser.
 
     Using the Selenium Alert class, assert that an alert is currently
@@ -556,10 +478,11 @@ def assert_alert_displayed(driver, text=None, soft=False):
             current test stops upon returning. If false, error is
             recorded and execution can continue. The default is False.
     """
-    sel.assert_alert_displayed(driver, text=text, soft=soft)
+    app._assert_alert_displayed(driver, text, soft)
 
-
-def assert_page_is_open(driver, page=None, find=_find_element_hide_keyboard,
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
+def assert_page_is_open(driver, *, find, page=None,
                         soft=False, page_id=None):
     """Assert the given page is open using the described method
 
@@ -582,12 +505,14 @@ def assert_page_is_open(driver, page=None, find=_find_element_hide_keyboard,
             given above.
 
     """
-    sel.assert_page_is_open(driver, page=page,
-                            find=find, soft=soft,
-                            page_id=page_id)
+    app._assert_page_is_open(driver, find,
+                             page, soft,
+                             page_id)
 
 
-def assert_contains_text(driver, text, find=_find_element_hide_keyboard,
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
+def assert_contains_text(driver, *, find, text,
                          soft=False, exact=False, **kwargs):
     """Assert the given text is displayed in the element.
        Can be soft, or hard check.
@@ -608,12 +533,14 @@ def assert_contains_text(driver, text, find=_find_element_hide_keyboard,
             or the default _find_element function.
 
     """
-    sel.assert_contains_text(driver, text, find=find,
-                             soft=soft, exact=exact, **kwargs)
+    app._assert_contains_text(driver, find, text,
+                             soft, exact, **kwargs)
 
 
-def assert_displayed(driver,
-                     find=_find_element_hide_keyboard,
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
+def assert_displayed(driver, *,
+                     find,
                      soft=False,
                      **kwargs):
     """Assert the given element is displayed. Can be a soft or hard check
@@ -640,11 +567,13 @@ def assert_displayed(driver,
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    sel.assert_displayed(driver, find=find, soft=soft, **kwargs)
+    app._assert_displayed(driver, find, soft, **kwargs)
 
 
-def assert_not_displayed(driver,
-                         find=_find_element_hide_keyboard,
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
+def assert_not_displayed(driver, *,
+                         find,
                          soft=False,
                          **kwargs):
     """Assert the given element is not displayed. Can be a soft of hard check
@@ -671,13 +600,15 @@ def assert_not_displayed(driver,
             By default, _find_element is used and thus kwargs
             requires: locator.
     """
-    sel.assert_not_displayed(driver, find=find, soft=soft, **kwargs)
+    app._assert_not_displayed(driver, find, soft, **kwargs)
 
 
-def assert_attribute_contains_value(driver,
+@AppiumBroker.command
+@AppiumBroker.find_with(finder="find_element")
+def assert_attribute_contains_value(driver, *,
+                                    find,
                                     attribute,
                                     value,
-                                    find=_find_element_hide_keyboard,
                                     soft=False,
                                     exact=False,
                                     **kwargs):
@@ -717,6 +648,6 @@ def assert_attribute_contains_value(driver,
             requires: locator.
 
     """
-    sel.assert_attribute_contains_value(driver, attribute, value,
-                                        find=find, soft=soft,
-                                        exact=exact, **kwargs)
+    app._assert_attribute_contains_value(driver, find, attribute,
+                                         value, soft,
+                                        exact, **kwargs)

@@ -1,5 +1,5 @@
 {
-    "schema-version": "1.0.0",
+    "schema-version": "1.1.0",
     "Job":
     {
         "uuid": "tr100101",
@@ -11,6 +11,16 @@
         {
             "uuid": "tr100101--uuid-tc-01--chrome001",
             "case": "uuid-tc-01",
+            "configurations": [
+                {
+                    "type": "browser",
+                    "uuid": "chrome001"
+                }
+            ]
+        },
+        {
+            "uuid": "tr100101--uuid-tc-01A--chrome001",
+            "case": "uuid-tc-01A",
             "configurations": [
                 {
                     "type": "browser",
@@ -33,9 +43,10 @@
     [
         {
             "uuid": "uuid-tc-01",
-            "title": "Tass Sample Case A",
+            "title": "Tass Sample Case A - Fail",
             "steps": [
                 "q1",
+                "q1wait",
                 "q2",
                 "q3",
                 "q4",
@@ -46,8 +57,20 @@
             ]
         },
         {
+            "uuid": "uuid-tc-01A",
+            "title": "Tass Sample Case A - Success",
+            "steps": [
+                "q1",
+                "q1wait",
+                "q2",
+                "q3",
+                "q4",
+                "q5"
+            ]
+        },
+        {
             "uuid": "Uuid-tc-02",
-            "title": "Tass Sample Case B",
+            "title": "Tass Sample Case B - Success",
             "steps": [
                 "q1",
                 "q2",
@@ -73,6 +96,17 @@
             ],
             "parameters": {
                 "relative_path": "examples/demo-html/page1.html"
+            }
+        },
+        {
+            "uuid": "q1wait",
+            "title": "test wait",
+            "action": [
+                "core",
+                "wait"
+            ],
+            "parameters": {
+                "wait_time": 5
             }
         },
         {
@@ -117,6 +151,7 @@
             ],
             "parameters": {
                 "locator": "btnColor",
+                "find": "wait_element_visible",
                 "page": [
                     "sample",
                     "page1"
