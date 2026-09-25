@@ -45,7 +45,7 @@ class ActionManager():
             executor.quit()
 
     @classmethod
-    def register_all(cls, managers) -> ActionManager:
+    def register_all(cls, managers):
         m = cls()
         for manager in managers:
             m._executors.update(execpool.get(**manager))
