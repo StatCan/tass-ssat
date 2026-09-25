@@ -49,12 +49,16 @@ and the [JSON schema](../templates/execution-template.json) found in the templat
 
 ### Commands
 
-`python -m tass.core -f/--file <path/to/file.ext> [--no-validate]`
+`python -m tass.core -f/--file <path/to/file.ext> [--no-validate] [--verbose/-v] [--log-level/-ll] <LOGLEVEL> [--disable-test-logging] [--disable-run-logging]`
 
 ### Arguments
 
-- file (required): The path to the JSON job file to be executed. 
+- file (required): The path to the JSON job file to be executed. Can be provided multiple times to execute multiple test runs.
 - no-validate: Flag used to disable the job file validation.
+- verbose: Flag to set logging level to DEBUG.
+- log-level: Set log level to: ["INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL"].
+- disable-test-logging: Disables logging to the test scope logger.
+- disable-run-logging: Disable logging to the run scope logger.
 
 ## Development
 
