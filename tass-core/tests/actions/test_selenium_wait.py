@@ -17,8 +17,8 @@ class TestSeleniumWait(TestSelenium):
                         .find_element(*['id', 'btn-y']) \
                         .click()
                     selwait \
-                        .wait_element_clickable(driver,
-                                                {
+                        .wait_element_clickable(driver=driver,
+                                                locator = {
                                                     "by": "id",
                                                     "value":
                                                     "btn-z"
@@ -48,7 +48,7 @@ class TestSeleniumWait(TestSelenium):
                     locator = {"by": "id",
                                "value": "btn-b"}
                     selwait \
-                        .wait_element_visible(driver, locator,
+                        .wait_element_visible(driver=driver, locator=locator,
                                               action=['selenium', 'click'])
                     self.assertIsNotNone(driver.wait_until(
                             until_func=EC.presence_of_element_located,

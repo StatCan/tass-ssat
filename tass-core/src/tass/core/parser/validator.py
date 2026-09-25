@@ -25,7 +25,7 @@ class Validator():
             try:
                 f = open(_schema)
             except IOError as e:
-                log.error("An IOError occured: %s" % e)
+                self.log.error("An IOError occured: %s" % e)
                 return None
 
             with f:
@@ -48,6 +48,7 @@ class Tass1Validator(Validator):
         super().__init__("tass_1.0.json")
 
     def validate(self, job):
+        self.log.info("Validating schema against schema version: 1.0.0")
         super().validate(job)
         # TODO: validate using uniqueness rules.
 
@@ -61,6 +62,7 @@ class Tass1_1Validator(Validator):
         super().__init__("tass_1.1.json")
 
     def validate(self, job):
+        self.log.info("Validating schema against schema version: 1.1.0")
         super().validate(job)
         # TODO: validate using uniqueness rules.
 

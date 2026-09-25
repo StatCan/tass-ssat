@@ -4,7 +4,6 @@ from pathlib import Path
 from ..log.logging import getLogger
 from ..secrets.excel import Excel
 
-
 log = getLogger(__name__)
 
 

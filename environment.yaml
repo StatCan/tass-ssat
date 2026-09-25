@@ -11,5 +11,7 @@ dependencies:
   - openpyxl
   - sphinx
   - myst-parser
-  - openjdk
-  - nodejs
+  - pip
+  - pip:
+    - -e ./tass-core
+    - -e ./tass-converter
