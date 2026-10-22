@@ -1,20 +1,13 @@
-import pathlib
-from datetime import datetime
 from selenium.common.exceptions import (WebDriverException,
                                         NoSuchWindowException,
                                         NoAlertPresentException)
-from ...tools.page_reader import PageReader
-from ...exceptions.assertion_errors import TassHardAssertionError
-from ...exceptions.assertion_errors import TassSoftAssertionError
-from ...log.logging import getLogger
+
 from ...registry import SeleniumBroker
 from ..impl import selcmds
 
 #  For additional documentation, see selenium docs:
 #  https://www.selenium.dev/selenium/docs/api/py/webdriver_remote/selenium.webdriver.remote.webelement.html
 
-
-logger = getLogger(__name__)
 
 RETRY_EXC = [WebDriverException]
 

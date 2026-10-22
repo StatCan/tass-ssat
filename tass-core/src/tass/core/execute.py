@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from .parser.parse import parse
 from .log.logging import getLogger, init_base_logger, closeLoggerFile
-from .context import Context
+from .context import ctx
 
 
 log = None
@@ -45,11 +45,12 @@ def execute(file_paths, no_validate, run_logging, test_logging, log_level):
 
             run = parse(path, no_validate)
 
-            Context().run_uuid.value = run.uuid
-            Context().run_name.value = run.title
-            Context().run_id.value = run.id
+            ctx.run_uuid.value = run.uuid
+            ctx.run_name.value = run.title
+            ctx.run_id.value = run.id
 
             log.info("<<<<< Starting Run: %s >>>>>", run.uuid)
+            # TODO: before run
             
             for case in run.collect():
                 try:
@@ -57,20 +58,21 @@ def execute(file_paths, no_validate, run_logging, test_logging, log_level):
                     log.info("< < < Starting Case: %s > > >", case.uuid)
                     log.info("")
 
-                    Context().test_uuid.value = case.uuid
-                    Context().test_name.value = case.title
-                    Context().test_id.value = case.id
-
+                    ctx.test_uuid.value = case.uuid
+                    ctx.test_name.value = case.title
+                    ctx.test_id.value = case.id
+                    # TODO: before test
                     case.execute_tass()
 
                     log.info("")
                     log.info("> > > Finished Case: %s < < <", case.uuid)
                     log.info("")
+                    # TODO: after test
                 finally:
-                    closeLoggerFile(Context().test_id.value)
-                    Context().test_id.reset()
-                    Context().test_uuid.reset()
-                    Context().test_name.reset()
+                    closeLoggerFile(ctx.test_id.value)
+                    ctx.test_id.reset()
+                    ctx.test_uuid.reset()
+                    ctx.test_name.reset()
 
             Path('results').mkdir(exist_ok=True)
 
@@ -84,7 +86,9 @@ def execute(file_paths, no_validate, run_logging, test_logging, log_level):
             with f:
                 json.dump(run, f, indent=4, cls=TassEncoder)
         finally:
-            closeLoggerFile(Context().run_id.value)
-            Context().run_id.reset()
-            Context().run_name.reset()
-            Context().run_uuid.reset()
+            # TODO: after run
+            closeLoggerFile(ctx.run_id.value)
+            ctx.run_id.reset()
+            ctx.run_name.reset()
+            ctx.run_uuid.reset()
+

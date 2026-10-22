@@ -1,6 +1,6 @@
 from tass.core.log.logging import getLogger
 from .pool import ExecutorPool
-from..registry import CommandBrokers
+from..registry import CommandRegistry
 
 
 
@@ -32,7 +32,7 @@ class ActionManager():
         if namespace in self._executors:
             self._executors[namespace].action(namespace, command, *args, **kwargs)
         else:
-            CommandBrokers.resolve(namespace, command)(*args, **kwargs)
+            CommandRegistry.resolve(namespace, command)(*args, **kwargs)
 
     def toJson(self):
         return {

@@ -39,9 +39,9 @@ class TassContextManager(metaclass=Singleton):
         return self.var("test_name", None)
 
     @property
-    def driver(self, driver):
-        _ = f"driver:{driver}"
-        return self.var(_, None)
+    def driver(self):
+        
+        return self.var("driver", None)
 
 
 class TassContextVar():

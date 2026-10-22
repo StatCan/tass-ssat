@@ -1,6 +1,7 @@
+from tass.core.context import ctx
 from ...action_manager import ActionExecutor
 from ....drivers.new_driver import new_driver
-from ....registry import CommandBrokers as executor
+from ....registry import CommandRegistry as executor
 
 
 def get_manager(browser_config, *args, **kwargs):
@@ -30,6 +31,7 @@ class SeleniumActionExecutor(ActionExecutor):
     def action(self, namespace, command, *args, **kwargs):
         if not self._manager['driver']:
             self._manager['driver'] = new_driver(**self._manager['config'])
+            ctx.driver.value = self._manager['driver']
         driver = self._manager['driver']
         executor.resolve(namespace, command)(driver=driver, *args, **kwargs)
 
@@ -45,3 +47,4 @@ class SeleniumActionExecutor(ActionExecutor):
         if self._manager['driver']:
             self._manager['driver'].quit()
             self._manager['driver'] = None
+            ctx.driver.reset()

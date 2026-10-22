@@ -3,7 +3,7 @@ import logging.config
 import logging.handlers
 from pathlib import Path
 from datetime import datetime
-from ..context import Context as Ctx
+from ..context import ctx
 from copy import copy
 
 
@@ -17,12 +17,12 @@ class TassTestFilter(logging.Filter):
     def filter(self, record):
         if TEST_LOGGING_DISABLED:
             return False
-        _id = Ctx().test_id.value
+        _id = ctx.test_id.value
         if _id is None:
             return False
 
-        _name = Ctx().test_name.value or "XtestX"
-        _uuid = Ctx().test_uuid.value
+        _name = ctx.test_name.value or "XtestX"
+        _uuid = ctx.test_uuid.value
 
         _ = copy(record)
         _.id = _id
@@ -33,12 +33,12 @@ class TassRunFilter(logging.Filter):
     def filter(self, record):
         if RUN_LOGGING_DISABLED:
             return False
-        _id = Ctx().run_id.value
+        _id = ctx.run_id.value
         if _id is None:
             return False
 
-        _name = Ctx().run_name.value or "XrunX"
-        _uuid = Ctx().run_uuid.value
+        _name = ctx.run_name.value or "XrunX"
+        _uuid = ctx.run_uuid.value
 
         _ = copy(record)
         _.id = _id
