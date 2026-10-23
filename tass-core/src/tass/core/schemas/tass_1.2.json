@@ -35,6 +35,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "hooks":{
+                    "$ref": "#/$defs/uuid-list"
                 }
             }
         },
@@ -113,8 +116,11 @@
                     "description": "Contains the various configurations for running a case.",
                     "properties": {
                         "browser": {
-                            "ref": "#/$defs/uuid",
+                            "$ref": "#/$defs/uuid",
                             "description": "The uuid of the browser used in this configuration."
+                        },
+                        "hooks": {
+                            "$ref": "#/$defs/uuid-list"
                         }
                     }
                 }
@@ -255,7 +261,7 @@
                 "when": {
                     "type": "string",
                     "description": "String representation of the hook triggering event.",
-                    "enum": ["before_run", "before_test", "on_start", "on_failure", "on_completion", "after_test", "after_run"]
+                    "enum": ["before_run", "before_test", "on_start", "on_failure", "on_success", "on_finish", "after_test", "after_run"]
                 },
                 "hook": {
                     "type": "string",
@@ -268,6 +274,10 @@
                 "critical": {
                     "type": "boolean",
                     "description": "Overwrites default hook failure severity."
+                },
+                "order": {
+                    "type": "integer",
+                    "description": "Number to define order of execution. Smaller values are executed first."
                 },
                 "args": {
                     "type": "object",
