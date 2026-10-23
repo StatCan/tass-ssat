@@ -1,4 +1,5 @@
 from .tass_errors import TassException
+from tass.core.hooks import HookEvent
 
 
 class HookError(TassException):
@@ -6,15 +7,21 @@ class HookError(TassException):
         super().__init__(message, *args)
     
 
-class HookExecutionError(HookError):
-    def __init__(self, message, errors: Exception | list[Exception], *args):
+class HookBaseExecutionError(HookError):
+    def __init__(self, message, event: HookEvent, errors: Exception | list[Exception], *args):
         super().__init__(message, *args)
+        self._event = event
         self._errors = errors
 
 
-class CriticalHookExecutionError(HookExecutionError):
-    def __init__(self, message, errors: Exception | list[Exception], *args):
-        super().__init__(message, errors, *args)
+class HookExecutionError(HookBaseExecutionError):
+    def __init__(self, message, event: HookEvent, errors: Exception | list[Exception], *args):
+        super().__init__(message, event, errors, *args)
+
+
+class CriticalHookExecutionError(HookBaseExecutionError):
+    def __init__(self, message, event: HookEvent, errors: Exception | list[Exception], *args):
+        super().__init__(message, event, errors, *args)
 
 
 class HookDefinitionError(HookError):

@@ -61,12 +61,14 @@ def execute(file_paths, no_validate, run_logging, test_logging, log_level):
                     ctx.test_uuid.value = case.uuid
                     ctx.test_name.value = case.title
                     ctx.test_id.value = case.id
-                    # TODO: before test
+                    # TODO: before test from run
+                    # TODO: before test from test
                     case.execute_tass()
 
                     log.info("")
                     log.info("> > > Finished Case: %s < < <", case.uuid)
                     log.info("")
+                    # TODO: before test from test
                     # TODO: after test
                 finally:
                     closeLoggerFile(ctx.test_id.value)

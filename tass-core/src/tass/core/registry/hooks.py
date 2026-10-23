@@ -1,5 +1,6 @@
 import inspect
-from enum import Enum
+from typing import Callable
+from dataclasses import dataclass, field
 from collections.abc import Iterable
 from functools import wraps
 from importlib import import_module
@@ -23,6 +24,21 @@ def _normalize_events(events: HookEvent | str | Iterable[HookEvent | str]):
     return frozenset(allowed)
 
 
+@dataclass(frozen=True)
+class HookDefinition():
+    func: Callable
+    name: str
+    allowed_events: frozenset[HookEvent] | None
+    critical: bool
+
+    def __call__(self, *args, **kwds):
+        self.func(*args, **kwds)
+
+    def __post_init__(self):
+        if not isinstance(self.allowed_events, frozenset) and isinstance(self.allowed_events, Iterable):
+            self.allowed_events = frozenset(self.allowed_events)
+
+
 class HookBroker(BaseBroker):
     def __init__(self, fallback, path):
         super().__init__()
@@ -32,7 +48,7 @@ class HookBroker(BaseBroker):
     def hook(self, fn=None, *,
              name: str | None = None,
              events: HookEvent | str | Iterable[HookEvent | str] = None,
-             critical: bool = False):
+             critical: bool = True):
         _allowed = _normalize_events(events)
         def decorator(fn):
             unwrapped = inspect.unwrap(fn)
@@ -47,8 +63,11 @@ class HookBroker(BaseBroker):
                         pass
                     pass
             
-            def_hook = {"func": wrapper, "allowed_events": _allowed}
-            return self.register(def_hook, _name)
+            def_hook = HookDefinition(name=_name,
+                                      func=wrapper,
+                                      critical=critical,
+                                      allowed_events=_allowed)
+            return self.register(def_hook, _name).func
         
         if fn:
             return decorator(fn)
