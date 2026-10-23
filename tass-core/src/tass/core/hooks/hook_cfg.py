@@ -7,6 +7,7 @@ class HookConfig():
     # Dataclass is used to enable simple fail fast implementation for bad hook configs.
     when: HookEvent
     hook: str
+    order: int = 0
     namespace: str = "core"
     critical: bool | None = None
     args: dict = field(default_factory=dict)

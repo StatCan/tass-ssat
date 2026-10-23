@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any
 from tass.core.log.logging import getLogger
 from tass.core.registry import HookRegistry
 from tass.core.registry.hooks import HookDefinition
@@ -14,6 +15,7 @@ class HookResult():
     hook: str
     trigger: HookEvent
     ok: bool
+    result: Any = None
     critical: bool = False
     error: Exception | None = None
 
@@ -46,6 +48,7 @@ class HookDispatcher():
         try:
             policy = trigger.policy
             actionable = [h for h in hooks if h.when == trigger]
+            actionable.sort(key=lambda h: h.order)
             if policy.reversed:
                 actionable.reverse()
             results = []
@@ -86,19 +89,42 @@ class HookDispatcher():
         return _push
 
     def unwind(self, event):
-        pass
+        logger.debug("Cleaning up from %s", event)
+        _ = self._unwind.get(event, [])
+        while _:
+            cleanup = _.pop()
+            logger.debug("Cleaning up after: %s", cleanup.name)
+            if cleanup.message:
+                logger.info(cleanup.message)
+            cleanup()
+        logger.debug("Finished %s cleanup", event)
+
+    def unwind_all(self):
+        if not all(self._unwind.values()):
+            return
+        logger.warning("Cleanup events were missed.")
+        for event, hooks in self._unwind.items():
+            logger.debug("Cleaning up from missed %s", event)
+            while hooks:
+                cleanup = _.pop()
+                logger.debug("Cleaning up after: %s", cleanup.name)
+                if cleanup.message:
+                    logger.info(cleanup.message)
+                cleanup()
+            logger.debug("Finished missed %s cleanup", event)
+
 
 def _fire(trigger: HookEvent, hook_cfg: HookConfig):
     try:
         hook = HookRegistry.resolve(hook_cfg.namespace, hook_cfg.hook)
         critical = _is_critical(hook_cfg, hook)
         _name = f"{hook_cfg.namespace}.{hook_cfg.hook}"
-        hook(hook_cfg.args)
+        result = hook(hook_cfg.args)
     except Exception as e:
         logger.exception("Hook execution failed.", e)
-        return HookResult(_name, trigger, False, critical, e)
+        return HookResult(_name, trigger, False, result, critical, e)
     logger.debug("Hook: %s completed", _name)
-    return HookResult(_name, trigger, True, critical)
+    return HookResult(_name, trigger, True, result, critical)
 
 
 def _is_critical(hook_cfg: HookConfig, hook: HookDefinition):

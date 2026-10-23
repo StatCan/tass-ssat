@@ -5,17 +5,18 @@ from ..exceptions.assertion_errors import TassHardAssertionError
 from ..exceptions.assertion_errors import TassSoftAssertionError
 from ..exceptions.hook_errors import CriticalHookExecutionError, HookExecutionError
 from ..log.logging import getLogger
+from ..hooks import HookEvent
 
 
 class TassCase(TassItem):
 
-    def execute_tass(self):
+    def execute_tass(self, hook_dispatch = None):
         self._start_time = datetime.now().strftime("%d-%m-%Y--%H_%M_%S")
         self.logger.info("Case: %s (%s) started @%s",
                          self.title, self.uuid, self._start_time)
         self._status = 'incomplete'
         manager = ActionManager.register_all(self._managers)
-        # TODO: on start
+        hook_dispatch(HookEvent.ON_START, self.hooks)
         for step in self.steps:
             self.logger.info("Executing > > > > %s", step['title'])
             self.logger.debug("Parameters > > > > %r", step)
@@ -28,10 +29,10 @@ class TassCase(TassItem):
                 step.update({"status": "passed"})
             except TassSoftAssertionError as soft_fail:
                 # TODO: Error message should be attached here.
-                # TODO: on failure
+                hook_dispatch(HookEvent.ON_FAILURE, self.hooks)
                 self.logger.warning(
                     (f"Step \"{step['uuid']}\": \"{step['title']}\" "
-                     "failed assertion. Stopping test case.")
+                     "failed soft assertion. Continuing test case.")
                      )
                 self.logger.warning("Failure message: %s", soft_fail)
                 self.logger.debug("ASSERT:::Soft assertion error raised. Msg: %s",
@@ -46,7 +47,7 @@ class TassCase(TassItem):
                 self._errors.append(step)
             except TassHardAssertionError as fail:
                 # TODO: Error message should be attached here.
-                # TODO: on failure
+                hook_dispatch(HookEvent.ON_FAILURE, self.hooks)
                 self.logger.warning(
                     (f"Step \"{step['uuid']}\": \"{step['title']}\" "
                      "failed assertion. Stopping test case.")
@@ -69,6 +70,7 @@ class TassCase(TassItem):
                 # TODO: Record result and continue.
                 pass
             except Exception as e:
+                hook_dispatch(HookEvent.ON_FAILURE, self.hooks)
                 self.logger.error(
                     (f"Step \"{step['uuid']}\": \"{step['title']}\" "
                      "failed. Stopping test case.")
@@ -89,10 +91,11 @@ class TassCase(TassItem):
             self._status = 'failed'
             self.parent.record_error()
         else:
+            hook_dispatch(HookEvent.ON_SUCCESS, self.hooks)
             self._status = 'passed'
         self.logger.info("Case completed: %s-%s", self.title, self.uuid)
         self.logger.info("Status: %s", self._status)
-        # TODO: on complete
+        hook_dispatch(HookEvent.ON_FINISH, self.hooks)
         manager.quit()
 
 
@@ -104,9 +107,6 @@ class TassCase(TassItem):
         self._errors = []
         self._managers = managers
         self.logger = getLogger(__name__)
-
-    def _run_hooks(self):
-        pass
 
     def __repr__(self):
         return (

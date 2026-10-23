@@ -3,6 +3,7 @@ from pathlib import Path
 from .parser.parse import parse
 from .log.logging import getLogger, init_base_logger, closeLoggerFile
 from .context import ctx
+from tass.core.hooks import HookDispatcher, HookEvent
 
 
 log = None
@@ -42,15 +43,14 @@ def execute(file_paths, no_validate, run_logging, test_logging, log_level):
         try:
             path = Path(file_path).resolve()
 
-
             run = parse(path, no_validate)
-
+            dispatcher = HookDispatcher()
             ctx.run_uuid.value = run.uuid
             ctx.run_name.value = run.title
             ctx.run_id.value = run.id
 
             log.info("<<<<< Starting Run: %s >>>>>", run.uuid)
-            # TODO: before run
+            dispatcher.fire(HookEvent.BEFORE_RUN, run.hooks)
             
             for case in run.collect():
                 try:
@@ -61,16 +61,14 @@ def execute(file_paths, no_validate, run_logging, test_logging, log_level):
                     ctx.test_uuid.value = case.uuid
                     ctx.test_name.value = case.title
                     ctx.test_id.value = case.id
-                    # TODO: before test from run
-                    # TODO: before test from test
-                    case.execute_tass()
+                    dispatcher.fire(HookEvent.BEFORE_TEST, run.hooks + case.hooks)
+                    case.execute_tass(dispatcher.fire)
 
                     log.info("")
                     log.info("> > > Finished Case: %s < < <", case.uuid)
                     log.info("")
-                    # TODO: before test from test
-                    # TODO: after test
                 finally:
+                    dispatcher.fire(HookEvent.AFTER_TEST, run.hooks + case.hooks)
                     closeLoggerFile(ctx.test_id.value)
                     ctx.test_id.reset()
                     ctx.test_uuid.reset()
@@ -88,9 +86,12 @@ def execute(file_paths, no_validate, run_logging, test_logging, log_level):
             with f:
                 json.dump(run, f, indent=4, cls=TassEncoder)
         finally:
-            # TODO: after run
+            dispatcher.fire(HookEvent.AFTER_RUN, run.hooks)
             closeLoggerFile(ctx.run_id.value)
             ctx.run_id.reset()
             ctx.run_name.reset()
             ctx.run_uuid.reset()
+
+            dispatcher.unwind_all()
+
 
