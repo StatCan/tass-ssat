@@ -118,11 +118,11 @@
                         "browser": {
                             "$ref": "#/$defs/uuid",
                             "description": "The uuid of the browser used in this configuration."
-                        },
-                        "hooks": {
-                            "$ref": "#/$defs/uuid-list"
                         }
                     }
+                },
+                "hooks": {
+                    "$ref": "#/$defs/uuid-list"
                 }
             }
         },
@@ -258,6 +258,9 @@
             "type": "object",
             "description": "A hook configuration",
             "properties": {
+                "uuid": {
+                    "$ref": "#/$defs/uuid"
+                },
                 "when": {
                     "type": "string",
                     "description": "String representation of the hook triggering event.",
@@ -284,7 +287,7 @@
                     "description": "JSON object representing keyword arguments passed to the hook prior to execution."
                 }
             },
-            "required": ["when", "hook", "namespace"]
+            "required": ["uuid", "when", "hook", "namespace"]
         }
     }
 }

@@ -1,6 +1,6 @@
 from tass.core.log.logging import getLogger
 from .impl import _selenium as selhooks
-from tass.core.registry.hooks import HookEvent
+from tass.core.hooks.hook_cfg import HookEvent
 from tass.core.registry import SeleniumHookBroker as Hooks
 
 

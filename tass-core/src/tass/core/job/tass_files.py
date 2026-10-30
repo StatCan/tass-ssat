@@ -8,6 +8,7 @@ class TassJob(TassFile):
 
     def __init__(self, path,
                  _meta=None,
+                 hooks=[],
                  **kwargs):
         super().__init__(path, **kwargs)
         self._start_time = 'not started'
@@ -25,6 +26,7 @@ class TassJob(TassFile):
                 "pages-path": "./pages"
             }
         self._meta = _meta
+        self._hooks = hooks
 
     def __str__(self):
         str_ = f"""
@@ -52,6 +54,10 @@ class TassJob(TassFile):
     @property
     def has_error(self):
         return self._has_error
+
+    @property
+    def hooks(self):
+        return self._hooks
 
     def record_error(self):
         self._has_error = True

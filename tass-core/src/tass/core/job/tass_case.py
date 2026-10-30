@@ -5,7 +5,7 @@ from ..exceptions.assertion_errors import TassHardAssertionError
 from ..exceptions.assertion_errors import TassSoftAssertionError
 from ..exceptions.hook_errors import CriticalHookExecutionError, HookExecutionError
 from ..log.logging import getLogger
-from ..hooks import HookEvent
+from ..hooks.hook_cfg import HookEvent
 
 
 class TassCase(TassItem):
@@ -99,13 +99,14 @@ class TassCase(TassItem):
         manager.quit()
 
 
-    def __init__(self, *, steps=[], managers, **kwargs):
+    def __init__(self, *, steps=[], managers, hooks, **kwargs):
         super().__init__(**kwargs)
         self._steps = steps
         self._start_time = 'not started'
         self._status = 'untested'
         self._errors = []
         self._managers = managers
+        self._hooks = self.parent.hooks + hooks
         self.logger = getLogger(__name__)
 
     def __repr__(self):
@@ -131,6 +132,10 @@ class TassCase(TassItem):
     @property
     def status(self):
         return self._status
+
+    @property
+    def hooks(self):
+        return self._hooks
 
     def toJson(self):
         return {

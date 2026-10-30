@@ -8,7 +8,7 @@ log = getLogger(__name__)
 
 
 DEFAULT = validator.Tass1_1Validator
-DEFAULT_SCHEMA = "1.1.0"
+DEFAULT_SCHEMA = "1.2.0"
 
 def version_check(version, spec):
     return Version(version) in SpecifierSet(spec)
@@ -23,6 +23,8 @@ def validate(job, no_validate):
 
     if version_check(schema_version, "<1.1"):
         schema = validator.Tass1Validator()
+    elif version_check(schema_version, "~=1.2"):
+        schema = validator.Tass1_2Validator()
     elif version_check(schema_version, "~=1.1"):
         schema = validator.Tass1_1Validator()
     else:

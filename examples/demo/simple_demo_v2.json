@@ -1,12 +1,39 @@
 {
-    "schema-version": "1.1.0",
+    "schema-version": "1.2.0",
     "Job":
     {
         "uuid": "tr100101",
         "build": "V2.4",
         "title": "Simple Demo v.1",
-        "parent": "None"
+        "parent": "None",
+        "hooks": ["screenshot1", "screenshot2", "screenshot3", "screenshot4"]
     },
+    "Hooks": [
+        {
+            "uuid": "screenshot1",
+            "when": "on_failure",
+            "hook": "screenshot",
+            "namespace": "selenium"
+        },
+        {
+            "uuid": "screenshot2",
+            "when": "on_success",
+            "hook": "screenshot",
+            "namespace": "selenium"
+        },
+        {
+            "uuid": "screenshot3",
+            "when": "on_finish",
+            "hook": "screenshot",
+            "namespace": "selenium"
+        },
+        {
+            "uuid": "screenshot4",
+            "when": "on_start",
+            "hook": "screenshot",
+            "namespace": "selenium"
+        }
+    ],
     "Tests": [
         {
             "uuid": "tr100101--uuid-tc-01--chrome001",
@@ -31,6 +58,16 @@
         {
             "uuid": "tr100101--Uuid-tc-02--ffox002",
             "case": "Uuid-tc-02",
+            "configurations": [
+                {
+                    "type": "browser",
+                    "uuid": "ffox002"
+                }
+            ]
+        },
+        {
+            "uuid": "tr100101--uuid-tc-01--ffox002",
+            "case": "uuid-tc-01",
             "configurations": [
                 {
                     "type": "browser",

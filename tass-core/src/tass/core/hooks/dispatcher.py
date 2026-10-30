@@ -45,15 +45,17 @@ class HookDispatcher():
 
 
     def fire(self, trigger: HookEvent, hooks: list[HookConfig], *args, **kwargs):
+        actionable = [h for h in hooks if h.when == trigger]
+        if not actionable:
+            return
+        policy = trigger.policy
+        actionable.sort(key=lambda h: h.order)
+        if policy.reversed and len(actionable) > 1:
+            actionable.reverse()
         try:
-            policy = trigger.policy
-            actionable = [h for h in hooks if h.when == trigger]
-            actionable.sort(key=lambda h: h.order)
-            if policy.reversed:
-                actionable.reverse()
             results = []
             for config in actionable:
-                result = _fire(config)
+                result = _fire(trigger, config)
                 results.append(result)
                 if result.ok:
                     continue
@@ -68,14 +70,14 @@ class HookDispatcher():
                                                 failures,
                                                 len(failures),
                                                 "s" if len(failures)>1 else "")
-            else:
+            elif failures:
                 raise HookExecutionError("%d hook%s failed.",
                                                 trigger,
                                                 failures,
                                                 len(failures),
                                                 "s" if len(failures)>1 else "")
         finally:
-            if policy.unwind:
+            if policy.unwind and self._unwind:
                 self.unwind(policy.unwind)
 
     def _push_unwind(self, event):
@@ -100,7 +102,7 @@ class HookDispatcher():
         logger.debug("Finished %s cleanup", event)
 
     def unwind_all(self):
-        if not all(self._unwind.values()):
+        if not self._unwind or not all(self._unwind.values()):
             return
         logger.warning("Cleanup events were missed.")
         for event, hooks in self._unwind.items():
@@ -119,7 +121,7 @@ def _fire(trigger: HookEvent, hook_cfg: HookConfig):
         hook = HookRegistry.resolve(hook_cfg.namespace, hook_cfg.hook)
         critical = _is_critical(hook_cfg, hook)
         _name = f"{hook_cfg.namespace}.{hook_cfg.hook}"
-        result = hook(hook_cfg.args)
+        result = hook(trigger, hook_cfg.args)
     except Exception as e:
         logger.exception("Hook execution failed.", e)
         return HookResult(_name, trigger, False, result, critical, e)

@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 @dataclass(frozen=True)
 class HookConfig():
     # Dataclass is used to enable simple fail fast implementation for bad hook configs.
+    uuid: str
     when: HookEvent
     hook: str
     order: int = 0
@@ -18,9 +19,9 @@ class HookConfig():
 
 @dataclass(frozen=True)
 class EventPolicy():
-    reverse: bool
+    reversed: bool
     fail_fast: bool
-    unwind: HookEvent = None
+    unwind: HookEvent | None = None
     
 
 class HookEvent(str, Enum):
@@ -37,7 +38,7 @@ class HookEvent(str, Enum):
     AFTER_RUN = ("after_run", EventPolicy(True, False, BEFORE_RUN))
     BEFORE_TEST = ("before_test", EventPolicy(False, True))
     AFTER_TEST = ("after_test", EventPolicy(True, False, BEFORE_TEST))
-    ON_FAILURE = ("on_failure", EventPolicy(True, False))
+    ON_FAILURE = ("on_failure", EventPolicy(False, False))
     ON_SUCCESS = ("on_success", EventPolicy(True, False))
     ON_START = ("on_start", EventPolicy(False, True))
     ON_FINISH = ("on_finish", EventPolicy(True, False, ON_START))

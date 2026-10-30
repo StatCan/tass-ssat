@@ -1,6 +1,6 @@
 from tass.core.log.logging import getLogger
 from tass.core.registry import BrokerRegistry
-from .. import HookEvent
+from ..hook_cfg import HookEvent
 from tass.core.context import ctx
 
 logger = getLogger(__name__)

@@ -28,11 +28,19 @@ class SeleniumActionExecutor(ActionExecutor):
         super().__init__()
         self._manager = manager
 
+    def register(self, namespace):
+        def callback():
+            return self.driver
+        ctx.driver(namespace).value = callback
+
+    @property        
+    def driver(self):
+        if not self._manager["driver"]:
+            self._manager["driver"] = new_driver(**self._manager['config'])
+        return self._manager["driver"]
+
     def action(self, namespace, command, *args, **kwargs):
-        if not self._manager['driver']:
-            self._manager['driver'] = new_driver(**self._manager['config'])
-            ctx.driver.value = self._manager['driver']
-        driver = self._manager['driver']
+        driver = self.driver
         executor.resolve(namespace, command)(driver=driver, *args, **kwargs)
 
     def toJson(self):
@@ -47,4 +55,4 @@ class SeleniumActionExecutor(ActionExecutor):
         if self._manager['driver']:
             self._manager['driver'].quit()
             self._manager['driver'] = None
-            ctx.driver.reset()
+            ctx.driver_reset()

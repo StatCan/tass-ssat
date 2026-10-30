@@ -3,7 +3,8 @@ from pathlib import Path
 from .parser.parse import parse
 from .log.logging import getLogger, init_base_logger, closeLoggerFile
 from .context import ctx
-from tass.core.hooks import HookDispatcher, HookEvent
+from tass.core.hooks.dispatcher import HookDispatcher
+from tass.core.hooks.hook_cfg import HookEvent
 
 
 log = None

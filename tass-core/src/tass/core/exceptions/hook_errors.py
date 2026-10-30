@@ -1,5 +1,5 @@
 from .tass_errors import TassException
-from tass.core.hooks import HookEvent
+from tass.core.hooks.hook_cfg import HookEvent
 
 
 class HookError(TassException):

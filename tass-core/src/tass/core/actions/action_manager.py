@@ -13,6 +13,9 @@ class ActionExecutor():
     def action(self, namespace, command, *args, **kwargs):
         raise NotImplementedError('action function not implemented')
 
+    def register(self, namespace):
+        pass
+
     def quit(self):
         # Method called at the end of every case
         # include any cleanup/resetting required
@@ -48,5 +51,9 @@ class ActionManager():
     def register_all(cls, managers):
         m = cls()
         for manager in managers:
-            m._executors.update(execpool.get(**manager))
+            _ = execpool.get(**manager)
+            for k, v in _.items():
+                v.register(k)
+            m._executors.update(_)
+        
         return m

@@ -1,16 +1,9 @@
-import pathlib
-from datetime import datetime
 from ..impl import _appium as app
-from ...tools.page_reader import PageReader
-from ...log.logging import getLogger
 from ...registry import AppiumBroker
 from selenium.common.exceptions import WebDriverException
 
 #  For additional documentation, see selenium docs:
 #  https://www.selenium.dev/selenium/docs/api/py/webdriver_remote/selenium.webdriver.remote.webelement.html
-
-
-logger = getLogger(__name__)
 
 
 @AppiumBroker.command

@@ -4,6 +4,7 @@ from tass.core.exceptions.tass_errors import (
     TassUUIDNotFound,
     TassAmbiguousUUID)
 from tass.core.log.logging import getLogger
+from tass.core.hooks.hook_cfg import HookConfig
 from ..job.tass_files import TassJob
 
 
@@ -316,4 +317,49 @@ class Tass1_1Parser(Parser):
                 managers.append(manager)
         self.log.info(f"Found managers for {c['uuid']}")
         return {"managers": managers}
+
+
+class Tass1_2Parser(Tass1_1Parser):
+    def _parse_job(self, path, job):
+    
+        meta = job.get("Meta", None)
+        job_raw = job['Job']
+
+        job_raw.update(self._parse_hooks(job_raw.get("hooks", []), job))
+
+        tassjob = TassJob(path, _meta=meta, **job_raw)
+    
+        for test in self._parse_tests(job["Tests"], job):
+            tassjob.add_test_case(test)
+        return tassjob 
+
+    def _parse_tests(self, tests, job):
+        for test in tests:
+            _out = {}
+            _out['uuid'] = test['uuid']
+            _out.update(self._parse_case(test['case'], job))
+            _out.update(
+                self._parse_configurations(
+                    test['configurations'], job))
+            _out.update(self._parse_managers(_out, job))
+            _out.update(self._parse_hooks(test.get("hooks", []), job))
+            yield _out
+
+    def _parse_hooks(self, hook_list, job):
+        hooks_out = []
+        for hook in hook_list:
+            self.log.debug("Activating hook: %s", hook)
+            found = list(filter(lambda h: h['uuid'] == hook, job["Hooks"]))
+            if len(found) > 1:
+                self.log.warning(
+                    "Ambiguous hook configuration. Attempting to resolve.")
+                if not all(conf == found[0] for conf in found[1:]):
+                    self.log.warning("Unable to resolve ambiguous uuids.")
+                    raise TassAmbiguousUUID(hook)
+            elif len(found) == 0:
+                self.log.warning("No matching mobiles configuration found.")
+                raise TassUUIDNotFound(hook)
+            hooks_out.append(HookConfig(**found[0]))
+        return {"hooks": hooks_out}
+
         

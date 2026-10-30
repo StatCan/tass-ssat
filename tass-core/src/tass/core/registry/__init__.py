@@ -28,5 +28,5 @@ CoreBroker = CommandRegistry.register("core", None, "tass.core.actions.core.core
 # Hooks
 HookRegistry = BrokerRegistry()
 # CoreHookBroker = Brokers.register("core", None, )
-SeleniumHookBroker = HookRegistry.register("selenium", "core", "", broker=HookBroker)
+SeleniumHookBroker = HookRegistry.register("selenium", "core", "tass.core.hooks.selenium", broker=HookBroker)
 AppiumHookBroker = HookRegistry.register("appium", "selenium", "", broker=HookBroker)

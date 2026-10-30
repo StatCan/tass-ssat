@@ -68,3 +68,17 @@ class Tass1_1Validator(Validator):
 
     def parser(self):
         return parser.Tass1_1Parser()
+
+
+class Tass1_2Validator(Validator):
+
+    def __init__(self):
+        super().__init__("tass_1.2.json")
+
+    def validate(self, job):
+        self.log.info("Validating schema against schema version: 1.2.0")
+        super().validate(job)
+        # TODO: validate using uniqueness rules.
+
+    def parser(self):
+        return parser.Tass1_2Parser()

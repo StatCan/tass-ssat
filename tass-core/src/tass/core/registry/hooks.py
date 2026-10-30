@@ -1,12 +1,13 @@
 import inspect
 from typing import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from collections.abc import Iterable
 from functools import wraps
 from importlib import import_module
 from .broker import BaseBroker
 from ..log.logging import getLogger
-from tass.core.hooks import HookEvent, HookResult
+from tass.core.hooks.hook_cfg import HookEvent
+from tass.core.exceptions.hook_errors import HookError
 
 logger = getLogger(__name__)
 
@@ -44,6 +45,20 @@ class HookBroker(BaseBroker):
         super().__init__()
         self._fallback = fallback
         self._path = path
+
+    def get(self, name):
+            if not self.registry:
+                try:
+                    if self._path:
+                        import_module(self._path)
+                except ImportError as e:
+                    logger.error("Unable to import command package: %s.", self._path)
+                    logger.error("%s", e)
+                    raise e
+            fn = super().get(name)
+            if fn is None:
+                raise HookError()
+            return fn
 
     def hook(self, fn=None, *,
              name: str | None = None,

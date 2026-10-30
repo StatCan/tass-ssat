@@ -38,10 +38,13 @@ class TassContextManager(metaclass=Singleton):
     def test_name(self):
         return self.var("test_name", None)
 
-    @property
-    def driver(self):
-        
-        return self.var("driver", None)
+    def driver(self, namespace="core"):
+        return self.var(f"driver:{namespace}", None)
+
+    def driver_reset(self):
+        drivers = list(filter(lambda var: "driver:" in var, self._vars))
+        for driver in drivers:
+            self._vars[driver].reset()
 
 
 class TassContextVar():
