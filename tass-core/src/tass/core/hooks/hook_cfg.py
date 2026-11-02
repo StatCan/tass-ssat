@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 class HookConfig():
     # Dataclass is used to enable simple fail fast implementation for bad hook configs.
     uuid: str
-    when: HookEvent
+    when: "HookEvent"
     hook: str
     order: int = 0
     namespace: str = "core"
@@ -21,7 +21,7 @@ class HookConfig():
 class EventPolicy():
     reversed: bool
     fail_fast: bool
-    unwind: HookEvent | None = None
+    unwind: "HookEvent | None" = None
     
 
 class HookEvent(str, Enum):
@@ -31,7 +31,6 @@ class HookEvent(str, Enum):
         obj._value_ = value
         obj.policy = policy
         return obj
-
 
 
     BEFORE_RUN = ("before_run", EventPolicy(False, True))
