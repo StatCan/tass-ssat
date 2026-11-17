@@ -130,7 +130,9 @@
             "type": "object",
             "description": "Describes a singular test case. Test cases should be independant of one another.",
             "properties": {
-                "uuid": {"$ref": "#/$defs/uuid"},
+                "uuid": {
+                    "$ref": "#/$defs/uuid"
+                },
                 "title": {
                     "type": "string",
                     "description": "Human readable descriptor for the test case."
@@ -139,7 +141,13 @@
                     "type": "string",
                     "description": "Version of the application being tested."
                 },
-                "steps": {"$ref": "#/$defs/uuid-list"}
+                "steps": {
+                    "$ref": "#/$defs/uuid-list"
+                },
+                "hooks": {
+                    "$ref": "#/$defs/uuid-list",
+                    "description": "Optional list of hooks for this "
+                }
             },
             "required": ["uuid", "title", "steps"]
         },
@@ -199,6 +207,9 @@
                                     "description": "Key value pairs to set preferences of a browser."
                                 }
                             }
+                        },
+                        "hooks": {
+                            "$ref": "#/$defs/uuid-list"
                         }
                     }
                 }
@@ -246,6 +257,9 @@
                         "appium:driver": {
                             "type": "object",
                             "description": "Capabilities for the appium driver."
+                        },
+                        "hooks": {
+                            "$ref": "#/$defs/uuid-list"
                         }
 
                     },

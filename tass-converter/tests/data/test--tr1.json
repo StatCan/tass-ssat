@@ -3,9 +3,10 @@
         "uuid": "tr1",
         "build": "V2.4",
         "title": "test",
-        "parent": "simple_demo.xlsx"
+        "parent": "simple_demo.xlsx",
+        "hooks": []
     },
-    "schema-version": "1.1.0",
+    "schema-version": "1.2.0",
     "Logger": {
         "path": "./log2"
     },
@@ -25,6 +26,11 @@
                 "q4",
                 "q5",
                 "q6a"
+            ],
+            "hooks": [
+                "hook1",
+                "hook2",
+                "hook4"
             ]
         },
         {
@@ -40,6 +46,10 @@
                 "q7",
                 "q8",
                 "q9"
+            ],
+            "hooks": [
+                "hook2",
+                "hook3"
             ]
         }
     ],
@@ -197,7 +207,10 @@
                     "sample",
                     "page1"
                 ],
-                "target": {"by": "id", "value": "btnX"},
+                "target": {
+                    "by": "id",
+                    "value": "btnX"
+                },
                 "xoffset": 10,
                 "yoffset": 20,
                 "deltax": 100,
@@ -220,7 +233,10 @@
                     ],
                     "preferences": {}
                 }
-            }
+            },
+            "hooks": [
+                "hook1"
+            ]
         },
         {
             "browser_name": "firefox",
@@ -234,7 +250,10 @@
                     "arguments": [],
                     "preferences": {}
                 }
-            }
+            },
+            "hooks": [
+                "hook3"
+            ]
         }
     ],
     "Mobiles": [
@@ -246,22 +265,59 @@
                     "implicit_wait": "15",
                     "explicit_wait": "30"
                 },
-                "scripts": {
-                    "driver:setup": [],
-                    "driver:teardown": []
-                },
                 "browser": {
                     "arguments": [
                         "--start-maximized"
                     ],
                     "preferences": {}
                 },
+                "scripts": {
+                    "driver:setup": [],
+                    "driver:teardown": []
+                },
                 "appium:server": {
                     "--testing1": true,
                     "--testing": "more"
                 },
                 "appium:driver": {}
-            }
+            },
+            "hooks": [
+                "hook1"
+            ]
+        }
+    ],
+    "Hooks": [
+        {
+            "uuid": "hook1",
+            "name": "screenshot",
+            "namespace": "selenium",
+            "when": "on_fail",
+            "critical": false,
+            "order": 25
+        },
+        {
+            "uuid": "hook2",
+            "name": "screenshot",
+            "namespace": "selenium",
+            "when": "on_success",
+            "critical": false,
+            "order": 10
+        },
+        {
+            "uuid": "hook3",
+            "name": "screenshot",
+            "namespace": "selenium",
+            "when": "on_finish",
+            "critical": true,
+            "order": 1
+        },
+        {
+            "uuid": "hook4",
+            "name": "screenshot",
+            "namespace": "selenium",
+            "when": "on_fail",
+            "critical": true,
+            "order": 1
         }
     ],
     "Tests": [

@@ -6,30 +6,45 @@
         "build": "V2.4",
         "title": "Simple Demo v.1",
         "parent": "None",
-        "hooks": ["screenshot1", "screenshot2", "screenshot3", "screenshot4"]
+        "hooks": ["screenshot1", "screenshot2", "screenshot3"]
     },
     "Hooks": [
         {
             "uuid": "screenshot1",
             "when": "on_failure",
             "hook": "screenshot",
-            "namespace": "selenium"
+            "namespace": "selenium",
+            "args": {
+                "name": "FAILED"
+            }
         },
         {
             "uuid": "screenshot2",
             "when": "on_success",
             "hook": "screenshot",
-            "namespace": "selenium"
+            "namespace": "selenium",
+            "args": {
+                "name": "PASSED"
+            }
         },
         {
             "uuid": "screenshot3",
             "when": "on_finish",
             "hook": "screenshot",
-            "namespace": "selenium"
+            "namespace": "selenium",
+            "args": {
+                "name": "FINISHED"
+            }
         },
         {
             "uuid": "screenshot4",
             "when": "on_start",
+            "hook": "screenshot",
+            "namespace": "selenium"
+        },
+        {
+            "uuid": "screenshot5",
+            "when": "before_run",
             "hook": "screenshot",
             "namespace": "selenium"
         }
@@ -43,7 +58,8 @@
                     "type": "browser",
                     "uuid": "chrome001"
                 }
-            ]
+            ],
+            "hooks": ["screenshot4"]
         },
         {
             "uuid": "tr100101--uuid-tc-01A--chrome001",
@@ -63,7 +79,8 @@
                     "type": "browser",
                     "uuid": "ffox002"
                 }
-            ]
+            ],
+            "hooks": ["screenshot1", "screenshot3"]
         },
         {
             "uuid": "tr100101--uuid-tc-01--ffox002",
@@ -73,7 +90,8 @@
                     "type": "browser",
                     "uuid": "ffox002"
                 }
-            ]
+            ],
+            "hooks": ["screenshot4", "screenshot3", "screenshot1"]
         }
     ],
     "Cases":
@@ -91,7 +109,8 @@
                 "q6",
                 "q7",
                 "q8"
-            ]
+            ],
+            "hooks": ["screenshot1"]
         },
         {
             "uuid": "uuid-tc-01A",
@@ -292,7 +311,8 @@
                     ],
                     "preferences": {}
                 }
-            }
+            },
+            "hooks": ["screenshot2"]
         },
 		{
             "browser_name": "chrome",

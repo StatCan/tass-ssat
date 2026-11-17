@@ -6,12 +6,12 @@ from tass.core.context import ctx
 logger = getLogger(__name__)
 
 
-def _screenshot(trigger: HookEvent):
+def _screenshot(trigger: HookEvent, name: str = None, *args, **kwargs):
     # Get the registered selenium screenshot function.
     screenshot = CommandRegistry.resolve("selenium", "screenshot")
     # Set the name of the screenshot to the test name and triggering event
-    name = f"{ctx.test_name.value}_{trigger.value}"
+    _name = name or f"{ctx.test_name.value}_{trigger.value}"
     # Take a screenshot via selenium driver
     driver = ctx.driver("selenium").value()
-    driver()
-    screenshot(driver=driver, name=name)
+    driver() # Start the driver if it is not started yet
+    screenshot(driver=driver, name=_name)

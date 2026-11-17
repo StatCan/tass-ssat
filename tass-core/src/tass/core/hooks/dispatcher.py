@@ -1,23 +1,11 @@
-from dataclasses import dataclass
-from typing import Any
 from tass.core.log.logging import getLogger
 from tass.core.registry import HookRegistry
 from tass.core.registry.hooks import HookDefinition
-from tass.core.hooks.hook_cfg import HookEvent, HookConfig
+from tass.core.hooks.hook_cfg import HookEvent, HookConfig, HookResult
 from tass.core.exceptions.hook_errors import CriticalHookExecutionError, HookExecutionError
 
 
 logger = getLogger(__name__)
-
-
-@dataclass(frozen=True)
-class HookResult():
-    hook: str
-    trigger: HookEvent
-    ok: bool
-    result: Any = None
-    critical: bool = False
-    error: Exception | None = None
 
 
 class HookCleanup():
@@ -65,13 +53,13 @@ class HookDispatcher():
                     break
             failures = [r for r in results if not r.ok]
             if any(r.critical for r in failures):
-                raise CriticalHookExecutionError("CRITICAL -- %d hook%s failed.",
+                raise CriticalHookExecutionError("CRITICAL -- {} hook{} failed.",
                                                 trigger,
                                                 failures,
                                                 len(failures),
                                                 "s" if len(failures)>1 else "")
             elif failures:
-                raise HookExecutionError("%d hook%s failed.",
+                raise HookExecutionError("{} hook{} failed.",
                                                 trigger,
                                                 failures,
                                                 len(failures),
@@ -121,10 +109,10 @@ def _fire(trigger: HookEvent, hook_cfg: HookConfig):
         hook = HookRegistry.resolve(hook_cfg.namespace, hook_cfg.hook)
         critical = _is_critical(hook_cfg, hook)
         _name = f"{hook_cfg.namespace}.{hook_cfg.hook}"
-        result = hook(trigger, hook_cfg.args)
+        result = hook(trigger, **hook_cfg.args)
     except Exception as e:
-        logger.exception("Hook execution failed.", e)
-        return HookResult(_name, trigger, False, result, critical, e)
+        logger.exception("Hook execution failed. %s", e)
+        return HookResult(_name, trigger, False, None, critical, e)
     logger.debug("Hook: %s completed", _name)
     return HookResult(_name, trigger, True, result, critical)
 

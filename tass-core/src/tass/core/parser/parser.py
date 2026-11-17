@@ -1,5 +1,6 @@
 import warnings
 from copy import deepcopy
+from collections import defaultdict
 from tass.core.exceptions.tass_errors import (
     TassUUIDNotFound,
     TassAmbiguousUUID)
@@ -218,7 +219,6 @@ class Tass1_1Parser(Parser):
 
         _case = deepcopy(found[0])
         _case['steps'] = self._parse_steps(found[0]['steps'], job)
-
         return _case
 
     def _parse_configurations(self, config, job):
@@ -254,7 +254,6 @@ class Tass1_1Parser(Parser):
                 continue
             parser = registered_configuration_parsers[k]
             parser(v)
-
         return {"configs": configurations}
 
     def _parse_steps(self, steps, job):
@@ -331,23 +330,23 @@ class Tass1_2Parser(Tass1_1Parser):
     
         for test in self._parse_tests(job["Tests"], job):
             tassjob.add_test_case(test)
-        return tassjob 
+        return tassjob
 
     def _parse_tests(self, tests, job):
         for test in tests:
-            _out = {}
+            _out = defaultdict(list)
             _out['uuid'] = test['uuid']
-            _out.update(self._parse_case(test['case'], job))
-            _out.update(
+            _merge_hooks(_out,
                 self._parse_configurations(
                     test['configurations'], job))
-            _out.update(self._parse_managers(_out, job))
-            _out.update(self._parse_hooks(test.get("hooks", []), job))
+            _merge_hooks(_out, self._parse_managers(_out, job))
+            _merge_hooks(_out, self._parse_case(test['case'], job))
+            _out.update(self._parse_hooks(_out["hooks"] + test.get("hooks", []), job))
             yield _out
 
     def _parse_hooks(self, hook_list, job):
         hooks_out = []
-        for hook in hook_list:
+        for hook in list(dict.fromkeys(hook_list)):
             self.log.debug("Activating hook: %s", hook)
             found = list(filter(lambda h: h['uuid'] == hook, job["Hooks"]))
             if len(found) > 1:
@@ -362,4 +361,62 @@ class Tass1_2Parser(Tass1_1Parser):
             hooks_out.append(HookConfig(**found[0]))
         return {"hooks": hooks_out}
 
-        
+    def _parse_managers(self, c, job):
+        manager_configs = c["configs"]
+        added_managers = []
+        managers = []
+        hooks = []
+        for manager in manager_configs:
+            if (manager["module_name"] not in added_managers):
+                added_managers.append(manager["module_name"])
+                managers.append(manager)
+            hooks.extend(manager.get("hooks", []))
+        self.log.info(f"Found managers for {c['uuid']}")
+        return {"managers": managers, "hooks": hooks}
+
+    def _parse_configurations(self, config, job):
+        configurations = []
+
+        def browser(uuid):
+            _browser = self._parse_browser(uuid, job)
+            conf = {
+                "module_name": "browser",
+                "uuid": _browser["uuid"],
+                "browser_config": _browser,
+                "hooks": _browser.pop("hooks", [])
+            }
+            configurations.append(conf)
+
+        def mobile(uuid):
+            _mobile = self._parse_mobile(uuid, job)
+            conf = {
+                "module_name": "mobile",
+                "uuid": _mobile["uuid"],
+                "mobile_configs": _mobile,
+                "hooks": _mobile.pop("hooks", [])
+            }
+            configurations.append(conf)
+
+        registered_configuration_parsers = {
+            "browser": browser,
+            "mobile": mobile
+        }
+
+        for conf in config:
+            k, v = conf['type'], conf['uuid']
+            if k not in registered_configuration_parsers:
+                self.log.warning(f"Unknown configuration type: {k}")
+                continue
+            parser = registered_configuration_parsers[k]
+            parser(v)
+        return {"configs": configurations}
+
+
+def _merge_hooks(out, merge):
+    # Combine out with merge
+    # Extract hooks uuids from merge
+    if "hooks" in merge and merge["hooks"]:
+        out["hooks"].extend(merge.pop("hooks"))
+    # Do not overwrite everything else
+    for k, v in merge.items():
+        out.setdefault(k, v)

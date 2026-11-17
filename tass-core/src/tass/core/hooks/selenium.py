@@ -10,6 +10,7 @@ logger = getLogger(__name__)
 @Hooks.hook(events=[HookEvent.ON_SUCCESS,
                     HookEvent.ON_FAILURE,
                     HookEvent.ON_START,
-                    HookEvent.ON_FINISH])
+                    HookEvent.ON_FINISH],
+            critical=False)
 def screenshot(trigger: HookEvent, *args, **kwargs):
-    selhooks._screenshot(trigger=trigger)
+    selhooks._screenshot(trigger=trigger, *args, **kwargs)

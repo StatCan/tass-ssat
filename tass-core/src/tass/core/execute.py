@@ -40,17 +40,18 @@ def execute(file_paths, no_validate, run_logging, test_logging, log_level):
                 test_logging,
                 log_level)
     log.info("\n\n <<<<<< TASS Starting >>>>>> \n\n")
+    dispatcher = HookDispatcher()
     for file_path in file_paths:
         try:
             path = Path(file_path).resolve()
 
             run = parse(path, no_validate)
-            dispatcher = HookDispatcher()
             ctx.run_uuid.value = run.uuid
             ctx.run_name.value = run.title
             ctx.run_id.value = run.id
 
             log.info("<<<<< Starting Run: %s >>>>>", run.uuid)
+            # TODO: try/except for critical fails
             dispatcher.fire(HookEvent.BEFORE_RUN, run.hooks)
             
             for case in run.collect():
@@ -62,14 +63,16 @@ def execute(file_paths, no_validate, run_logging, test_logging, log_level):
                     ctx.test_uuid.value = case.uuid
                     ctx.test_name.value = case.title
                     ctx.test_id.value = case.id
-                    dispatcher.fire(HookEvent.BEFORE_TEST, run.hooks + case.hooks)
+                    # TODO: try/except for critical fails
+                    dispatcher.fire(HookEvent.BEFORE_TEST, case.hooks)
                     case.execute_tass(dispatcher.fire)
 
                     log.info("")
                     log.info("> > > Finished Case: %s < < <", case.uuid)
                     log.info("")
                 finally:
-                    dispatcher.fire(HookEvent.AFTER_TEST, run.hooks + case.hooks)
+                    # TODO: try/except for critical fails
+                    dispatcher.fire(HookEvent.AFTER_TEST, case.hooks)
                     closeLoggerFile(ctx.test_id.value)
                     ctx.test_id.reset()
                     ctx.test_uuid.reset()
@@ -87,6 +90,7 @@ def execute(file_paths, no_validate, run_logging, test_logging, log_level):
             with f:
                 json.dump(run, f, indent=4, cls=TassEncoder)
         finally:
+            # TODO: try/except for critical fails
             dispatcher.fire(HookEvent.AFTER_RUN, run.hooks)
             closeLoggerFile(ctx.run_id.value)
             ctx.run_id.reset()

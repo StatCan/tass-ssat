@@ -7,7 +7,7 @@ from importlib import import_module
 from .broker import BaseBroker
 from ..log.logging import getLogger
 from tass.core.hooks.hook_cfg import HookEvent
-from tass.core.exceptions.hook_errors import HookError
+from tass.core.exceptions.hook_errors import HookError, HookDefinitionError
 
 logger = getLogger(__name__)
 
@@ -69,14 +69,10 @@ class HookBroker(BaseBroker):
             unwrapped = inspect.unwrap(fn)
             _name = name or unwrapped.__name__
             @wraps(fn)
-            def wrapper(*args, **kwargs):
-                try:
-                    return fn(*args, **kwargs)
-                except Exception:
-                    if critical:
-                        # TODO: Return critical hook result?
-                        pass
-                    pass
+            def wrapper(trigger: HookEvent, *args, **kwargs):
+                if _allowed and trigger not in _allowed:
+                    raise HookDefinitionError(f"Defined hook: {_name} is not allowed during: {trigger.value}")
+                return fn(trigger, *args, **kwargs)
             
             def_hook = HookDefinition(name=_name,
                                       func=wrapper,

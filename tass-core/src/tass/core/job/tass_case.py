@@ -1,4 +1,5 @@
 from datetime import datetime
+from itertools import chain
 from .tass_items import TassItem
 from ..actions.action_manager import ActionManager
 from ..exceptions.assertion_errors import TassHardAssertionError
@@ -106,7 +107,7 @@ class TassCase(TassItem):
         self._status = 'untested'
         self._errors = []
         self._managers = managers
-        self._hooks = self.parent.hooks + hooks
+        self._hooks = self._ready_hooks(hooks)
         self.logger = getLogger(__name__)
 
     def __repr__(self):
@@ -159,4 +160,10 @@ class TassCase(TassItem):
         self.logger.debug("Action: %s -- Executed with: %r",
                           action, params)
 
-        manager.action(*action, **params)
+        manager.action(*action, **params)  
+
+    def _ready_hooks(self, hooks):
+        readied = {}
+        for hook in chain(self.parent.hooks, hooks):
+            readied.setdefault(hook.uuid, hook)
+        return list(readied.values())

@@ -2,7 +2,7 @@ import openpyxl
 
 
 k_V_PARAMS = ["page", "stored_filter", "locator", "offset", "delta", "target"]
-
+EOF = '//end//'
 
 def convert(path):
     """
@@ -16,21 +16,24 @@ def convert(path):
     s_reporters = []  # Holds all reporter worksheet names.
     s_browsers = []  # Holds all the browser worksheet names.
     s_mobiles = [] # Holds all the mobile worksheet names.
+    s_hooks = [] # Holds all hook definitions worksheet names.
 
     # Get all worksheet names per type.
     for sheet in wb.sheetnames:
 
-        test_type = wb[sheet]['A1'].value
-        if test_type == 'tr_uuid:':
+        tab_type = wb[sheet]['A1'].value
+        if tab_type == 'tr_uuid:':
             s_runs.append(sheet)
-        elif test_type == 'tc_uuid:':
+        elif tab_type == 'tc_uuid:':
             s_cases.append(sheet)
-        elif test_type == 'r_uuid:':
+        elif tab_type == 'r_uuid:':
             s_reporters.append(sheet)
-        elif test_type == 'br_uuid:':
+        elif tab_type == 'br_uuid:':
             s_browsers.append(sheet)
-        elif test_type == 'mb_uuid:':
+        elif tab_type == 'mb_uuid:':
             s_mobiles.append(sheet)
+        elif tab_type == "hooks":
+            s_hooks.append(sheet)
         else:
             print('Not a tass Excel template.')
 
@@ -41,12 +44,55 @@ def convert(path):
     browsers = convert_browsers(s_browsers, wb)
     # Extract mobile configs from sheets
     mobiles = convert_mobiles(s_mobiles, wb)
+    # Extract hook definitions from sheets
+    hooks = convert_hooks(s_hooks, wb)
     # Extract all jobs to executed as a list.
-    runs = convert_runs(s_runs, cases, steps, browsers, mobiles, wb)
+    runs = convert_runs(s_runs, cases, steps, browsers, mobiles, hooks, wb)
     # TODO: define and print reporters.
     # reporters = convert_reporters(s_reporters, wb)
 
     return runs
+
+
+def convert_hooks(hooks, wb):
+    if not hooks:
+        return {}
+    _hooks = {}
+    header_row = 2
+    for sheet in hooks:
+        for row in wb[sheet].iter_rows(min_row=3, max_col=6):
+            _uuid = row[0].value
+            _name = row[1].value
+            _ns = row[2].value
+            _when = row[3].value
+            _critical = row[4].value
+            _order = row[5].value
+            _args = {}
+            for col in wb[sheet].iter_cols(min_row=row[0].row,
+                                            max_row=row[0].row,
+                                            min_col=7):
+                key = wb[sheet][header_row][col[0].column-1].value
+                if key == EOF:
+                    break
+                val = col[0].value
+                if val:
+                    _args[key] = val
+
+            hook_out = {
+                "uuid": _uuid,
+                "name": _name,
+                "namespace": _ns,
+                "when": _when,
+            }
+
+            if _critical is not None:
+                hook_out["critical"] = bool(_critical)
+            if _order is not None:
+                hook_out["order"] = int(_order)
+
+            _hooks[_uuid] = hook_out
+
+    return _hooks
 
 
 def convert_cases(cases, wb):
@@ -64,6 +110,11 @@ def convert_cases(cases, wb):
             continue
         tc["title"] = wb[c]['D1'].value
         tc["steps"] = []
+        hooks = wb[c]["F1"].value
+        if hooks:
+            tc["hooks"] = str(hooks).split(",")
+        else:
+            tc["hooks"] = []
 
         for row in wb[c].iter_rows(min_row=3, max_col=6):
             if (row[0] is None or row[0] == ''):
@@ -95,7 +146,7 @@ def convert_cases(cases, wb):
 
                 header = wb[c].cell(2, col[0].column).value
 
-                if (header == '//end//'):  # e.o.f indicator for TASS
+                if (header == EOF):  # e.o.f indicator for TASS
                     break
 
                 header = header.lower()
@@ -220,6 +271,12 @@ def convert_browsers(browsers, wb):
         b['uuid'] = uuid
         b['configs'] = config
 
+        hooks = s["F1"].value
+        if hooks:
+            b["hooks"] = str(hooks).split(",")
+        else:
+            b["hooks"] = []
+
         conf[uuid] = b
     return conf
 
@@ -291,10 +348,16 @@ def convert_mobiles(mobiles, wb):
         m["uuid"] = uuid
         m["configs"] = config
 
+        hooks = s["F1"].value
+        if hooks:
+            m["hooks"] = str(hooks).split(",")
+        else:
+            m["hooks"] = []
+
         conf[uuid] = m
     return conf
 
-def convert_runs(runs, cases, steps, browsers, mobiles, wb):
+def  convert_runs(runs, cases, steps, browsers, mobiles, hooks, wb):
     if not runs:
         return []
     execs = []  # Holds all ready-to-run test runs as dict
@@ -312,11 +375,12 @@ def convert_runs(runs, cases, steps, browsers, mobiles, wb):
             "uuid": uuid,
             "build": build,
             "title": title,
-            "parent": parent
+            "parent": parent,
+            "hooks": []
             }
 
         tr["Job"] = job
-        tr["schema-version"] = "1.1.0"
+        tr["schema-version"] = "1.2.0"
         # \\\\\
 
         # ///// Create custom Logger as applicable
@@ -328,6 +392,12 @@ def convert_runs(runs, cases, steps, browsers, mobiles, wb):
         caseset = set()
         driverset = set()
         stepset = set()
+        hookset = set()
+        if ts["F1"].value:
+            jobhooks = list(dict.fromkeys(str(ts["F1"].value).split(",")))
+            job["hooks"] = jobhooks
+            hookset.update(jobhooks)
+        
         for row in wb[run].iter_rows(min_row=3, min_col=2, max_col=8):
             # Add cases ids
             if row[2].value:
@@ -336,6 +406,7 @@ def convert_runs(runs, cases, steps, browsers, mobiles, wb):
             if row[6].value:
                 driverset.add(row[6].value)
 
+        # TODO: Optimize this? Move down to perform inside existing case loop
         for case in caseset:
             # Add step ids
             c = cases[case]
@@ -356,9 +427,16 @@ def convert_runs(runs, cases, steps, browsers, mobiles, wb):
                                 key=lambda x: x['uuid'])
 
         tests = []
-        # "Explode" test cases + configurations
         for driver in driverset:
+            # extract hooks by browser and device
+            if driver in browsers:
+                driverhooks = list(dict.fromkeys(browsers[driver].get("hooks", [])))
+            else:
+                driverhooks = list(dict.fromkeys(mobiles[driver].get("hooks", [])))
+            
+        # "Explode" test cases + configurations
             for c in caseset:
+                casehooks = list(dict.fromkeys(cases[c].get("hooks", [])))
                 uuid = "--".join([job['uuid'], c, driver])  # Hybrid uuid
                 test = {
                     "uuid": uuid,
@@ -368,10 +446,16 @@ def convert_runs(runs, cases, steps, browsers, mobiles, wb):
                             "type": "browser" if driver in browsers else "mobile",
                             "uuid": driver
                         }
-                    ]
+                    ],
                 }
 
+                hookset.update(casehooks)
                 tests.append(test)
+
+            hookset.update(driverhooks)
+            
+        tr["Hooks"] = sorted([hooks[h] for h in hookset],
+                                key=lambda x: x['uuid'])
         tr['Tests'] = sorted(tests, key=lambda x: x['uuid'])
 
         # other attributes:

@@ -1,5 +1,7 @@
 from enum import Enum
 from dataclasses import dataclass, field
+from typing import Any
+
 
 
 @dataclass(frozen=True)
@@ -16,6 +18,7 @@ class HookConfig():
     def __post_init__(self):
         if isinstance(self.when, HookEvent) and isinstance(self.when, str):
             self.when = HookEvent[self.when]
+
 
 @dataclass(frozen=True)
 class EventPolicy():
@@ -41,3 +44,13 @@ class HookEvent(str, Enum):
     ON_SUCCESS = ("on_success", EventPolicy(True, False))
     ON_START = ("on_start", EventPolicy(False, True))
     ON_FINISH = ("on_finish", EventPolicy(True, False, ON_START))
+
+
+@dataclass(frozen=True)
+class HookResult():
+    hook: str
+    trigger: HookEvent
+    ok: bool
+    result: Any = None
+    critical: bool = False
+    error: Exception | None = None

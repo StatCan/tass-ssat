@@ -72,12 +72,12 @@ class TassJob(TassFile):
             "test_cases": [c.toJson() for c in self._completed_cases]
         }
 
+
     def collect(self):
         self._start_time = datetime.now().strftime("%d-%m-%Y--%H_%M_%S")
         self.logger.info("Start time (%s): %s", self.uuid, self._start_time)
         self._status = "incomplete"
         for case in self._test_cases:
-
             self.logger.debug("Collected: %r", case)
             yield case
 
