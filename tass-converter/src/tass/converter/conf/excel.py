@@ -446,14 +446,14 @@ def  convert_runs(runs, cases, steps, browsers, mobiles, hooks, wb):
                             "type": "browser" if driver in browsers else "mobile",
                             "uuid": driver
                         }
-                    ],
+                    ]
                 }
 
                 hookset.update(casehooks)
                 tests.append(test)
 
             hookset.update(driverhooks)
-            
+
         tr["Hooks"] = sorted([hooks[h] for h in hookset],
                                 key=lambda x: x['uuid'])
         tr['Tests'] = sorted(tests, key=lambda x: x['uuid'])
