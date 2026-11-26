@@ -25,7 +25,7 @@ class EventPolicy():
     reversed: bool
     fail_fast: bool
     unwind: "HookEvent | None" = None
-    
+
 
 class HookEvent(str, Enum):
 
